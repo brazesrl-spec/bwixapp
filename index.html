@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="fr-BE">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BWIX — Valorisation et analyse financière de PME belges | bwix.app</title>
+  <meta name="description" content="Importez votre bilan BNB et obtenez en 2 minutes une analyse financière complète et une valorisation de votre PME belge. Gratuit.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://bwix.app/">
+  <link rel="alternate" hreflang="fr-BE" href="https://bwix.app/">
+  <link rel="alternate" hreflang="nl-BE" href="https://bwix.app/nl/">
+  <link rel="alternate" hreflang="x-default" href="https://bwix.app/">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://bwix.app/">
+  <meta property="og:title" content="BWIX — Valorisation et analyse financière de PME belges">
+  <meta property="og:description" content="Importez votre bilan BNB et obtenez en 2 minutes une analyse financière complète et une valorisation de votre PME belge. Gratuit.">
+  <meta property="og:image" content="https://bwix.app/og-image.png">
+  <meta property="og:locale" content="fr_BE">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="BWIX — Valorisation et analyse financière de PME belges">
+  <meta name="twitter:description" content="Importez votre bilan BNB et obtenez en 2 minutes une analyse financière complète et une valorisation de votre PME belge. Gratuit.">
+
+  <!-- Schema.org -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "BWIX",
+    "url": "https://bwix.app",
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "Web",
+    "description": "Le premier outil belge d'analyse financière et de valorisation des PME — depuis votre bilan BNB, sans intermédiaire.",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "EUR"
+    },
+    "author": {
+      "@type": "Organization",
+      "name": "BWIX",
+      "url": "https://bwix.app"
+    }
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ============ HEADER / NAV ============ -->
+  <header class="header">
+    <div class="container header__inner">
+      <a href="/" class="logo" aria-label="BWIX accueil">BWIX<span class="logo__dot">.</span></a>
+      <a href="#waitlist-bottom" class="btn btn--small">Liste d'attente</a>
+    </div>
+  </header>
+
+  <!-- ============ 1. HERO ============ -->
+  <section class="hero" id="hero">
+    <div class="container hero__inner">
+      <div class="hero__content">
+        <span class="badge"><span class="badge__flag">&#127463;&#127466;</span> Conçu pour les PME belges</span>
+        <h1 class="hero__title">Valorisez votre entreprise en <span class="highlight">2 minutes</span></h1>
+        <p class="hero__subtitle">Le premier outil belge d'analyse financière et de valorisation des PME&nbsp;&mdash; depuis votre bilan BNB, sans intermédiaire.</p>
+        <form class="waitlist-form" id="waitlist-hero" aria-label="Rejoindre la liste d'attente">
+          <input type="email" name="email" placeholder="votre@email.com" required autocomplete="email" aria-label="Adresse email">
+          <button type="submit" class="btn">Rejoindre la liste d'attente</button>
+        </form>
+        <p class="waitlist-msg" id="waitlist-hero-msg" hidden></p>
+      </div>
+      <div class="hero__visual" aria-hidden="true">
+        <!-- SVG dashboard mockup -->
+        <svg class="mockup" viewBox="0 0 480 340" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="2" width="476" height="336" rx="16" fill="#0f2440" stroke="#1e3a5f" stroke-width="2"/>
+          <!-- Top bar -->
+          <rect x="20" y="18" width="80" height="10" rx="5" fill="#1e3a5f"/>
+          <rect x="380" y="18" width="80" height="10" rx="5" fill="#1e3a5f"/>
+          <!-- Score circle -->
+          <circle cx="80" cy="100" r="42" stroke="#00c896" stroke-width="6" fill="none" stroke-dasharray="200 64" stroke-linecap="round"/>
+          <text x="80" y="106" text-anchor="middle" fill="#fff" font-size="20" font-weight="700" font-family="Inter,sans-serif">78</text>
+          <text x="80" y="120" text-anchor="middle" fill="#5a7fa0" font-size="8" font-family="Inter,sans-serif">Score sante</text>
+          <!-- Bars -->
+          <rect x="160" y="65" width="30" height="70" rx="4" fill="#1e3a5f"/>
+          <rect x="160" y="95" width="30" height="40" rx="4" fill="#00c896"/>
+          <rect x="200" y="65" width="30" height="70" rx="4" fill="#1e3a5f"/>
+          <rect x="200" y="80" width="30" height="55" rx="4" fill="#00c896"/>
+          <rect x="240" y="65" width="30" height="70" rx="4" fill="#1e3a5f"/>
+          <rect x="240" y="75" width="30" height="60" rx="4" fill="#00c896"/>
+          <rect x="280" y="65" width="30" height="70" rx="4" fill="#1e3a5f"/>
+          <rect x="280" y="90" width="30" height="45" rx="4" fill="#00c896"/>
+          <rect x="320" y="65" width="30" height="70" rx="4" fill="#1e3a5f"/>
+          <rect x="320" y="72" width="30" height="63" rx="4" fill="#00c896"/>
+          <rect x="360" y="65" width="30" height="70" rx="4" fill="#1e3a5f"/>
+          <rect x="360" y="85" width="30" height="50" rx="4" fill="#00c896"/>
+          <rect x="400" y="65" width="30" height="70" rx="4" fill="#1e3a5f"/>
+          <rect x="400" y="78" width="30" height="57" rx="4" fill="#00c896"/>
+          <!-- Valuation card -->
+          <rect x="20" y="165" width="200" height="70" rx="10" fill="#162d4a"/>
+          <text x="36" y="188" fill="#5a7fa0" font-size="9" font-family="Inter,sans-serif">Valorisation EBITDA</text>
+          <text x="36" y="215" fill="#00c896" font-size="22" font-weight="700" font-family="Inter,sans-serif">€ 1.240.000</text>
+          <!-- Ratios card -->
+          <rect x="240" y="165" width="220" height="70" rx="10" fill="#162d4a"/>
+          <text x="256" y="188" fill="#5a7fa0" font-size="9" font-family="Inter,sans-serif">Ratios cles</text>
+          <rect x="256" y="198" width="60" height="6" rx="3" fill="#1e3a5f"/><rect x="256" y="198" width="42" height="6" rx="3" fill="#00c896"/>
+          <rect x="256" y="210" width="60" height="6" rx="3" fill="#1e3a5f"/><rect x="256" y="210" width="50" height="6" rx="3" fill="#00c896"/>
+          <rect x="256" y="222" width="60" height="6" rx="3" fill="#1e3a5f"/><rect x="256" y="222" width="35" height="6" rx="3" fill="#00c896"/>
+          <text x="330" y="204" fill="#fff" font-size="8" font-family="Inter,sans-serif">Liquidite 1.8</text>
+          <text x="330" y="216" fill="#fff" font-size="8" font-family="Inter,sans-serif">Solvabilite 62%</text>
+          <text x="330" y="228" fill="#fff" font-size="8" font-family="Inter,sans-serif">ROE 14.2%</text>
+          <!-- Bottom line chart -->
+          <polyline points="30,290 80,278 130,285 180,265 230,270 280,255 330,260 380,245 430,250" stroke="#00c896" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <rect x="20" y="260" width="440" height="1" fill="#1e3a5f"/>
+          <text x="20" y="320" fill="#5a7fa0" font-size="8" font-family="Inter,sans-serif">2019</text>
+          <text x="130" y="320" fill="#5a7fa0" font-size="8" font-family="Inter,sans-serif">2020</text>
+          <text x="240" y="320" fill="#5a7fa0" font-size="8" font-family="Inter,sans-serif">2021</text>
+          <text x="350" y="320" fill="#5a7fa0" font-size="8" font-family="Inter,sans-serif">2022</text>
+          <text x="430" y="320" fill="#5a7fa0" font-size="8" font-family="Inter,sans-serif">2023</text>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 2. PROBLEME ============ -->
+  <section class="section section--dark" id="probleme">
+    <div class="container">
+      <h2 class="section__title">Aujourd'hui, valoriser votre entreprise c'est&hellip;</h2>
+      <div class="grid grid--3">
+        <div class="card card--problem">
+          <span class="card__icon">&#128340;</span>
+          <h3>2-3 semaines d'attente</h3>
+          <p>chez votre comptable pour obtenir une estimation approximative.</p>
+        </div>
+        <div class="card card--problem">
+          <span class="card__icon">&#128182;</span>
+          <h3>Des honoraires élevés</h3>
+          <p>pour un rapport basique, souvent hors de portée des petites structures.</p>
+        </div>
+        <div class="card card--problem">
+          <span class="card__icon">&#128552;</span>
+          <h3>Négocier à l'aveugle</h3>
+          <p>sans chiffres fiables, sans benchmark sectoriel, sans vision claire.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 3. SOLUTION ============ -->
+  <section class="section" id="solution">
+    <div class="container">
+      <h2 class="section__title">Avec BWIX, en <span class="highlight">2 minutes</span> :</h2>
+      <div class="steps">
+        <div class="step">
+          <span class="step__icon">&#128196;</span>
+          <div>
+            <h3>Importez votre bilan BNB</h3>
+            <p>PDF ou numéro BCE &mdash; c'est tout ce qu'il faut.</p>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step__icon">&#128202;</span>
+          <div>
+            <h3>Obtenez tous vos ratios financiers clés</h3>
+            <p>Liquidité, solvabilité, rentabilité, endettement&hellip;</p>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step__icon">&#128176;</span>
+          <div>
+            <h3>Visualisez votre valorisation</h3>
+            <p>EBITDA, capitaux propres, DCF &mdash; trois méthodes comparées.</p>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step__icon">&#129302;</span>
+          <div>
+            <h3>Recevez une analyse IA contextuelle</h3>
+            <p>Points forts, points d'attention, recommandations personnalisées.</p>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step__icon">&#128203;</span>
+          <div>
+            <h3>Exportez un rapport professionnel</h3>
+            <p>PDF pret a partager avec votre banquier, avocat ou acquéreur.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 4. CAS D'USAGE ============ -->
+  <section class="section section--dark" id="cas-usage">
+    <div class="container">
+      <h2 class="section__title">BWIX vous aide si&hellip;</h2>
+      <div class="grid grid--3">
+        <div class="card card--usecase">
+          <span class="card__icon">&#127969;</span>
+          <h3>Je veux vendre mon entreprise</h3>
+        </div>
+        <div class="card card--usecase">
+          <span class="card__icon">&#129309;</span>
+          <h3>Je veux entrer un associé</h3>
+        </div>
+        <div class="card card--usecase">
+          <span class="card__icon">&#127919;</span>
+          <h3>Je veux acquérir une société</h3>
+        </div>
+        <div class="card card--usecase">
+          <span class="card__icon">&#128640;</span>
+          <h3>Je veux lever des fonds</h3>
+        </div>
+        <div class="card card--usecase">
+          <span class="card__icon">&#128200;</span>
+          <h3>Je veux suivre ma santé financière</h3>
+        </div>
+        <div class="card card--usecase">
+          <span class="card__icon">&#128188;</span>
+          <h3>Mon comptable analyse mes dossiers clients</h3>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 5. POUR QUI ? ============ -->
+  <section class="section" id="pour-qui">
+    <div class="container">
+      <h2 class="section__title">Pour qui ?</h2>
+      <div class="grid grid--5">
+        <div class="persona">
+          <span class="persona__icon">&#128100;</span>
+          <h3>Chefs d'entreprise PME</h3>
+        </div>
+        <div class="persona">
+          <span class="persona__icon">&#128209;</span>
+          <h3>Comptables &amp; fiduciaires</h3>
+        </div>
+        <div class="persona">
+          <span class="persona__icon">&#9878;&#65039;</span>
+          <h3>Avocats d'affaires</h3>
+        </div>
+        <div class="persona">
+          <span class="persona__icon">&#128176;</span>
+          <h3>Investisseurs &amp; repreneurs</h3>
+        </div>
+        <div class="persona">
+          <span class="persona__icon">&#127942;</span>
+          <h3>Candidats à la reprise</h3>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 6. BELGIQUE FIRST ============ -->
+  <section class="section section--accent" id="belgique">
+    <div class="container">
+      <h2 class="section__title">&#127463;&#127466; 100% belge, par conception</h2>
+      <div class="grid grid--features">
+        <div class="feature">
+          <strong>Intégration BNB native</strong>
+          <p>Connexion directe à la Banque Nationale de Belgique.</p>
+        </div>
+        <div class="feature">
+          <strong>Plan comptable PCMN</strong>
+          <p>Mapping automatique sur le plan comptable minimum normalisé.</p>
+        </div>
+        <div class="feature">
+          <strong>Droit des sociétés belge (CSA)</strong>
+          <p>Contexte juridique intégré dans l'analyse.</p>
+        </div>
+        <div class="feature">
+          <strong>Disponible en FR et NL</strong>
+          <p>Interface bilingue pour tout le pays.</p>
+        </div>
+        <div class="feature">
+          <strong>Multiples sectoriels belges</strong>
+          <p>Benchmarks calibrés sur le marché belge.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 7. WAITLIST BOTTOM ============ -->
+  <section class="section section--cta" id="waitlist-bottom">
+    <div class="container container--narrow">
+      <h2 class="section__title">Soyez parmi les premiers à tester BWIX</h2>
+      <p class="section__subtitle">Accès anticipé <strong>gratuit</strong> pour les 100 premiers inscrits.</p>
+      <form class="waitlist-form waitlist-form--center" id="waitlist-bottom-form" aria-label="Rejoindre la liste d'attente">
+        <input type="email" name="email" placeholder="votre@email.com" required autocomplete="email" aria-label="Adresse email">
+        <button type="submit" class="btn">Rejoindre la liste d'attente</button>
+      </form>
+      <p class="waitlist-msg" id="waitlist-bottom-msg" hidden></p>
+      <p class="waitlist-counter"><span id="waitlist-count">0</span> personnes déjà inscrites</p>
+    </div>
+  </section>
+
+  <!-- ============ DISCLAIMER ============ -->
+  <section class="section section--dark" style="padding:40px 0">
+    <div class="container container--narrow" style="text-align:center">
+      <p style="font-size:.82rem;color:#5a7fa0;line-height:1.6">BWIX est un outil d'aide &agrave; la d&eacute;cision indicatif. Les analyses et valorisations produites ne constituent pas un conseil financier, comptable ou juridique. Aucune garantie n'est donn&eacute;e sur l'exactitude des r&eacute;sultats. L'utilisateur reste seul responsable de ses d&eacute;cisions.</p>
+    </div>
+  </section>
+
+  <!-- ============ 8. FOOTER ============ -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <p>&copy; 2026 BWIX &mdash; Braze SRL</p>
+      <nav class="footer__links">
+        <a href="/mentions-legales">Mentions l&eacute;gales</a>
+        <a href="/confidentialite">Confidentialit&eacute;</a>
+        <a href="/conditions-utilisation">CGU</a>
+        <a href="https://bwix.app">bwix.app</a>
+      </nav>
+      <p class="footer__love">Fait avec &#10084;&#65039; en Belgique &#127463;&#127466;</p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,115 @@
+/* ===== RESET & BASE ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:#e2e8f0;background:#0b1929;line-height:1.6;-webkit-font-smoothing:antialiased}
+img,svg{display:block;max-width:100%}
+a{color:#00c896;text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ===== UTILITIES ===== */
+.container{max-width:1120px;margin:0 auto;padding:0 24px}
+.container--narrow{max-width:640px}
+.highlight{color:#00c896}
+
+/* ===== HEADER ===== */
+.header{position:sticky;top:0;z-index:100;background:rgba(11,25,41,.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(30,58,95,.4);padding:14px 0}
+.header__inner{display:flex;align-items:center;justify-content:space-between}
+.logo{font-size:1.5rem;font-weight:800;color:#fff;letter-spacing:-.02em}
+.logo__dot{color:#00c896}
+
+/* ===== BUTTONS ===== */
+.btn{display:inline-flex;align-items:center;justify-content:center;background:#00c896;color:#0b1929;font-weight:600;font-size:.95rem;padding:12px 28px;border:none;border-radius:8px;cursor:pointer;transition:background .2s,transform .15s;white-space:nowrap}
+.btn:hover{background:#00e0a8;transform:translateY(-1px);text-decoration:none}
+.btn:active{transform:translateY(0)}
+.btn--small{padding:8px 20px;font-size:.85rem}
+
+/* ===== BADGE ===== */
+.badge{display:inline-flex;align-items:center;gap:6px;background:rgba(0,200,150,.1);color:#00c896;font-size:.85rem;font-weight:500;padding:6px 14px;border-radius:100px;border:1px solid rgba(0,200,150,.25);margin-bottom:20px}
+.badge__flag{font-size:1rem}
+
+/* ===== HERO ===== */
+.hero{padding:80px 0 60px;overflow:hidden}
+.hero__inner{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+.hero__title{font-size:clamp(2rem,5vw,3.2rem);font-weight:800;line-height:1.15;color:#fff;margin-bottom:18px;letter-spacing:-.02em}
+.hero__subtitle{font-size:1.1rem;color:#8fa3bf;margin-bottom:32px;max-width:480px}
+.hero__visual{display:flex;justify-content:center}
+.mockup{width:100%;max-width:480px;filter:drop-shadow(0 20px 60px rgba(0,200,150,.08))}
+
+/* ===== WAITLIST FORM ===== */
+.waitlist-form{display:flex;gap:10px;max-width:460px}
+.waitlist-form input[type="email"]{flex:1;padding:12px 16px;border:1px solid #1e3a5f;background:#0f2440;color:#fff;border-radius:8px;font-size:.95rem;font-family:inherit;outline:none;transition:border-color .2s}
+.waitlist-form input[type="email"]:focus{border-color:#00c896}
+.waitlist-form input[type="email"]::placeholder{color:#4a6a8a}
+.waitlist-form--center{justify-content:center;max-width:100%}
+.waitlist-msg{margin-top:12px;font-size:.9rem;color:#00c896}
+.waitlist-msg.error{color:#ff6b6b}
+
+/* ===== SECTIONS ===== */
+.section{padding:80px 0}
+.section--dark{background:#0f2440}
+.section--accent{background:linear-gradient(135deg,#0f2440 0%,#1e3a5f 100%)}
+.section--cta{background:linear-gradient(180deg,#0b1929 0%,#0f2440 50%,#0b1929 100%);padding:100px 0;text-align:center}
+.section__title{font-size:clamp(1.5rem,3.5vw,2.2rem);font-weight:700;color:#fff;text-align:center;margin-bottom:48px;letter-spacing:-.01em}
+.section__subtitle{font-size:1.1rem;color:#8fa3bf;margin-bottom:32px}
+
+/* ===== GRIDS ===== */
+.grid{display:grid;gap:24px}
+.grid--3{grid-template-columns:repeat(3,1fr)}
+.grid--5{grid-template-columns:repeat(5,1fr)}
+.grid--features{grid-template-columns:repeat(6,1fr);gap:20px}
+.grid--features .feature:nth-child(-n+3){grid-column:span 2}
+.grid--features .feature:nth-child(4){grid-column:2/span 2}
+.grid--features .feature:nth-child(5){grid-column:4/span 2}
+
+/* ===== CARDS ===== */
+.card{background:#162d4a;border:1px solid rgba(30,58,95,.6);border-radius:14px;padding:32px 24px;text-align:center;transition:transform .2s,border-color .2s}
+.card:hover{transform:translateY(-4px);border-color:#00c896}
+.card__icon{font-size:2.4rem;display:block;margin-bottom:14px}
+.card h3{font-size:1.05rem;font-weight:600;color:#fff;margin-bottom:8px}
+.card p{font-size:.9rem;color:#8fa3bf;line-height:1.5}
+
+/* ===== STEPS ===== */
+.steps{max-width:600px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+.step{display:flex;align-items:flex-start;gap:20px}
+.step__icon{font-size:2rem;flex-shrink:0;width:48px;height:48px;display:flex;align-items:center;justify-content:center;background:rgba(0,200,150,.1);border-radius:12px}
+.step h3{font-size:1.05rem;font-weight:600;color:#fff;margin-bottom:4px}
+.step p{font-size:.9rem;color:#8fa3bf}
+
+/* ===== PERSONA ===== */
+.persona{text-align:center;padding:24px 12px}
+.persona__icon{font-size:2.2rem;display:block;margin-bottom:10px}
+.persona h3{font-size:.95rem;font-weight:600;color:#fff}
+
+/* ===== FEATURES ===== */
+.feature{background:rgba(0,200,150,.06);border:1px solid rgba(0,200,150,.15);border-radius:12px;padding:24px 20px}
+.feature strong{display:block;color:#00c896;font-size:1rem;margin-bottom:6px}
+.feature p{font-size:.88rem;color:#8fa3bf}
+
+/* ===== WAITLIST COUNTER ===== */
+.waitlist-counter{margin-top:20px;font-size:.95rem;color:#5a7fa0;font-weight:500}
+.waitlist-counter span{color:#00c896;font-weight:700}
+
+/* ===== FOOTER ===== */
+.footer{border-top:1px solid #1e3a5f;padding:32px 0;font-size:.85rem;color:#5a7fa0}
+.footer__inner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.footer__links{display:flex;gap:20px}
+.footer__links a{color:#5a7fa0;transition:color .2s}
+.footer__links a:hover{color:#00c896}
+.footer__love{color:#5a7fa0}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:900px){
+  .hero__inner{grid-template-columns:1fr;text-align:center}
+  .hero__subtitle{margin-left:auto;margin-right:auto}
+  .waitlist-form{flex-direction:column;align-items:stretch;margin:0 auto}
+  .hero__visual{margin-top:40px}
+  .grid--3{grid-template-columns:1fr}
+  .grid--5{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:600px){
+  .hero{padding:50px 0 40px}
+  .section{padding:60px 0}
+  .hero__title{font-size:1.8rem}
+  .grid--5{grid-template-columns:1fr 1fr}
+  .footer__inner{flex-direction:column;text-align:center}
+}

@@ -1,0 +1,5 @@
+.vercel
+waitlist.json
+__pycache__/
+*.pyc
+.env
