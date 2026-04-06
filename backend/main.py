@@ -331,14 +331,7 @@ async def create_checkout(request: Request):
     session = stripe.checkout.Session.create(
         payment_method_types=["card"],
         line_items=[{
-            "price_data": {
-                "currency": "eur",
-                "product_data": {
-                    "name": "BWIX — Analyse financière complète",
-                    "description": "Valorisation détaillée, ratios complets, analyse IA, export PDF",
-                },
-                "unit_amount": 1999,
-            },
+            "price": "price_1TJK3M1XczkPkPz652TlUn4J",
             "quantity": 1,
         }],
         mode="payment",
