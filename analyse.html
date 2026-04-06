@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="fr-BE">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analyse financière — BWIX</title>
+  <meta name="description" content="Analysez et valorisez votre PME belge en 2 minutes. Importez votre bilan BNB.">
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="analyse.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container header__inner">
+      <a href="/" class="logo" aria-label="BWIX accueil">BWIX<span class="logo__dot">.</span></a>
+      <a href="/" class="btn btn--small">Accueil</a>
+    </div>
+  </header>
+
+  <!-- ============ UPLOAD SECTION ============ -->
+  <section class="section" id="upload-section">
+    <div class="container container--narrow">
+      <h1 class="section__title">Analysez votre entreprise</h1>
+      <p class="section__subtitle" style="text-align:center">Importez vos comptes annuels BNB et obtenez votre analyse en 2 minutes.</p>
+
+      <!-- Disclaimers -->
+      <div class="disclaimer-box">
+        <strong>Format accepté</strong>
+        <p>BWIX accepte uniquement les comptes annuels officiels au format PDF BNB (Banque Nationale de Belgique).</p>
+        <div class="format-list">
+          <span class="format-yes">&#10003; Comptes annuels déposés BNB (PDF natif)</span>
+          <span class="format-no">&#10007; Exports logiciels comptables (Bob, Sage, Winbooks, Excel...)</span>
+          <span class="format-no">&#10007; Bilans intermédiaires non déposés</span>
+          <span class="format-no">&#10007; Documents scannés de mauvaise qualité</span>
+        </div>
+        <p class="format-link">Téléchargez vos comptes sur : <a href="https://consult.cbso.nbb.be" target="_blank" rel="noopener">consult.cbso.nbb.be</a></p>
+      </div>
+
+      <div class="disclaimer-box disclaimer-box--warning">
+        <strong>Qualité du PDF</strong>
+        <p>Un scan de mauvaise qualité, un document illisible ou des comptes incomplets peuvent empêcher l'extraction. La qualité du document fourni est sous la responsabilité de l'utilisateur.</p>
+      </div>
+
+      <!-- Upload form -->
+      <form id="analyse-form" class="upload-form">
+        <div class="form-group">
+          <label for="email">Votre email</label>
+          <input type="email" id="email" name="email" placeholder="votre@email.com" required autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label for="secteur">Secteur d'activité</label>
+          <select id="secteur" name="secteur">
+            <option value="">-- Sélectionnez --</option>
+            <option value="Construction / BTP">Construction / BTP</option>
+            <option value="Tech / SaaS">Tech / SaaS</option>
+            <option value="Services">Services</option>
+            <option value="Commerce">Commerce</option>
+            <option value="Industrie">Industrie</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="pdf">Comptes annuels BNB (PDF)</label>
+          <div class="drop-zone" id="drop-zone">
+            <input type="file" id="pdf" name="file" accept=".pdf" required>
+            <div class="drop-zone__prompt">
+              <span class="drop-zone__icon">&#128196;</span>
+              <span>Glissez votre PDF ici ou <strong>cliquez pour parcourir</strong></span>
+              <span class="drop-zone__hint">PDF comptes annuels BNB uniquement</span>
+            </div>
+            <div class="drop-zone__file" hidden></div>
+          </div>
+        </div>
+        <button type="submit" class="btn btn--full" id="submit-btn">Lancer l'analyse</button>
+        <p class="upload-note">L'analyse prend environ 30 secondes. Votre PDF est supprimé après extraction (RGPD).</p>
+      </form>
+      <p class="upload-msg" id="upload-msg" hidden></p>
+
+      <!-- Loading -->
+      <div id="loading" class="loading" hidden>
+        <div class="spinner"></div>
+        <p>Extraction et analyse en cours...</p>
+        <div class="loading-steps">
+          <span class="loading-step active">&#128196; Extraction PDF</span>
+          <span class="loading-step">&#128202; Calcul des ratios</span>
+          <span class="loading-step">&#129302; Analyse IA</span>
+        </div>
+      </div>
+
+      <!-- Consolidated warning modal -->
+      <div id="consolidated-warning" class="modal" hidden>
+        <div class="modal__content">
+          <span class="modal__icon">&#9888;&#65039;</span>
+          <h3>Ce document semble être des comptes consolidés</h3>
+          <p>BWIX est optimisé pour les comptes individuels (statutaires). Les comptes consolidés (holdings, groupes avec filiales) ne sont pas supportés — les résultats seraient inexacts.</p>
+          <div class="modal__actions">
+            <button class="btn" id="consolidated-continue">Continuer quand même</button>
+            <button class="btn btn--outline" id="consolidated-cancel">Annuler</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ RESULTS SECTION ============ -->
+  <section class="section" id="results-section" hidden>
+    <div class="container">
+      <!-- Consolidated notice -->
+      <div id="consolidated-notice" class="disclaimer-box disclaimer-box--warning" hidden>
+        <strong>&#9888;&#65039; Comptes consolidés détectés</strong>
+        <p>BWIX analyse uniquement les comptes annuels individuels (statutaires). Les comptes consolidés ne sont pas supportés — les résultats peuvent être inexacts. Pour une analyse de groupe, consultez un expert-comptable.</p>
+      </div>
+
+      <div class="results-header">
+        <h2 class="results-title">Résultats de l'analyse <span id="result-year"></span></h2>
+        <div class="score-card">
+          <div class="score-circle" id="score-circle">
+            <svg viewBox="0 0 120 120">
+              <circle cx="60" cy="60" r="52" fill="none" stroke="#1e3a5f" stroke-width="8"/>
+              <circle cx="60" cy="60" r="52" fill="none" stroke="#00c896" stroke-width="8" stroke-dasharray="327" stroke-dashoffset="327" stroke-linecap="round" id="score-arc" transform="rotate(-90 60 60)"/>
+            </svg>
+            <div class="score-value"><span id="score-val">0</span><small>/100</small></div>
+          </div>
+          <span class="score-label">Score santé</span>
+        </div>
+      </div>
+
+      <!-- Freemium ratios -->
+      <div class="grid grid--4" id="freemium-ratios">
+        <div class="metric-card">
+          <span class="metric-label">EBITDA</span>
+          <span class="metric-value" id="m-ebitda">—</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-label">ROE</span>
+          <span class="metric-value" id="m-roe">—</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-label">Liquidité générale</span>
+          <span class="metric-value" id="m-liquidite">—</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-label">Solvabilité</span>
+          <span class="metric-value" id="m-solvabilite">—</span>
+        </div>
+      </div>
+
+      <!-- Blurred valuation -->
+      <div class="valuation-card" id="valuation-card">
+        <h3>Valorisation de votre entreprise</h3>
+        <div class="valuation-range" id="valuation-blurred">
+          <span class="valuation-label">Votre entreprise vaut entre</span>
+          <span class="valuation-amount blurred" id="val-low">██████</span>
+          <span class="valuation-sep">et</span>
+          <span class="valuation-amount blurred" id="val-high">██████</span>
+          <span class="valuation-currency">€</span>
+        </div>
+        <div class="valuation-range" id="valuation-clear" hidden>
+          <span class="valuation-label">Votre entreprise vaut entre</span>
+          <span class="valuation-amount" id="val-low-clear">—</span>
+          <span class="valuation-sep">et</span>
+          <span class="valuation-amount" id="val-high-clear">—</span>
+          <span class="valuation-currency">€</span>
+        </div>
+      </div>
+
+      <!-- Paywall -->
+      <div id="paywall" class="paywall">
+        <div class="paywall__overlay">
+          <h3>Débloquez l'analyse complète</h3>
+          <ul class="paywall__features">
+            <li>&#128176; Valorisation détaillée (EBITDA, capitaux propres, DCF)</li>
+            <li>&#128202; Tous les ratios financiers complets</li>
+            <li>&#129302; Analyse IA — forces, risques, recommandations</li>
+            <li>&#128203; Export rapport PDF professionnel</li>
+          </ul>
+          <button class="btn btn--large" id="pay-btn">Débloquer l'analyse complète — 19,99 €</button>
+          <p class="paywall__note">Paiement sécurisé par Stripe. Accès immédiat après paiement.</p>
+        </div>
+      </div>
+
+      <!-- Full results (hidden until unlocked) -->
+      <div id="full-results" hidden>
+        <!-- Detailed valuation -->
+        <div class="detail-section">
+          <h3>Valorisation détaillée</h3>
+          <div class="grid grid--3" id="valo-details"></div>
+        </div>
+
+        <!-- All ratios -->
+        <div class="detail-section">
+          <h3>Ratios financiers complets</h3>
+          <div class="ratios-table" id="ratios-table"></div>
+        </div>
+
+        <!-- AI Analysis -->
+        <div class="detail-section" id="ai-section">
+          <h3>&#129302; Analyse IA</h3>
+          <div class="ai-card">
+            <div class="ai-synthese" id="ai-synthese"></div>
+            <div class="grid grid--2">
+              <div class="ai-list ai-list--green">
+                <h4>Points forts</h4>
+                <ul id="ai-forts"></ul>
+              </div>
+              <div class="ai-list ai-list--orange">
+                <h4>Points d'attention</h4>
+                <ul id="ai-attention"></ul>
+              </div>
+            </div>
+            <div class="grid grid--2">
+              <div class="ai-list ai-list--red">
+                <h4>Risques</h4>
+                <ul id="ai-risques"></ul>
+              </div>
+              <div class="ai-list ai-list--blue">
+                <h4>Recommandations</h4>
+                <ul id="ai-reco"></ul>
+              </div>
+            </div>
+            <div class="ai-valo" id="ai-valo"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ DISCLAIMER ============ -->
+  <section class="section section--dark" style="padding:40px 0">
+    <div class="container container--narrow" style="text-align:center">
+      <p style="font-size:.82rem;color:#5a7fa0;line-height:1.6">BWIX est un outil d'aide à la décision indicatif. Les analyses et valorisations produites ne constituent pas un conseil financier, comptable ou juridique. Aucune garantie n'est donnée sur l'exactitude des résultats. L'utilisateur reste seul responsable de ses décisions.</p>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <p>&copy; 2026 BWIX &mdash; Braze SRL</p>
+      <nav class="footer__links">
+        <a href="/mentions-legales">Mentions légales</a>
+        <a href="/confidentialite">Confidentialité</a>
+        <a href="/conditions-utilisation">CGU</a>
+        <a href="https://bwix.app">bwix.app</a>
+      </nav>
+      <p class="footer__love">Fait avec &#10084;&#65039; en Belgique &#127463;&#127466;</p>
+    </div>
+  </footer>
+
+  <script src="analyse.js"></script>
+</body>
+</html>
