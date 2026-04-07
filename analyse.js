@@ -2,8 +2,7 @@
 (function () {
   'use strict';
 
-  // TODO: replace with Render URL once deployed
-  var API = window.BWIX_API || '';
+  var API = window.BWIX_API || 'https://bwix-api.onrender.com';
 
   // Wake up backend on page load (Render free tier cold start)
   fetch(API + '/api/health').catch(function () {});
