@@ -43,7 +43,8 @@
 .loading-step.active{color:#00c896}
 
 /* Modal */
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);align-items:center;justify-content:center;z-index:200;padding:20px}
+.modal:not([hidden]){display:flex}
 .modal__content{background:#0f2440;border:1px solid #1e3a5f;border-radius:16px;padding:40px;max-width:480px;text-align:center}
 .modal__icon{font-size:3rem;display:block;margin-bottom:16px}
 .modal__content h3{color:#fff;margin-bottom:12px}
