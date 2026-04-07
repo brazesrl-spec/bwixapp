@@ -116,8 +116,9 @@ a:hover{text-decoration:underline}
 .footer{border-top:1px solid #1e3a5f;padding:32px 0;font-size:.85rem;color:#5a7fa0}
 .footer__inner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
 .footer__links{display:flex;gap:20px}
-.footer__links a{color:#5a7fa0;transition:color .2s}
-.footer__links a:hover{color:#00c896}
+.footer__links a{color:#8fa3bf;text-decoration:none;transition:color .2s}
+.footer__links a:hover{color:#fff;text-decoration:none}
+.footer__links a:visited{color:#8fa3bf}
 .footer__love{color:#5a7fa0}
 
 /* ===== RESPONSIVE ===== */

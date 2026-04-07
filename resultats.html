@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="fr-BE">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>R&eacute;sultats d'analyse &mdash; BWIX</title>
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="analyse.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container header__inner">
+      <a href="/" class="logo" aria-label="BWIX accueil">BWIX<span class="logo__dot">.</span></a>
+      <a href="/" class="btn btn--small">Nouvelle analyse</a>
+    </div>
+  </header>
+
+  <!-- Loading -->
+  <div id="loading" class="loading" hidden>
+    <div class="progress-container">
+      <p class="progress-label" id="progress-label">Chargement de l'analyse...</p>
+      <div class="progress-bar"><div class="progress-bar__fill" id="progress-fill"></div></div>
+      <p class="progress-pct" id="progress-pct">0%</p>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <section class="section" id="results-section" hidden>
+    <div class="container">
+      <div id="consolidated-notice" class="disclaimer-box disclaimer-box--warning" hidden>
+        <strong>&#9888;&#65039; Comptes consolid&eacute;s d&eacute;tect&eacute;s</strong>
+        <p>BWIX analyse uniquement les comptes annuels individuels. Les r&eacute;sultats peuvent &ecirc;tre inexacts.</p>
+      </div>
+
+      <div class="results-header">
+        <h2 class="results-title">R&eacute;sultats de l'analyse <span id="result-year"></span></h2>
+        <div class="score-card">
+          <div class="score-circle">
+            <svg viewBox="0 0 120 120">
+              <circle cx="60" cy="60" r="52" fill="none" stroke="#1e3a5f" stroke-width="8"/>
+              <circle cx="60" cy="60" r="52" fill="none" stroke="#00c896" stroke-width="8" stroke-dasharray="327" stroke-dashoffset="327" stroke-linecap="round" id="score-arc" transform="rotate(-90 60 60)"/>
+            </svg>
+            <div class="score-value"><span id="score-val">0</span><small>/100</small></div>
+          </div>
+          <span class="score-label">Score sant&eacute;</span>
+        </div>
+      </div>
+
+      <div class="grid grid--4">
+        <div class="metric-card"><span class="metric-label">EBITDA</span><span class="metric-value" id="m-ebitda">&mdash;</span></div>
+        <div class="metric-card"><span class="metric-label">ROE</span><span class="metric-value" id="m-roe">&mdash;</span></div>
+        <div class="metric-card"><span class="metric-label">Liquidit&eacute;</span><span class="metric-value" id="m-liquidite">&mdash;</span></div>
+        <div class="metric-card"><span class="metric-label">Solvabilit&eacute;</span><span class="metric-value" id="m-solvabilite">&mdash;</span></div>
+      </div>
+
+      <div class="valuation-card">
+        <h3>Valorisation de l'entreprise</h3>
+        <div class="valuation-range" id="valuation-blurred">
+          <span class="valuation-label">L'entreprise vaut entre</span>
+          <span class="valuation-amount blurred" id="val-low-blur">850.000</span>
+          <span class="valuation-sep">et</span>
+          <span class="valuation-amount blurred" id="val-high-blur">1.400.000</span>
+          <span class="valuation-currency">&euro;</span>
+        </div>
+        <div class="valuation-range" id="valuation-clear" hidden>
+          <span class="valuation-label">L'entreprise vaut entre</span>
+          <span class="valuation-amount" id="val-low-clear">&mdash;</span>
+          <span class="valuation-sep">et</span>
+          <span class="valuation-amount" id="val-high-clear">&mdash;</span>
+          <span class="valuation-currency">&euro;</span>
+        </div>
+      </div>
+
+      <!-- Paywall -->
+      <div id="paywall" class="paywall">
+        <div class="paywall__overlay">
+          <h3>D&eacute;bloquer l'analyse compl&egrave;te</h3>
+          <ul class="paywall__features">
+            <li>&#128176; Valorisation d&eacute;taill&eacute;e (EBITDA, capitaux propres, DCF)</li>
+            <li>&#128202; Tous les ratios financiers complets</li>
+            <li>&#129302; Analyse IA &mdash; forces, risques, recommandations</li>
+            <li>&#128203; Export rapport PDF professionnel</li>
+          </ul>
+          <button class="btn btn--large" id="pay-btn">D&eacute;bloquer l'analyse compl&egrave;te &mdash; 19,99&nbsp;&euro;</button>
+          <p class="paywall__note">Paiement s&eacute;curis&eacute; par Stripe. Acc&egrave;s imm&eacute;diat.</p>
+        </div>
+      </div>
+
+      <!-- Full results -->
+      <div id="full-results" hidden>
+        <div class="detail-section"><h3>Valorisation d&eacute;taill&eacute;e</h3><div class="grid grid--3" id="valo-details"></div></div>
+        <div class="detail-section"><h3>Ratios financiers complets</h3><div class="ratios-table" id="ratios-table"></div></div>
+        <div class="detail-section">
+          <h3>&#129302; Analyse IA</h3>
+          <div class="ai-card">
+            <div class="ai-synthese" id="ai-synthese"></div>
+            <div class="grid grid--2">
+              <div class="ai-list ai-list--green"><h4>Points forts</h4><ul id="ai-forts"></ul></div>
+              <div class="ai-list ai-list--orange"><h4>Points d'attention</h4><ul id="ai-attention"></ul></div>
+            </div>
+            <div class="grid grid--2">
+              <div class="ai-list ai-list--red"><h4>Risques</h4><ul id="ai-risques"></ul></div>
+              <div class="ai-list ai-list--blue"><h4>Recommandations</h4><ul id="ai-reco"></ul></div>
+            </div>
+            <div class="ai-valo" id="ai-valo"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--dark" style="padding:40px 0">
+    <div class="container container--narrow" style="text-align:center">
+      <p style="font-size:.82rem;color:#5a7fa0;line-height:1.6">BWIX est un outil d'aide &agrave; la d&eacute;cision indicatif. Les analyses et valorisations produites ne constituent pas un conseil financier, comptable ou juridique. Aucune garantie n'est donn&eacute;e sur l'exactitude des r&eacute;sultats. L'utilisateur reste seul responsable de ses d&eacute;cisions.</p>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <p>&copy; 2026 BWIX &mdash; Braze SRL</p>
+      <nav class="footer__links">
+        <a href="/mentions-legales">Mentions l&eacute;gales</a>
+        <a href="/confidentialite">Confidentialit&eacute;</a>
+        <a href="/conditions-utilisation">CGU</a>
+      </nav>
+      <p class="footer__love">Fait avec &#10084;&#65039; en Belgique &#127463;&#127466;</p>
+    </div>
+  </footer>
+
+  <script src="resultats.js"></script>
+</body>
+</html>
