@@ -10,6 +10,7 @@
   var params = new URLSearchParams(window.location.search);
   var tokenFromUrl = params.get('token');
   var isSuccess = params.get('success') === '1';
+  var adminCode = params.get('admin') || '';
 
   // If returning from Stripe or accessing existing analysis
   if (tokenFromUrl) {
@@ -78,6 +79,7 @@
     fd.append('file', file);
     fd.append('email', email);
     fd.append('secteur', secteur);
+    if (adminCode) fd.append('admin', adminCode);
 
     fetch(API + '/api/analyse', { method: 'POST', body: fd })
       .then(function (res) {
@@ -87,7 +89,11 @@
       .then(function (data) {
         // Push token to URL without reload
         history.replaceState(null, '', 'analyse.html?token=' + data.token);
-        renderPreview(data);
+        if (data.unlocked) {
+          renderFull(data);
+        } else {
+          renderPreview(data);
+        }
       })
       .catch(function (err) {
         loading.hidden = true;
