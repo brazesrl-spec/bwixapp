@@ -58,10 +58,7 @@
   <header class="header">
     <div class="container header__inner">
       <a href="/" class="logo" aria-label="BWIX accueil">BWIX<span class="logo__dot">.</span></a>
-      <nav class="header__nav">
-        <a href="/analyse" class="btn btn--small">Analyser mon entreprise</a>
-        <a href="#waitlist-bottom" class="btn btn--small btn--outline-nav">Liste d'attente</a>
-      </nav>
+      <a href="/analyse" class="btn btn--small">Analyser une entreprise</a>
     </div>
   </header>
 
@@ -72,11 +69,7 @@
         <span class="badge"><span class="badge__flag">&#127463;&#127466;</span> Toutes les soci&eacute;t&eacute;s belges &mdash; PME &middot; Holdings &middot; Ind&eacute;pendants</span>
         <h1 class="hero__title">Le bilan BNB de n'importe quelle soci&eacute;t&eacute; belge. <span class="highlight">Analys&eacute;. En 2 minutes.</span></h1>
         <p class="hero__subtitle">Ratios financiers &middot; Valorisation &middot; Analyse IA &mdash; depuis le document officiel BNB, sans interm&eacute;diaire.</p>
-        <form class="waitlist-form" id="waitlist-hero" aria-label="Rejoindre la liste d'attente">
-          <input type="email" name="email" placeholder="votre@email.com" required autocomplete="email" aria-label="Adresse email">
-          <button type="submit" class="btn">Rejoindre la liste d'attente</button>
-        </form>
-        <p class="waitlist-msg" id="waitlist-hero-msg" hidden></p>
+        <a href="/analyse" class="btn btn--large" style="margin-top:8px">Analyser une entreprise &rarr;</a>
       </div>
       <div class="hero__visual" aria-hidden="true">
         <!-- SVG dashboard mockup -->
@@ -318,17 +311,13 @@
     </div>
   </section>
 
-  <!-- ============ 7. WAITLIST BOTTOM ============ -->
-  <section class="section section--cta" id="waitlist-bottom">
-    <div class="container container--narrow">
-      <h2 class="section__title">Soyez parmi les premiers à tester BWIX</h2>
-      <p class="section__subtitle">Accès anticipé <strong>gratuit</strong> pour les 100 premiers inscrits.</p>
-      <form class="waitlist-form waitlist-form--center" id="waitlist-bottom-form" aria-label="Rejoindre la liste d'attente">
-        <input type="email" name="email" placeholder="votre@email.com" required autocomplete="email" aria-label="Adresse email">
-        <button type="submit" class="btn">Rejoindre la liste d'attente</button>
-      </form>
-      <p class="waitlist-msg" id="waitlist-bottom-msg" hidden></p>
-      <p class="waitlist-counter"><span id="waitlist-count">0</span> personnes déjà inscrites</p>
+  <!-- ============ 7. CTA UPLOAD ============ -->
+  <section class="section section--cta" id="cta-upload">
+    <div class="container container--narrow" style="text-align:center">
+      <h2 class="section__title">Pr&ecirc;t &agrave; analyser ?</h2>
+      <p class="section__subtitle">Importez un PDF BNB et obtenez votre analyse en 2 minutes.</p>
+      <a href="/analyse" class="btn btn--large">Lancer une analyse &rarr;</a>
+      <p style="margin-top:16px;font-size:.85rem;color:#5a7fa0">Gratuit : score sant&eacute; + ratios de base. Analyse compl&egrave;te : 19,99&nbsp;&euro;</p>
     </div>
   </section>
 
@@ -353,6 +342,9 @@
     </div>
   </footer>
 
-  <script src="app.js"></script>
+  <script>
+  // Pre-warm backend when user lands on homepage
+  fetch('https://bwix-api.onrender.com/api/health').catch(function(){});
+  </script>
 </body>
 </html>
