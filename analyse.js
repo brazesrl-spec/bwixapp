@@ -2,8 +2,11 @@
 (function () {
   'use strict';
 
-  // TODO: replace with Railway URL once deployed
+  // TODO: replace with Render URL once deployed
   var API = window.BWIX_API || '';
+
+  // Wake up backend on page load (Render free tier cold start)
+  fetch(API + '/api/health').catch(function () {});
 
   var params = new URLSearchParams(window.location.search);
   var tokenFromUrl = params.get('token');
