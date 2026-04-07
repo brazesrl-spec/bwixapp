@@ -66,7 +66,16 @@
     var msgEl = document.getElementById('upload-msg');
     var loading = document.getElementById('loading');
 
-    document.getElementById('upload-section').querySelector('.upload-form').hidden = true;
+    var uploadSection = document.getElementById('upload-section');
+    var heroUpload = document.getElementById('hero');
+    var formEl = document.querySelector('.upload-form');
+    if (formEl) formEl.hidden = true;
+    if (heroUpload && !uploadSection) {
+      // On index.html — hide non-upload sections
+      var sections = document.querySelectorAll('.section, .hero');
+      sections.forEach(function(s) { if (s.id !== 'results-section') s.style.display = 'none'; });
+      heroUpload.style.display = 'block';
+    }
     loading.hidden = false;
     msgEl.hidden = true;
 
@@ -88,7 +97,7 @@
       })
       .then(function (data) {
         // Push token to URL without reload
-        history.replaceState(null, '', 'analyse.html?token=' + data.token);
+        history.replaceState(null, '', '?token=' + data.token);
         if (data.unlocked) {
           renderFull(data);
         } else {
@@ -97,7 +106,11 @@
       })
       .catch(function (err) {
         loading.hidden = true;
-        document.getElementById('upload-section').querySelector('.upload-form').hidden = false;
+        var formEl2 = document.querySelector('.upload-form');
+        if (formEl2) formEl2.hidden = false;
+        // Restore hidden sections on index.html
+        var allSections = document.querySelectorAll('.section, .hero');
+        allSections.forEach(function(s) { s.style.display = ''; });
         msgEl.hidden = false;
         msgEl.textContent = err.message || 'Erreur lors de l\u2019analyse.';
       });
@@ -105,9 +118,11 @@
 
   // ── Load existing analysis ───────────────────────────────────────────────
   function loadAnalysis(token) {
-    document.getElementById('upload-section').hidden = true;
+    // Hide all page content, show loading
+    var allSections = document.querySelectorAll('.section, .hero, footer');
+    allSections.forEach(function(s) { if (s.id !== 'results-section') s.style.display = 'none'; });
     var loading = document.getElementById('loading');
-    loading.hidden = false;
+    if (loading) loading.hidden = false;
 
     fetch(API + '/api/analyse/' + token)
       .then(function (res) {
@@ -115,7 +130,7 @@
         return res.json();
       })
       .then(function (data) {
-        loading.hidden = true;
+        if (loading) loading.hidden = true;
         if (data.unlocked) {
           renderFull(data);
         } else {
@@ -123,14 +138,15 @@
         }
       })
       .catch(function () {
-        loading.hidden = true;
-        document.getElementById('upload-section').hidden = false;
+        if (loading) loading.hidden = true;
+        allSections.forEach(function(s) { s.style.display = ''; });
       });
   }
 
   // ── Render freemium preview ──────────────────────────────────────────────
   function renderPreview(data) {
-    document.getElementById('upload-section').hidden = true;
+    var _up = document.getElementById('upload-section');
+    if (_up) _up.hidden = true;
     document.getElementById('loading').hidden = true;
     var results = document.getElementById('results-section');
     results.hidden = false;
@@ -175,7 +191,8 @@
 
   // ── Render full (unlocked) results ───────────────────────────────────────
   function renderFull(data) {
-    document.getElementById('upload-section').hidden = true;
+    var _up = document.getElementById('upload-section');
+    if (_up) _up.hidden = true;
     document.getElementById('loading').hidden = true;
     var results = document.getElementById('results-section');
     results.hidden = false;

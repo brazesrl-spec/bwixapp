@@ -51,6 +51,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="analyse.css">
 </head>
 <body>
 
@@ -58,7 +59,7 @@
   <header class="header">
     <div class="container header__inner">
       <a href="/" class="logo" aria-label="BWIX accueil">BWIX<span class="logo__dot">.</span></a>
-      <a href="/analyse" class="btn btn--small">Analyser une entreprise</a>
+      <a href="#upload" class="btn btn--small">Lancer une analyse</a>
     </div>
   </header>
 
@@ -69,56 +70,129 @@
         <span class="badge"><span class="badge__flag">&#127463;&#127466;</span> Toutes les soci&eacute;t&eacute;s belges &mdash; PME &middot; Holdings &middot; Ind&eacute;pendants</span>
         <h1 class="hero__title">Le bilan BNB de n'importe quelle soci&eacute;t&eacute; belge. <span class="highlight">Analys&eacute;. En 2 minutes.</span></h1>
         <p class="hero__subtitle">Ratios financiers &middot; Valorisation &middot; Analyse IA &mdash; depuis le document officiel BNB, sans interm&eacute;diaire.</p>
-        <a href="/analyse" class="btn btn--large" style="margin-top:8px">Analyser une entreprise &rarr;</a>
       </div>
-      <div class="hero__visual" aria-hidden="true">
-        <!-- SVG dashboard mockup -->
-        <svg class="mockup" viewBox="0 0 480 340" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="2" y="2" width="476" height="336" rx="16" fill="#0f2440" stroke="#1e3a5f" stroke-width="2"/>
-          <!-- Top bar -->
-          <rect x="20" y="18" width="80" height="10" rx="5" fill="#1e3a5f"/>
-          <rect x="380" y="18" width="80" height="10" rx="5" fill="#1e3a5f"/>
-          <!-- Score circle -->
-          <circle cx="80" cy="100" r="42" stroke="#00c896" stroke-width="6" fill="none" stroke-dasharray="200 64" stroke-linecap="round"/>
-          <text x="80" y="106" text-anchor="middle" fill="#fff" font-size="20" font-weight="700" font-family="Inter,sans-serif">78</text>
-          <text x="80" y="120" text-anchor="middle" fill="#5a7fa0" font-size="8" font-family="Inter,sans-serif">Score sante</text>
-          <!-- Bars -->
-          <rect x="160" y="65" width="30" height="70" rx="4" fill="#1e3a5f"/>
-          <rect x="160" y="95" width="30" height="40" rx="4" fill="#00c896"/>
-          <rect x="200" y="65" width="30" height="70" rx="4" fill="#1e3a5f"/>
-          <rect x="200" y="80" width="30" height="55" rx="4" fill="#00c896"/>
-          <rect x="240" y="65" width="30" height="70" rx="4" fill="#1e3a5f"/>
-          <rect x="240" y="75" width="30" height="60" rx="4" fill="#00c896"/>
-          <rect x="280" y="65" width="30" height="70" rx="4" fill="#1e3a5f"/>
-          <rect x="280" y="90" width="30" height="45" rx="4" fill="#00c896"/>
-          <rect x="320" y="65" width="30" height="70" rx="4" fill="#1e3a5f"/>
-          <rect x="320" y="72" width="30" height="63" rx="4" fill="#00c896"/>
-          <rect x="360" y="65" width="30" height="70" rx="4" fill="#1e3a5f"/>
-          <rect x="360" y="85" width="30" height="50" rx="4" fill="#00c896"/>
-          <rect x="400" y="65" width="30" height="70" rx="4" fill="#1e3a5f"/>
-          <rect x="400" y="78" width="30" height="57" rx="4" fill="#00c896"/>
-          <!-- Valuation card -->
-          <rect x="20" y="165" width="200" height="70" rx="10" fill="#162d4a"/>
-          <text x="36" y="188" fill="#5a7fa0" font-size="9" font-family="Inter,sans-serif">Valorisation EBITDA</text>
-          <text x="36" y="215" fill="#00c896" font-size="22" font-weight="700" font-family="Inter,sans-serif">€ 1.240.000</text>
-          <!-- Ratios card -->
-          <rect x="240" y="165" width="220" height="70" rx="10" fill="#162d4a"/>
-          <text x="256" y="188" fill="#5a7fa0" font-size="9" font-family="Inter,sans-serif">Ratios cles</text>
-          <rect x="256" y="198" width="60" height="6" rx="3" fill="#1e3a5f"/><rect x="256" y="198" width="42" height="6" rx="3" fill="#00c896"/>
-          <rect x="256" y="210" width="60" height="6" rx="3" fill="#1e3a5f"/><rect x="256" y="210" width="50" height="6" rx="3" fill="#00c896"/>
-          <rect x="256" y="222" width="60" height="6" rx="3" fill="#1e3a5f"/><rect x="256" y="222" width="35" height="6" rx="3" fill="#00c896"/>
-          <text x="330" y="204" fill="#fff" font-size="8" font-family="Inter,sans-serif">Liquidite 1.8</text>
-          <text x="330" y="216" fill="#fff" font-size="8" font-family="Inter,sans-serif">Solvabilite 62%</text>
-          <text x="330" y="228" fill="#fff" font-size="8" font-family="Inter,sans-serif">ROE 14.2%</text>
-          <!-- Bottom line chart -->
-          <polyline points="30,290 80,278 130,285 180,265 230,270 280,255 330,260 380,245 430,250" stroke="#00c896" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-          <rect x="20" y="260" width="440" height="1" fill="#1e3a5f"/>
-          <text x="20" y="320" fill="#5a7fa0" font-size="8" font-family="Inter,sans-serif">2019</text>
-          <text x="130" y="320" fill="#5a7fa0" font-size="8" font-family="Inter,sans-serif">2020</text>
-          <text x="240" y="320" fill="#5a7fa0" font-size="8" font-family="Inter,sans-serif">2021</text>
-          <text x="350" y="320" fill="#5a7fa0" font-size="8" font-family="Inter,sans-serif">2022</text>
-          <text x="430" y="320" fill="#5a7fa0" font-size="8" font-family="Inter,sans-serif">2023</text>
-        </svg>
+      <div class="hero__upload" id="upload">
+        <form id="analyse-form" class="upload-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="email">Email de livraison</label>
+              <input type="email" id="email" name="email" placeholder="email@exemple.com" required autocomplete="email">
+            </div>
+            <div class="form-group">
+              <label for="secteur">Secteur</label>
+              <select id="secteur" name="secteur">
+                <option value="">-- S&eacute;lectionnez --</option>
+                <option value="Construction / BTP">Construction / BTP</option>
+                <option value="Tech / SaaS">Tech / SaaS</option>
+                <option value="Services">Services</option>
+                <option value="Commerce">Commerce</option>
+                <option value="Industrie">Industrie</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="pdf">Comptes annuels BNB (PDF)</label>
+            <div class="drop-zone" id="drop-zone">
+              <input type="file" id="pdf" name="file" accept=".pdf" required>
+              <div class="drop-zone__prompt">
+                <span class="drop-zone__icon">&#128196;</span>
+                <span>Glissez le PDF ici ou <strong>cliquez pour parcourir</strong></span>
+              </div>
+              <div class="drop-zone__file" hidden></div>
+            </div>
+          </div>
+          <button type="submit" class="btn btn--full" id="submit-btn">Lancer l'analyse</button>
+          <p class="upload-note">PDF BNB uniquement &mdash; <a href="https://consult.cbso.nbb.be" target="_blank" rel="noopener">consult.cbso.nbb.be</a></p>
+        </form>
+        <p class="upload-msg" id="upload-msg" hidden></p>
+        <!-- Loading -->
+        <div id="loading" class="loading" hidden>
+          <div class="spinner"></div>
+          <p>Extraction et analyse en cours...</p>
+          <div class="loading-steps">
+            <span class="loading-step active">&#128196; Extraction PDF</span>
+            <span class="loading-step">&#128202; Calcul des ratios</span>
+            <span class="loading-step">&#129302; Analyse IA</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ RESULTS (inline) ============ -->
+  <section class="section" id="results-section" hidden>
+    <div class="container">
+      <div id="consolidated-notice" class="disclaimer-box disclaimer-box--warning" hidden>
+        <strong>&#9888;&#65039; Comptes consolid&eacute;s d&eacute;tect&eacute;s</strong>
+        <p>BWIX analyse uniquement les comptes annuels individuels (statutaires). Les r&eacute;sultats peuvent &ecirc;tre inexacts.</p>
+      </div>
+      <div class="results-header">
+        <h2 class="results-title">R&eacute;sultats de l'analyse <span id="result-year"></span></h2>
+        <div class="score-card">
+          <div class="score-circle" id="score-circle">
+            <svg viewBox="0 0 120 120">
+              <circle cx="60" cy="60" r="52" fill="none" stroke="#1e3a5f" stroke-width="8"/>
+              <circle cx="60" cy="60" r="52" fill="none" stroke="#00c896" stroke-width="8" stroke-dasharray="327" stroke-dashoffset="327" stroke-linecap="round" id="score-arc" transform="rotate(-90 60 60)"/>
+            </svg>
+            <div class="score-value"><span id="score-val">0</span><small>/100</small></div>
+          </div>
+          <span class="score-label">Score sant&eacute;</span>
+        </div>
+      </div>
+      <div class="grid grid--4" id="freemium-ratios">
+        <div class="metric-card"><span class="metric-label">EBITDA</span><span class="metric-value" id="m-ebitda">&mdash;</span></div>
+        <div class="metric-card"><span class="metric-label">ROE</span><span class="metric-value" id="m-roe">&mdash;</span></div>
+        <div class="metric-card"><span class="metric-label">Liquidit&eacute; g&eacute;n&eacute;rale</span><span class="metric-value" id="m-liquidite">&mdash;</span></div>
+        <div class="metric-card"><span class="metric-label">Solvabilit&eacute;</span><span class="metric-value" id="m-solvabilite">&mdash;</span></div>
+      </div>
+      <div class="valuation-card" id="valuation-card">
+        <h3>Valorisation de l'entreprise</h3>
+        <div class="valuation-range" id="valuation-blurred">
+          <span class="valuation-label">L'entreprise vaut entre</span>
+          <span class="valuation-amount blurred">&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;</span>
+          <span class="valuation-sep">et</span>
+          <span class="valuation-amount blurred">&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;</span>
+          <span class="valuation-currency">&euro;</span>
+        </div>
+        <div class="valuation-range" id="valuation-clear" hidden>
+          <span class="valuation-label">L'entreprise vaut entre</span>
+          <span class="valuation-amount" id="val-low-clear">&mdash;</span>
+          <span class="valuation-sep">et</span>
+          <span class="valuation-amount" id="val-high-clear">&mdash;</span>
+          <span class="valuation-currency">&euro;</span>
+        </div>
+      </div>
+      <div id="paywall" class="paywall">
+        <div class="paywall__overlay">
+          <h3>D&eacute;bloquer l'analyse compl&egrave;te</h3>
+          <ul class="paywall__features">
+            <li>&#128176; Valorisation d&eacute;taill&eacute;e (EBITDA, capitaux propres, DCF)</li>
+            <li>&#128202; Tous les ratios financiers complets</li>
+            <li>&#129302; Analyse IA &mdash; forces, risques, recommandations</li>
+            <li>&#128203; Export rapport PDF professionnel</li>
+          </ul>
+          <button class="btn btn--large" id="pay-btn">D&eacute;bloquer l'analyse compl&egrave;te &mdash; 19,99&nbsp;&euro;</button>
+          <p class="paywall__note">Paiement s&eacute;curis&eacute; par Stripe. Acc&egrave;s imm&eacute;diat apr&egrave;s paiement.</p>
+        </div>
+      </div>
+      <div id="full-results" hidden>
+        <div class="detail-section"><h3>Valorisation d&eacute;taill&eacute;e</h3><div class="grid grid--3" id="valo-details"></div></div>
+        <div class="detail-section"><h3>Ratios financiers complets</h3><div class="ratios-table" id="ratios-table"></div></div>
+        <div class="detail-section" id="ai-section">
+          <h3>&#129302; Analyse IA</h3>
+          <div class="ai-card">
+            <div class="ai-synthese" id="ai-synthese"></div>
+            <div class="grid grid--2">
+              <div class="ai-list ai-list--green"><h4>Points forts</h4><ul id="ai-forts"></ul></div>
+              <div class="ai-list ai-list--orange"><h4>Points d'attention</h4><ul id="ai-attention"></ul></div>
+            </div>
+            <div class="grid grid--2">
+              <div class="ai-list ai-list--red"><h4>Risques</h4><ul id="ai-risques"></ul></div>
+              <div class="ai-list ai-list--blue"><h4>Recommandations</h4><ul id="ai-reco"></ul></div>
+            </div>
+            <div class="ai-valo" id="ai-valo"></div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -126,12 +200,12 @@
   <!-- ============ 2. PROBLEME ============ -->
   <section class="section section--dark" id="probleme">
     <div class="container">
-      <h2 class="section__title">Aujourd'hui, valoriser votre entreprise c'est&hellip;</h2>
+      <h2 class="section__title">Aujourd'hui, valoriser une entreprise c'est&hellip;</h2>
       <div class="grid grid--3">
         <div class="card card--problem">
           <span class="card__icon">&#128340;</span>
           <h3>2-3 semaines d'attente</h3>
-          <p>chez votre comptable pour obtenir une estimation approximative.</p>
+          <p>chez le comptable pour obtenir une estimation approximative.</p>
         </div>
         <div class="card card--problem">
           <span class="card__icon">&#128182;</span>
@@ -155,21 +229,21 @@
         <div class="step">
           <span class="step__icon">&#128196;</span>
           <div>
-            <h3>Importez votre bilan BNB</h3>
+            <h3>Importez un bilan BNB</h3>
             <p>PDF ou numéro BCE &mdash; c'est tout ce qu'il faut.</p>
           </div>
         </div>
         <div class="step">
           <span class="step__icon">&#128202;</span>
           <div>
-            <h3>Obtenez tous vos ratios financiers clés</h3>
+            <h3>Obtenez tous les ratios financiers cl&eacute;s</h3>
             <p>Liquidité, solvabilité, rentabilité, endettement&hellip;</p>
           </div>
         </div>
         <div class="step">
           <span class="step__icon">&#128176;</span>
           <div>
-            <h3>Visualisez votre valorisation</h3>
+            <h3>Visualisez la valorisation</h3>
             <p>EBITDA, capitaux propres, DCF &mdash; trois méthodes comparées.</p>
           </div>
         </div>
@@ -184,7 +258,7 @@
           <span class="step__icon">&#128203;</span>
           <div>
             <h3>Exportez un rapport professionnel</h3>
-            <p>PDF pret a partager avec votre banquier, avocat ou acquéreur.</p>
+            <p>PDF pr&ecirc;t &agrave; partager avec un banquier, avocat ou acqu&eacute;reur.</p>
           </div>
         </div>
       </div>
@@ -311,12 +385,12 @@
     </div>
   </section>
 
-  <!-- ============ 7. CTA UPLOAD ============ -->
-  <section class="section section--cta" id="cta-upload">
+  <!-- ============ 7. CTA ============ -->
+  <section class="section section--cta" id="cta-bottom">
     <div class="container container--narrow" style="text-align:center">
       <h2 class="section__title">Pr&ecirc;t &agrave; analyser ?</h2>
-      <p class="section__subtitle">Importez un PDF BNB et obtenez votre analyse en 2 minutes.</p>
-      <a href="/analyse" class="btn btn--large">Lancer une analyse &rarr;</a>
+      <p class="section__subtitle">Importez un PDF BNB et obtenez l'analyse en 2 minutes.</p>
+      <a href="#upload" class="btn btn--large">Lancer une analyse &uarr;</a>
       <p style="margin-top:16px;font-size:.85rem;color:#5a7fa0">Gratuit : score sant&eacute; + ratios de base. Analyse compl&egrave;te : 19,99&nbsp;&euro;</p>
     </div>
   </section>
@@ -342,9 +416,6 @@
     </div>
   </footer>
 
-  <script>
-  // Pre-warm backend when user lands on homepage
-  fetch('https://bwix-api.onrender.com/api/health').catch(function(){});
-  </script>
+  <script src="analyse.js"></script>
 </body>
 </html>
