@@ -62,8 +62,12 @@
 
     // Blurred valuation with real numbers
     var vf = data.valorisation_floue || {};
-    if (vf.fourchette_low != null) document.getElementById('val-low-blur').textContent = fmtEurRaw(vf.fourchette_low);
-    if (vf.fourchette_high != null) document.getElementById('val-high-blur').textContent = fmtEurRaw(vf.fourchette_high);
+    var valLow = document.getElementById('val-low');
+    var valHigh = document.getElementById('val-high');
+    if (vf.fourchette_low != null) valLow.textContent = fmtEurRaw(vf.fourchette_low);
+    if (vf.fourchette_high != null) valHigh.textContent = fmtEurRaw(vf.fourchette_high);
+    valLow.classList.add('blurred');
+    valHigh.classList.add('blurred');
 
     document.getElementById('paywall').hidden = false;
     document.getElementById('full-results').hidden = true;
@@ -102,10 +106,12 @@
 
     var full = data.full || {};
     var vr = full.valorisation_resume || {};
-    document.getElementById('valuation-blurred').hidden = true;
-    document.getElementById('valuation-clear').hidden = false;
-    document.getElementById('val-low-clear').textContent = fmtEur(vr.fourchette_equity_low);
-    document.getElementById('val-high-clear').textContent = fmtEur(vr.fourchette_equity_high);
+    var valLow = document.getElementById('val-low');
+    var valHigh = document.getElementById('val-high');
+    valLow.textContent = fmtEurRaw(vr.fourchette_equity_low);
+    valHigh.textContent = fmtEurRaw(vr.fourchette_equity_high);
+    valLow.classList.remove('blurred');
+    valHigh.classList.remove('blurred');
 
     document.getElementById('paywall').hidden = true;
     document.getElementById('full-results').hidden = false;

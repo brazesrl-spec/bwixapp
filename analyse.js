@@ -60,7 +60,7 @@
     setProgress(5, 'Envoi du PDF...');
     setTimeout(function () { setProgress(20, 'Extraction des donn\u00e9es comptables...'); }, 1500);
     setTimeout(function () { setProgress(45, 'Calcul des ratios financiers...'); }, 5000);
-    setTimeout(function () { setProgress(70, 'Analyse IA en cours...'); }, 10000);
+    setTimeout(function () { setProgress(70, 'Analyse en cours...'); }, 10000);
     setTimeout(function () { setProgress(85, 'Finalisation...'); }, 18000);
 
     var fd = new FormData();
