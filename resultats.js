@@ -62,10 +62,18 @@
       if (data.ebitda_moyenne != null && nb >= 2) parts.push('Moyenne : <strong>' + fmtEur(data.ebitda_moyenne) + '</strong> \u2190 utilis\u00e9e pour la valorisation');
       bd.innerHTML = parts.join(' &nbsp;|&nbsp; ');
     }
-    // EBITDA variation warning
+    // EBITDA variation warning (warning-only for structures particulières)
     var warn = document.getElementById('ebitda-warning');
     if (warn && data.ebitda_variation != null && data.ebitda_variation > 0.30) {
       warn.hidden = false;
+      if (data.is_structure_particuliere) {
+        warn.querySelector('p').textContent = 'Variation EBITDA importante \u2014 fr\u00e9quent pour ce type de structure (management fees, dividendes, op\u00e9rations ponctuelles). La valorisation reste indicative.';
+      }
+    }
+    // Structure particulière notice
+    var sp = document.getElementById('structure-notice');
+    if (sp && data.is_structure_particuliere) {
+      sp.hidden = false;
     }
   }
 

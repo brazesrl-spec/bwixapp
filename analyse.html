@@ -54,11 +54,19 @@
           <label for="secteur">Secteur d'activité</label>
           <select id="secteur" name="secteur">
             <option value="">-- Sélectionnez --</option>
-            <option value="Construction / BTP">Construction / BTP</option>
-            <option value="Tech / SaaS">Tech / SaaS</option>
-            <option value="Services">Services</option>
-            <option value="Commerce">Commerce</option>
-            <option value="Industrie">Industrie</option>
+            <optgroup label="Secteur d'activité">
+              <option value="Construction / BTP">Construction / BTP</option>
+              <option value="Tech / SaaS">Tech / SaaS</option>
+              <option value="Services">Services</option>
+              <option value="Commerce">Commerce</option>
+              <option value="Industrie">Industrie</option>
+            </optgroup>
+            <optgroup label="Structure particulière">
+              <option value="Management / Holding">Management / Holding</option>
+              <option value="Immobilier / SCI">Immobilier / SCI</option>
+              <option value="ASBL">ASBL</option>
+              <option value="Startup">Startup</option>
+            </optgroup>
           </select>
         </div>
         <div class="form-group">
