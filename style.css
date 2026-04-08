@@ -75,6 +75,12 @@ a:hover{text-decoration:underline}
 .card--link{text-decoration:none;display:block}
 .card--link:hover{text-decoration:none}
 .card--link h3{color:#00c896}
+.card--guide{padding-bottom:12px}
+.card__main{display:block;text-decoration:none;padding-bottom:10px}
+.card__main h3{color:#00c896}
+.card__sectors{border-top:1px solid rgba(30,58,95,.4);padding-top:8px;font-size:.75rem;display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.card__sectors a{color:#5a7fa0;text-decoration:none;transition:color .2s}
+.card__sectors a:hover{color:#00c896}
 .card__icon{font-size:2.4rem;display:block;margin-bottom:14px}
 .card h3{font-size:1.05rem;font-weight:600;color:#fff;margin-bottom:8px}
 .card p{font-size:.9rem;color:#8fa3bf;line-height:1.5}

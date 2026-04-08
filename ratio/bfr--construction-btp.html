@@ -3,7 +3,7 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>BFR en jours de CA — PME construction / BTP belge | BWIX</title>
 <meta name="description" content="Le BFR en jours de CA mesure combien de jours de chiffre d'affaires sont immobilisés dans le cycle d'exploitation : stocks + créances clients - dettes four">
-<link rel="canonical" href="https://bwix.app/ratio/bfr?secteur=construction-btp">
+<link rel="canonical" href="https://bwix.app/ratio/bfr--construction-btp">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../style.css">
@@ -24,14 +24,25 @@
 .seo-bench-val{font-size:1.5rem !important;font-weight:700;color:#00c896 !important}
 .seo-cta{text-align:center;margin:48px 0 0;padding:36px;background:linear-gradient(135deg,#162d4a,#1e3a5f);border-radius:16px;border:1px solid rgba(0,200,150,.2)}
 .seo-cta h2{color:#fff !important;margin-top:0}
+.pills{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0 24px}
+.pill{display:inline-block;padding:6px 14px;border-radius:100px;font-size:.8rem;color:#8fa3bf;border:1px solid #1e3a5f;text-decoration:none;transition:all .2s}
+.pill:hover,.pill--active{background:#00c896;color:#0b1929;border-color:#00c896;text-decoration:none}
+.prevnext{display:flex;justify-content:space-between;margin:40px 0 0;padding-top:20px;border-top:1px solid #1e3a5f}
+.prevnext a{color:#8fa3bf;text-decoration:none;font-size:.9rem}.prevnext a:hover{color:#00c896}
+.other-ratios{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-top:16px}
+.other-ratios a{display:block;background:#162d4a;border:1px solid rgba(30,58,95,.6);border-radius:10px;padding:14px;text-align:center;color:#fff;text-decoration:none;font-size:.85rem;font-weight:600;transition:border-color .2s}
+.other-ratios a:hover{border-color:#00c896}
+.other-ratios a span{display:block;font-size:.75rem;color:#5a7fa0;font-weight:400;margin-top:4px}
+.secteur-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-top:12px}
+.secteur-cards a{display:block;background:#162d4a;border:1px solid rgba(30,58,95,.6);border-radius:8px;padding:12px;text-align:center;color:#8fa3bf;text-decoration:none;font-size:.85rem;transition:border-color .2s}
+.secteur-cards a:hover{border-color:#00c896;color:#fff}
 </style>
 </head><body>
 <header class="header"><div class="container header__inner"><a href="/" class="logo">BWIX<span class="logo__dot">.</span></a><a href="/" class="btn btn--small">Analyser</a></div></header>
 <main class="seo">
-<nav class="breadcrumb"><a href="/">bwix.app</a> <span>›</span> <a href="/ratio/ebitda">Ratios</a> <span>›</span> BFR en jours de CA</nav>
+<nav class="breadcrumb"><a href="/">bwix.app</a> <span>›</span> <a href="/ratio/ebitda">Ratios</a> <span>›</span> <a href="/ratio/bfr">BFR en jours de CA</a> <span>›</span> construction / BTP</nav>
 <h1>BFR — Besoin en Fonds de Roulement pour les PME construction / BTP en Belgique</h1>
-<p class="seo-sub">Ratio financier • Comptes annuels BNB • Analyse automatisée</p>
-<h2>Définition</h2>
+<div class="pills"><a class="pill pill--active" href="/ratio/bfr--construction-btp">construction / BTP</a><a class="pill" href="/ratio/bfr--tech-saas">tech / SaaS</a><a class="pill" href="/ratio/bfr--services">services</a><a class="pill" href="/ratio/bfr--commerce">commerce</a><a class="pill" href="/ratio/bfr--industrie">industrie</a></div><h2>Définition</h2>
 <p>Le BFR en jours de CA mesure combien de jours de chiffre d'affaires sont immobilisés dans le cycle d'exploitation : stocks + créances clients - dettes fournisseurs.</p>
 <h2>Pourquoi ce ratio est important</h2>
 <p>Le BFR détermine le besoin de financement lié à l'activité courante. Un BFR élevé signifie que l'entreprise doit financer un décalage important entre ses décaissements et ses encaissements.</p>
@@ -43,11 +54,15 @@
 <div class="seo-bad"><strong>⚠️ Signal d'alerte :</strong> Un BFR supérieur à 90 jours immobilise beaucoup de capital et nécessite des financements coûteux.</div>
 <h2>Comment améliorer ce ratio</h2>
 <ul><li>Réduire les délais de paiement clients (factoring, escompte pour paiement rapide)</li><li>Négocier des délais fournisseurs plus longs</li><li>Optimiser la gestion des stocks (just-in-time, réduction du stock dormant)</li><li>Automatiser la facturation et les relances</li></ul>
+
+<h2>Voir aussi ce ratio pour</h2><div class="secteur-cards"><a href="/ratio/bfr--tech-saas">tech / SaaS</a><a href="/ratio/bfr--services">services</a><a href="/ratio/bfr--commerce">commerce</a><a href="/ratio/bfr--industrie">industrie</a></div>
+<h2>Autres ratios financiers</h2><div class="other-ratios"><a href="/ratio/ebitda--construction-btp">EBITDA<span>undefined</span></a><a href="/ratio/roe--construction-btp">ROE<span>Return on Equity (Rentabilité des capitaux propres)</span></a><a href="/ratio/roa--construction-btp">ROA<span>Return on Assets (Rentabilité des actifs)</span></a><a href="/ratio/gearing--construction-btp">Gearing<span>Ratio d'endettement net</span></a><a href="/ratio/solvabilite--construction-btp">Solvabilité<span>Autonomie financière</span></a></div>
+<div class="prevnext"><a href="/ratio/liquidite-generale--construction-btp">← Liquidité générale</a><a href="/ratio/dette-ebitda--construction-btp">Dette nette / EBITDA →</a></div>
 <div class="seo-cta">
 <h2>Calculez le BFR en jours de CA de n'importe quelle société belge</h2>
 <p>Importez un bilan BNB et obtenez tous les ratios financiers + valorisation en 2 minutes.</p>
 <a href="/" class="btn btn--large">Analyser une entreprise →</a>
 </div>
 </main>
-<footer class="footer"><div class="container footer__inner"><p>© 2026 BWIX — Braze SRL</p><nav class="footer__links"><a href="/mentions-legales">Mentions légales</a><a href="/confidentialite">Confidentialité</a><a href="/conditions-utilisation">CGU</a></nav><p class="footer__love">Fait avec ❤️ en Belgique 🇧🇪</p></div></footer>
+<footer class="footer"><div class="container footer__grid"><div class="footer__col"><p class="footer__brand">BWIX<span style="color:#00c896">.</span></p><p>© 2026 Braze SRL</p></div><div class="footer__col"><p class="footer__heading">Légal</p><a href="/mentions-legales">Mentions légales</a><a href="/confidentialite">Confidentialité</a><a href="/conditions-utilisation">CGU</a></div><div class="footer__col"><p class="footer__heading">Ratios</p><a href="/ratio/ebitda">EBITDA</a><a href="/ratio/roe">ROE</a><a href="/ratio/roa">ROA</a><a href="/ratio/gearing">Gearing</a><a href="/ratio/solvabilite">Solvabilité</a><a href="/ratio/liquidite-generale">Liquidité générale</a><a href="/ratio/bfr">BFR en jours de CA</a><a href="/ratio/dette-ebitda">Dette nette / EBITDA</a><a href="/ratio/marge-nette">Marge nette</a><a href="/ratio/couverture-interets">Couverture des intérêts</a><a href="/ratio/valorisation-ebitda">Valorisation EV/EBITDA</a><a href="/ratio/valorisation-dcf">Valorisation DCF</a></div></div></footer>
 </body></html>

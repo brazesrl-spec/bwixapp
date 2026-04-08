@@ -151,74 +151,155 @@ fs.mkdirSync(outDir, { recursive: true });
 
 function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
 
-var count = 0;
-Object.keys(ratios).forEach(function (key) {
-  var r = ratios[key];
-  secteurs.forEach(function (s) {
-    var title = r.label + ' \u2014 PME ' + s.label + ' belge | BWIX';
-    var h1 = r.full + ' pour les PME ' + s.label + ' en Belgique';
+var ratioKeys = Object.keys(ratios);
+
+var CSS = '<style>\n'
+  + '.breadcrumb{font-size:.8rem;color:#5a7fa0;margin-bottom:20px}.breadcrumb a{color:#5a7fa0;text-decoration:none}.breadcrumb a:hover{color:#00c896}.breadcrumb span{margin:0 6px}\n'
+  + '.seo{max-width:760px;margin:0 auto;padding:100px 24px 80px}\n'
+  + '.seo h1{font-size:1.6rem;line-height:1.3;margin-bottom:8px}\n'
+  + '.seo h2{font-size:1.15rem;color:#00c896;margin-top:32px;margin-bottom:12px}\n'
+  + '.seo h3{font-size:1rem;color:#fff;margin-bottom:8px}\n'
+  + '.seo p,.seo li{color:#8fa3bf;font-size:.95rem;line-height:1.7;margin-bottom:12px}\n'
+  + '.seo ul{padding-left:20px;margin-bottom:16px}\n'
+  + '.seo li{margin-bottom:6px}\n'
+  + '.seo-sub{color:#5a7fa0;font-size:.9rem;margin-bottom:24px}\n'
+  + '.seo-formula{background:#162d4a;padding:16px 20px;border-radius:10px;font-family:monospace;color:#00c896;font-size:.9rem;margin:16px 0 24px;white-space:pre-line;line-height:1.6}\n'
+  + '.seo-good{background:rgba(0,200,150,.06);border-left:3px solid #00c896;padding:14px 18px;border-radius:0 8px 8px 0;margin:12px 0}\n'
+  + '.seo-bad{background:rgba(255,100,100,.06);border-left:3px solid #ff6b6b;padding:14px 18px;border-radius:0 8px 8px 0;margin:12px 0}\n'
+  + '.seo-card{background:#162d4a;border:1px solid rgba(30,58,95,.6);border-radius:12px;padding:20px;margin:16px 0;text-align:center}\n'
+  + '.seo-bench-val{font-size:1.5rem !important;font-weight:700;color:#00c896 !important}\n'
+  + '.seo-cta{text-align:center;margin:48px 0 0;padding:36px;background:linear-gradient(135deg,#162d4a,#1e3a5f);border-radius:16px;border:1px solid rgba(0,200,150,.2)}\n'
+  + '.seo-cta h2{color:#fff !important;margin-top:0}\n'
+  + '.pills{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0 24px}\n'
+  + '.pill{display:inline-block;padding:6px 14px;border-radius:100px;font-size:.8rem;color:#8fa3bf;border:1px solid #1e3a5f;text-decoration:none;transition:all .2s}\n'
+  + '.pill:hover,.pill--active{background:#00c896;color:#0b1929;border-color:#00c896;text-decoration:none}\n'
+  + '.prevnext{display:flex;justify-content:space-between;margin:40px 0 0;padding-top:20px;border-top:1px solid #1e3a5f}\n'
+  + '.prevnext a{color:#8fa3bf;text-decoration:none;font-size:.9rem}.prevnext a:hover{color:#00c896}\n'
+  + '.other-ratios{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-top:16px}\n'
+  + '.other-ratios a{display:block;background:#162d4a;border:1px solid rgba(30,58,95,.6);border-radius:10px;padding:14px;text-align:center;color:#fff;text-decoration:none;font-size:.85rem;font-weight:600;transition:border-color .2s}\n'
+  + '.other-ratios a:hover{border-color:#00c896}\n'
+  + '.other-ratios a span{display:block;font-size:.75rem;color:#5a7fa0;font-weight:400;margin-top:4px}\n'
+  + '.secteur-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-top:12px}\n'
+  + '.secteur-cards a{display:block;background:#162d4a;border:1px solid rgba(30,58,95,.6);border-radius:8px;padding:12px;text-align:center;color:#8fa3bf;text-decoration:none;font-size:.85rem;transition:border-color .2s}\n'
+  + '.secteur-cards a:hover{border-color:#00c896;color:#fff}\n'
+  + '</style>\n';
+
+var HEADER = '<header class="header"><div class="container header__inner"><a href="/" class="logo">BWIX<span class="logo__dot">.</span></a><a href="/" class="btn btn--small">Analyser</a></div></header>\n';
+
+var FOOTER = '<footer class="footer"><div class="container footer__grid">'
+  + '<div class="footer__col"><p class="footer__brand">BWIX<span style="color:#00c896">.</span></p><p>\u00a9 2026 Braze SRL</p></div>'
+  + '<div class="footer__col"><p class="footer__heading">L\u00e9gal</p><a href="/mentions-legales">Mentions l\u00e9gales</a><a href="/confidentialite">Confidentialit\u00e9</a><a href="/conditions-utilisation">CGU</a></div>'
+  + '<div class="footer__col"><p class="footer__heading">Ratios</p>'
+  + ratioKeys.map(function(k){ return '<a href="/ratio/' + ratios[k].slug + '">' + ratios[k].label.split(' \u2014')[0].split(' (')[0] + '</a>'; }).join('')
+  + '</div></div></footer>\n';
+
+function buildPage(r, s, isGeneric) {
+  var rIdx = ratioKeys.indexOf(Object.keys(ratios).find(function(k){ return ratios[k].slug === r.slug; }));
+  var prevR = rIdx > 0 ? ratios[ratioKeys[rIdx - 1]] : null;
+  var nextR = rIdx < ratioKeys.length - 1 ? ratios[ratioKeys[rIdx + 1]] : null;
+
+  var title, h1, canonical, benchBlock, secteurPills, secteurSection, voirAussi;
+
+  if (isGeneric) {
+    title = r.label + ' \u2014 Guide complet PME belge | BWIX';
+    h1 = r.full + ' \u2014 Guide pour les PME belges';
+    canonical = 'https://bwix.app/ratio/' + r.slug;
+    benchBlock = '';
+    // Sector pills
+    secteurPills = '<div class="pills">'
+      + secteurs.map(function(ss){ return '<a class="pill" href="/ratio/' + r.slug + '--' + ss.slug + '">' + ss.label + '</a>'; }).join('')
+      + '</div>';
+    // Sector cards section
+    secteurSection = '<h2>Par secteur d\u2019activit\u00e9</h2><div class="secteur-cards">'
+      + secteurs.map(function(ss){ return '<a href="/ratio/' + r.slug + '--' + ss.slug + '">' + r.label.split(' (')[0] + ' \u2014 ' + ss.label + '</a>'; }).join('')
+      + '</div>';
+    voirAussi = '';
+  } else {
+    title = r.label + ' \u2014 PME ' + s.label + ' belge | BWIX';
+    h1 = r.full + ' pour les PME ' + s.label + ' en Belgique';
+    canonical = 'https://bwix.app/ratio/' + r.slug + '--' + s.slug;
     var bench = (r.benchmarks && r.benchmarks[s.value]) || '';
-    var benchBlock = bench ? '<div class="seo-card"><h3>Benchmark ' + s.label + ' belge</h3><p class="seo-bench-val">' + bench + '</p></div>' : '';
-    var improveList = (r.improve || []).map(function(i){ return '<li>' + i + '</li>'; }).join('');
+    benchBlock = bench ? '<div class="seo-card"><h3>Benchmark ' + s.label + ' belge</h3><p class="seo-bench-val">' + bench + '</p></div>' : '';
+    // Sector pills with active
+    secteurPills = '<div class="pills">'
+      + secteurs.map(function(ss){
+        var active = ss.slug === s.slug ? ' pill--active' : '';
+        return '<a class="pill' + active + '" href="/ratio/' + r.slug + '--' + ss.slug + '">' + ss.label + '</a>';
+      }).join('')
+      + '</div>';
+    secteurSection = '';
+    // Voir aussi
+    voirAussi = '<h2>Voir aussi ce ratio pour</h2><div class="secteur-cards">'
+      + secteurs.filter(function(ss){ return ss.slug !== s.slug; }).map(function(ss){
+        return '<a href="/ratio/' + r.slug + '--' + ss.slug + '">' + ss.label + '</a>';
+      }).join('')
+      + '</div>';
+  }
 
-    var html = '<!DOCTYPE html>\n<html lang="fr-BE"><head>\n'
-      + '<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">\n'
-      + '<title>' + esc(title) + '</title>\n'
-      + '<meta name="description" content="' + esc(r.def.substring(0, 155)) + '">\n'
-      + '<link rel="canonical" href="https://bwix.app/ratio/' + r.slug + '?secteur=' + s.slug + '">\n'
-      + '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n'
-      + '<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">\n'
-      + '<link rel="stylesheet" href="../style.css">\n'
-      + '<style>\n'
-      + '.breadcrumb{font-size:.8rem;color:#5a7fa0;margin-bottom:20px}.breadcrumb a{color:#5a7fa0;text-decoration:none}.breadcrumb a:hover{color:#00c896}.breadcrumb span{margin:0 6px}\n'
-      + '.seo{max-width:760px;margin:0 auto;padding:100px 24px 80px}\n'
-      + '.seo h1{font-size:1.6rem;line-height:1.3;margin-bottom:8px}\n'
-      + '.seo h2{font-size:1.15rem;color:#00c896;margin-top:32px;margin-bottom:12px}\n'
-      + '.seo h3{font-size:1rem;color:#fff;margin-bottom:8px}\n'
-      + '.seo p,.seo li{color:#8fa3bf;font-size:.95rem;line-height:1.7;margin-bottom:12px}\n'
-      + '.seo ul{padding-left:20px;margin-bottom:16px}\n'
-      + '.seo li{margin-bottom:6px}\n'
-      + '.seo-sub{color:#5a7fa0;font-size:.9rem;margin-bottom:24px}\n'
-      + '.seo-formula{background:#162d4a;padding:16px 20px;border-radius:10px;font-family:monospace;color:#00c896;font-size:.9rem;margin:16px 0 24px;white-space:pre-line;line-height:1.6}\n'
-      + '.seo-good{background:rgba(0,200,150,.06);border-left:3px solid #00c896;padding:14px 18px;border-radius:0 8px 8px 0;margin:12px 0}\n'
-      + '.seo-bad{background:rgba(255,100,100,.06);border-left:3px solid #ff6b6b;padding:14px 18px;border-radius:0 8px 8px 0;margin:12px 0}\n'
-      + '.seo-card{background:#162d4a;border:1px solid rgba(30,58,95,.6);border-radius:12px;padding:20px;margin:16px 0;text-align:center}\n'
-      + '.seo-bench-val{font-size:1.5rem !important;font-weight:700;color:#00c896 !important}\n'
-      + '.seo-cta{text-align:center;margin:48px 0 0;padding:36px;background:linear-gradient(135deg,#162d4a,#1e3a5f);border-radius:16px;border:1px solid rgba(0,200,150,.2)}\n'
-      + '.seo-cta h2{color:#fff !important;margin-top:0}\n'
-      + '</style>\n'
-      + '</head><body>\n'
-      + '<header class="header"><div class="container header__inner"><a href="/" class="logo">BWIX<span class="logo__dot">.</span></a><a href="/" class="btn btn--small">Analyser</a></div></header>\n'
-      + '<main class="seo">\n'
-      + '<nav class="breadcrumb"><a href="/">bwix.app</a> <span>\u203a</span> <a href="/ratio/ebitda">Ratios</a> <span>\u203a</span> ' + r.label + '</nav>\n'
-      + '<h1>' + h1 + '</h1>\n'
-      + '<p class="seo-sub">Ratio financier \u2022 Comptes annuels BNB \u2022 Analyse automatis\u00e9e</p>\n'
-      + '<h2>D\u00e9finition</h2>\n'
-      + '<p>' + r.def + '</p>\n'
-      + '<h2>Pourquoi ce ratio est important</h2>\n'
-      + '<p>' + r.why + '</p>\n'
-      + '<h2>Formule de calcul</h2>\n'
-      + '<div class="seo-formula">' + r.formula + '</div>\n'
-      + benchBlock + '\n'
-      + '<h2>Interpr\u00e9tation</h2>\n'
-      + '<div class="seo-good"><strong>\u2705 Bon signal :</strong> ' + r.good + '</div>\n'
-      + '<div class="seo-bad"><strong>\u26a0\ufe0f Signal d\'alerte :</strong> ' + r.bad + '</div>\n'
-      + '<h2>Comment am\u00e9liorer ce ratio</h2>\n'
-      + '<ul>' + improveList + '</ul>\n'
-      + '<div class="seo-cta">\n'
-      + '<h2>Calculez le ' + r.label + ' de n\'importe quelle soci\u00e9t\u00e9 belge</h2>\n'
-      + '<p>Importez un bilan BNB et obtenez tous les ratios financiers + valorisation en 2 minutes.</p>\n'
-      + '<a href="/" class="btn btn--large">Analyser une entreprise \u2192</a>\n'
-      + '</div>\n'
-      + '</main>\n'
-      + '<footer class="footer"><div class="container footer__inner"><p>\u00a9 2026 BWIX \u2014 Braze SRL</p>'
-      + '<nav class="footer__links"><a href="/mentions-legales">Mentions l\u00e9gales</a><a href="/confidentialite">Confidentialit\u00e9</a><a href="/conditions-utilisation">CGU</a></nav>'
-      + '<p class="footer__love">Fait avec \u2764\ufe0f en Belgique \ud83c\udde7\ud83c\uddea</p>'
-      + '</div></footer>\n'
-      + '</body></html>';
+  var improveList = (r.improve || []).map(function(i){ return '<li>' + i + '</li>'; }).join('');
 
-    var filename = r.slug + '--' + s.slug + '.html';
-    fs.writeFileSync(path.join(outDir, filename), html);
+  // Prev/next nav
+  var prevnext = '<div class="prevnext">';
+  prevnext += prevR ? '<a href="/ratio/' + prevR.slug + (isGeneric ? '' : '--' + s.slug) + '">\u2190 ' + prevR.label.split(' (')[0] + '</a>' : '<span></span>';
+  prevnext += nextR ? '<a href="/ratio/' + nextR.slug + (isGeneric ? '' : '--' + s.slug) + '">' + nextR.label.split(' (')[0] + ' \u2192</a>' : '<span></span>';
+  prevnext += '</div>';
+
+  // Other ratios
+  var otherRatios = '<h2>Autres ratios financiers</h2><div class="other-ratios">'
+    + ratioKeys.filter(function(k){ return ratios[k].slug !== r.slug; }).slice(0, 5).map(function(k){
+      var or2 = ratios[k];
+      return '<a href="/ratio/' + or2.slug + (isGeneric ? '' : '--' + s.slug) + '">' + or2.label.split(' (')[0] + '<span>' + or2.full.split(' \u2014 ')[1] + '</span></a>';
+    }).join('')
+    + '</div>';
+
+  var breadcrumbSecteur = isGeneric ? '' : ' <span>\u203a</span> ' + s.label;
+
+  return '<!DOCTYPE html>\n<html lang="fr-BE"><head>\n'
+    + '<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">\n'
+    + '<title>' + esc(title) + '</title>\n'
+    + '<meta name="description" content="' + esc(r.def.substring(0, 155)) + '">\n'
+    + '<link rel="canonical" href="' + canonical + '">\n'
+    + '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n'
+    + '<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">\n'
+    + '<link rel="stylesheet" href="../style.css">\n'
+    + CSS
+    + '</head><body>\n'
+    + HEADER
+    + '<main class="seo">\n'
+    + '<nav class="breadcrumb"><a href="/">bwix.app</a> <span>\u203a</span> <a href="/ratio/ebitda">Ratios</a> <span>\u203a</span> <a href="/ratio/' + r.slug + '">' + r.label.split(' (')[0] + '</a>' + breadcrumbSecteur + '</nav>\n'
+    + '<h1>' + h1 + '</h1>\n'
+    + secteurPills
+    + '<h2>D\u00e9finition</h2>\n<p>' + r.def + '</p>\n'
+    + '<h2>Pourquoi ce ratio est important</h2>\n<p>' + r.why + '</p>\n'
+    + '<h2>Formule de calcul</h2>\n<div class="seo-formula">' + r.formula + '</div>\n'
+    + benchBlock + '\n'
+    + '<h2>Interpr\u00e9tation</h2>\n'
+    + '<div class="seo-good"><strong>\u2705 Bon signal :</strong> ' + r.good + '</div>\n'
+    + '<div class="seo-bad"><strong>\u26a0\ufe0f Signal d\'alerte :</strong> ' + r.bad + '</div>\n'
+    + '<h2>Comment am\u00e9liorer ce ratio</h2>\n<ul>' + improveList + '</ul>\n'
+    + secteurSection + '\n'
+    + voirAussi + '\n'
+    + otherRatios + '\n'
+    + prevnext + '\n'
+    + '<div class="seo-cta">\n'
+    + '<h2>Calculez le ' + r.label.split(' (')[0] + ' de n\'importe quelle soci\u00e9t\u00e9 belge</h2>\n'
+    + '<p>Importez un bilan BNB et obtenez tous les ratios financiers + valorisation en 2 minutes.</p>\n'
+    + '<a href="/" class="btn btn--large">Analyser une entreprise \u2192</a>\n'
+    + '</div>\n'
+    + '</main>\n'
+    + FOOTER
+    + '</body></html>';
+}
+
+var count = 0;
+ratioKeys.forEach(function (key) {
+  var r = ratios[key];
+  // Generic page (no sector)
+  fs.writeFileSync(path.join(outDir, r.slug + '.html'), buildPage(r, secteurs[0], true));
+  count++;
+  // Sectoral pages
+  secteurs.forEach(function (s) {
+    fs.writeFileSync(path.join(outDir, r.slug + '--' + s.slug + '.html'), buildPage(r, s, false));
     count++;
   });
 });
