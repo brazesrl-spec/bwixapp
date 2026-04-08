@@ -121,7 +121,51 @@
         .then(function (d) { if (d.checkout_url) window.location.href = d.checkout_url; })
         .catch(function () {
           document.getElementById('pay-btn').disabled = false;
-          document.getElementById('pay-btn').textContent = 'D\u00e9bloquer l\u2019analyse compl\u00e8te \u2014 19,99 \u20ac';
+          document.getElementById('pay-btn').textContent = 'D\u00e9bloquer maintenant \u2014 19,99 \u20ac';
+        });
+    };
+
+    // Promo code
+    var showLink = document.getElementById('show-code-input');
+    var codeSection = document.getElementById('code-section');
+    var redeemBtn = document.getElementById('redeem-btn');
+    var codeMsg = document.getElementById('code-msg');
+
+    if (showLink) showLink.onclick = function (e) {
+      e.preventDefault();
+      codeSection.hidden = false;
+      showLink.parentElement.hidden = true;
+      document.getElementById('promo-code').focus();
+    };
+
+    if (redeemBtn) redeemBtn.onclick = function () {
+      var code = document.getElementById('promo-code').value.trim();
+      if (!code) return;
+      redeemBtn.disabled = true;
+      redeemBtn.textContent = 'V\u00e9rification...';
+      codeMsg.hidden = true;
+
+      fetch(API + '/api/redeem-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: code, token: token }),
+      })
+        .then(function (r) {
+          if (!r.ok) return r.json().then(function (d) { throw new Error(d.detail || 'Code invalide'); });
+          return r.json();
+        })
+        .then(function () {
+          codeMsg.hidden = false;
+          codeMsg.className = 'paywall__code-msg';
+          codeMsg.textContent = 'Analyse d\u00e9bloqu\u00e9e !';
+          setTimeout(function () { window.location.reload(); }, 800);
+        })
+        .catch(function (err) {
+          redeemBtn.disabled = false;
+          redeemBtn.textContent = 'Valider';
+          codeMsg.hidden = false;
+          codeMsg.className = 'paywall__code-msg error';
+          codeMsg.textContent = err.message;
         });
     };
   }

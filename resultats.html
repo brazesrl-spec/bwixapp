@@ -96,6 +96,12 @@
           </ul>
           <button class="btn btn--large" id="pay-btn">D&eacute;bloquer maintenant &mdash; 19,99&nbsp;&euro;</button>
           <p class="paywall__note">Paiement s&eacute;curis&eacute; par Stripe. Acc&egrave;s imm&eacute;diat.</p>
+          <p class="paywall__code-link"><a href="#" id="show-code-input">Vous avez un code ?</a></p>
+          <div class="paywall__code" id="code-section" hidden>
+            <input type="text" id="promo-code" placeholder="Entrez le code" maxlength="20">
+            <button class="btn btn--small" id="redeem-btn">Valider</button>
+          </div>
+          <p class="paywall__code-msg" id="code-msg" hidden></p>
         </div>
       </div>
 

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="fr-BE">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — BWIX</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .admin{max-width:800px;margin:0 auto;padding:100px 24px 60px}
+    .admin h1{font-size:1.6rem;color:#fff;margin-bottom:32px}
+    .admin table{width:100%;border-collapse:collapse;font-size:.85rem}
+    .admin th{text-align:left;color:#5a7fa0;padding:8px 12px;border-bottom:1px solid #1e3a5f;font-weight:600}
+    .admin td{color:#8fa3bf;padding:8px 12px;border-bottom:1px solid rgba(30,58,95,.3)}
+    .admin td.code{color:#00c896;font-weight:700;font-family:monospace;font-size:.9rem}
+    .admin .used{color:#ff6b6b}
+    .admin .available{color:#00c896}
+    .admin-form{display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap;align-items:end}
+    .admin-form .fg{display:flex;flex-direction:column;gap:4px}
+    .admin-form label{font-size:.75rem;color:#5a7fa0;font-weight:600}
+    .admin-form input{padding:8px 12px;border:1px solid #1e3a5f;background:#0f2440;color:#fff;border-radius:6px;font-size:.85rem;font-family:inherit}
+    .admin-form input:focus{border-color:#00c896;outline:none}
+    .admin-msg{font-size:.85rem;margin-bottom:16px}
+    .admin-msg.ok{color:#00c896}
+    .admin-msg.err{color:#ff6b6b}
+    .denied{text-align:center;padding:120px 24px;color:#5a7fa0;font-size:1.1rem}
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="container header__inner">
+      <a href="/" class="logo">BWIX<span class="logo__dot">.</span></a>
+      <span style="color:#5a7fa0;font-size:.85rem">Admin</span>
+    </div>
+  </header>
+
+  <div id="denied" class="denied" hidden>Acc&egrave;s refus&eacute;.</div>
+
+  <main class="admin" id="admin" hidden>
+    <h1>Codes promo</h1>
+
+    <div class="admin-form">
+      <div class="fg">
+        <label>Code</label>
+        <input type="text" id="new-code" placeholder="BETA021" style="text-transform:uppercase">
+      </div>
+      <div class="fg">
+        <label>Max usages</label>
+        <input type="number" id="new-max" value="1" min="0" style="width:80px">
+      </div>
+      <div class="fg">
+        <label>Expiration (optionnel)</label>
+        <input type="date" id="new-expires">
+      </div>
+      <button class="btn btn--small" id="create-btn">Cr&eacute;er</button>
+    </div>
+    <p class="admin-msg" id="admin-msg" hidden></p>
+
+    <table>
+      <thead>
+        <tr><th>Code</th><th>Usages</th><th>Max</th><th>Expire</th><th>Cr&eacute;&eacute;</th></tr>
+      </thead>
+      <tbody id="codes-body"></tbody>
+    </table>
+  </main>
+
+  <script>
+  (function () {
+    var API = 'https://bwix-api.onrender.com';
+    var key = new URLSearchParams(window.location.search).get('key') || '';
+
+    if (!key) { document.getElementById('denied').hidden = false; return; }
+
+    // Load codes
+    fetch(API + '/api/admin/codes?key=' + encodeURIComponent(key))
+      .then(function (r) {
+        if (!r.ok) throw new Error();
+        return r.json();
+      })
+      .then(function (data) {
+        document.getElementById('admin').hidden = false;
+        renderCodes(data.codes || []);
+      })
+      .catch(function () {
+        document.getElementById('denied').hidden = false;
+      });
+
+    function renderCodes(codes) {
+      var tbody = document.getElementById('codes-body');
+      tbody.innerHTML = '';
+      codes.forEach(function (c) {
+        var used = c.used_count || 0;
+        var max = c.max_uses || 0;
+        var full = max > 0 && used >= max;
+        var exp = c.expires_at ? new Date(c.expires_at).toLocaleDateString('fr-BE') : '\u2014';
+        var created = c.created_at ? new Date(c.created_at).toLocaleDateString('fr-BE') : '\u2014';
+        var tr = document.createElement('tr');
+        tr.innerHTML = '<td class="code">' + c.code + '</td>'
+          + '<td class="' + (full ? 'used' : 'available') + '">' + used + '</td>'
+          + '<td>' + (max === 0 ? '\u221E' : max) + '</td>'
+          + '<td>' + exp + '</td>'
+          + '<td>' + created + '</td>';
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Create code
+    document.getElementById('create-btn').onclick = function () {
+      var code = document.getElementById('new-code').value.trim();
+      var max = parseInt(document.getElementById('new-max').value) || 1;
+      var expires = document.getElementById('new-expires').value || null;
+      var msg = document.getElementById('admin-msg');
+      if (!code) return;
+
+      fetch(API + '/api/admin/codes?key=' + encodeURIComponent(key), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: code, max_uses: max, expires_at: expires ? expires + 'T23:59:59Z' : null }),
+      })
+        .then(function (r) {
+          if (!r.ok) return r.json().then(function (d) { throw new Error(d.detail || 'Erreur'); });
+          return r.json();
+        })
+        .then(function () {
+          msg.hidden = false; msg.className = 'admin-msg ok'; msg.textContent = 'Code ' + code + ' cr\u00e9\u00e9.';
+          document.getElementById('new-code').value = '';
+          // Reload
+          return fetch(API + '/api/admin/codes?key=' + encodeURIComponent(key)).then(function(r){return r.json();});
+        })
+        .then(function (data) { if (data) renderCodes(data.codes || []); })
+        .catch(function (err) {
+          msg.hidden = false; msg.className = 'admin-msg err'; msg.textContent = err.message;
+        });
+    };
+  })();
+  </script>
+</body>
+</html>

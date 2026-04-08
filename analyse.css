@@ -89,6 +89,14 @@
 .paywall__features li{color:#8fa3bf;font-size:.95rem;padding:8px 0;border-bottom:1px solid rgba(30,58,95,.4)}
 .btn--large{padding:16px 40px;font-size:1.1rem}
 .paywall__note{color:#5a7fa0;font-size:.8rem;margin-top:12px}
+.paywall__code-link{margin-top:16px;font-size:.82rem}
+.paywall__code-link a{color:#5a7fa0;text-decoration:underline}
+.paywall__code-link a:hover{color:#00c896}
+.paywall__code{display:flex;gap:8px;justify-content:center;margin-top:12px}
+.paywall__code input{padding:8px 14px;border:1px solid #1e3a5f;background:#0f2440;color:#fff;border-radius:8px;font-size:.9rem;font-family:inherit;text-transform:uppercase;width:180px;text-align:center}
+.paywall__code input:focus{border-color:#00c896;outline:none}
+.paywall__code-msg{margin-top:8px;font-size:.85rem;color:#00c896}
+.paywall__code-msg.error{color:#ff6b6b}
 
 /* Full results */
 .detail-section{margin-bottom:40px}
