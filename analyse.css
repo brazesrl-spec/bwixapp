@@ -69,6 +69,16 @@
 .score-context--yellow{color:#ffb432}
 .score-context--green{color:#00c896}
 
+/* Score deductions */
+.score-deductions{margin-bottom:24px;padding:16px 20px;background:rgba(30,58,95,.2);border-radius:10px}
+.score-deductions__title{font-size:.82rem;color:#5a7fa0;font-weight:600;margin-bottom:8px}
+.score-deductions__list{list-style:none;padding:0;margin:0}
+.score-deductions__list li{font-size:.8rem;color:#8fa3bf;padding:3px 0;display:flex;justify-content:space-between}
+.score-deductions__list li span{color:#ff8c00;font-weight:600}
+
+/* Results sub */
+.results-sub{font-size:.85rem;color:#5a7fa0;margin-top:4px}
+
 /* Metric cards */
 .grid--4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}
 .grid--2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:16px}

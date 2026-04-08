@@ -149,9 +149,13 @@ var RATIOS_DATA = {
     title: "Valorisation EV/EBITDA \u2014 Valeur d'entreprise",
     slug: 'valorisation-ebitda',
     explain: "Valeur d'entreprise calcul\u00e9e en multipliant l'EBITDA par un multiple sectoriel. C'est la m\u00e9thode la plus utilis\u00e9e pour valoriser une PME.",
-    interpret: function (v) {
+    interpret: function (v, s, extra) {
       if (v == null || v <= 0) return 'Non applicable \u2014 EBITDA n\u00e9gatif ou nul. La valorisation par les multiples n\u00e9cessite un EBITDA positif.';
-      return "Valeur d'entreprise estim\u00e9e \u00e0 " + Math.round(v).toLocaleString('fr-BE') + "\u00a0\u20ac par la m\u00e9thode EV/EBITDA.";
+      var txt = "Valeur d'entreprise estim\u00e9e \u00e0 " + Math.round(v).toLocaleString('fr-BE') + "\u00a0\u20ac par la m\u00e9thode EV/EBITDA.";
+      if (extra && extra.ebitda_reference_label && extra.ebitda_reference) {
+        txt += "\nCalcul\u00e9 sur " + extra.ebitda_reference_label + " : " + Math.round(extra.ebitda_reference).toLocaleString('fr-BE') + "\u00a0\u20ac \u00d7 " + (extra.multiple_sectoriel || '?') + "x";
+      }
+      return txt;
     },
     formatOverride: function (v) {
       if (v != null && v <= 0) return 'N/A (EBITDA n\u00e9gatif)';

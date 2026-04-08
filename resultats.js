@@ -44,8 +44,17 @@
     results.hidden = false;
 
     if (data.is_consolidated) document.getElementById('consolidated-notice').hidden = false;
-    document.getElementById('result-year').textContent = data.annee ? '(' + data.annee + ')' : '';
+
+    // CORRECTION 4a: dynamic header
+    var sub = document.getElementById('results-sub');
+    var annees = data.annees_disponibles || [data.annee];
+    sub.textContent = 'Bas\u00e9e sur : ' + annees.filter(Boolean).join(', ');
+    if (annees.length < 3) {
+      sub.textContent += ' \u2014 \u26a1 3 \u00e0 5 exercices recommand\u00e9s pour une valorisation fiable';
+    }
+
     animateScore(data.score_sante || 50);
+    renderDeductions(data.score_deductions || []);
     renderMultiInfo(data);
 
     // Structure particulière
@@ -116,7 +125,7 @@
         + '<span class="ratio-card__value">' + formatted + '</span>'
         + (isLocked ? '<span class="ratio-card__hover">D\u00e9bloquer</span>' : '');
 
-      card.onclick = function () { openModal(key, val, isLocked, unlocked, secteur); };
+      card.onclick = function () { openModal(key, val, isLocked, unlocked, secteur, data); };
       grid.appendChild(card);
     });
 
@@ -146,7 +155,7 @@
   }
 
   // ── Modal ────────────────────────────────────────────────────────────────
-  function openModal(key, val, isLocked, unlocked, secteur) {
+  function openModal(key, val, isLocked, unlocked, secteur, fullData) {
     var def = RATIOS_DATA[key];
     if (!def) return;
     var modal = document.getElementById('ratio-modal');
@@ -168,10 +177,11 @@
     document.getElementById('modal-explain').textContent = def.explain;
 
     var interp = document.getElementById('modal-interpret');
+    var extra = fullData ? (fullData.valorisation || {}) : {};
     if (isLocked) {
       interp.textContent = 'D\u00e9bloquez l\u2019analyse pour voir la valeur et l\u2019interpr\u00e9tation contextualis\u00e9e.';
     } else if (def.interpret) {
-      interp.textContent = def.interpret(val, secteur);
+      interp.textContent = def.interpret(val, secteur, extra);
     } else {
       interp.textContent = '';
     }
@@ -195,6 +205,19 @@
   document.getElementById('ratio-modal').onclick = function (e) {
     if (e.target === this) this.hidden = true;
   };
+
+  // ── Score deductions ──────────────────────────────────────────────────────
+  function renderDeductions(deductions) {
+    var el = document.getElementById('score-deductions');
+    if (!el || !deductions || deductions.length === 0) return;
+    el.hidden = false;
+    var html = '<p class="score-deductions__title">Pourquoi ce score ?</p><ul class="score-deductions__list">';
+    deductions.forEach(function (d) {
+      html += '<li>' + d.motif + ' <span>' + d.points + ' pts</span></li>';
+    });
+    html += '</ul>';
+    el.innerHTML = html;
+  }
 
   // ── Multi-exercise info ──────────────────────────────────────────────────
   function renderMultiInfo(data) {
