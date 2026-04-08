@@ -52,12 +52,26 @@
     var sp = document.getElementById('structure-notice');
     if (sp && data.is_structure_particuliere) sp.hidden = false;
 
-    // Valuation
+    // Valuation — handle negative EBITDA
     var vf = data.valorisation_floue || {};
     var vr = (data.full || {}).valorisation_resume || vf;
+    var ebitda = (data.freemium || {}).ebitda || (data.ebitda_n) || 0;
+    var valCard = document.querySelector('.valuation-card');
     var valLow = document.getElementById('val-low');
     var valHigh = document.getElementById('val-high');
-    if (unlocked) {
+
+    if (ebitda < 0) {
+      // Negative EBITDA — show asset-based valuation only
+      var cp = unlocked ? (vr.capitaux_propres_comptables || 0) : null;
+      valCard.innerHTML = '<h3>Valorisation de l\u2019entreprise</h3>'
+        + '<div class="disclaimer-box disclaimer-box--warning" style="margin:16px 0;text-align:left">'
+        + '<strong>\u26a0\ufe0f Soci\u00e9t\u00e9 en difficult\u00e9 financi\u00e8re</strong>'
+        + '<p>Valorisation par les b\u00e9n\u00e9fices non applicable (EBITDA n\u00e9gatif). '
+        + 'Valorisation bas\u00e9e sur les actifs nets uniquement.</p></div>'
+        + '<div class="valuation-range"><span class="valuation-label">Valeur plancher estim\u00e9e : capitaux propres</span>'
+        + '<span class="valuation-amount' + (unlocked ? '' : ' blurred') + '">' + (cp != null ? fmtEurRaw(cp) : '---') + '</span>'
+        + '<span class="valuation-currency">\u20ac</span></div>';
+    } else if (unlocked) {
       valLow.textContent = fmtEurRaw(vr.fourchette_equity_low);
       valHigh.textContent = fmtEurRaw(vr.fourchette_equity_high);
     } else {
@@ -87,8 +101,11 @@
       card.setAttribute('data-ratio', key);
 
       var formatted;
-      if (isLocked) {
-        // Show a plausible blurred value
+      // Check for special display override (negative gearing, N/A DCF, etc.)
+      var override = def.formatOverride ? def.formatOverride(val) : null;
+      if (override && !isLocked) {
+        formatted = override;
+      } else if (isLocked) {
         formatted = def.unit === 'eur' ? '---' : def.unit === 'pct' ? '--%' : '--';
         if (val != null) formatted = formatVal(val, def.unit);
       } else {
@@ -136,9 +153,13 @@
     document.getElementById('modal-title').textContent = def.title;
 
     var valEl = document.getElementById('modal-value');
+    var modalOverride = def.formatOverride ? def.formatOverride(val) : null;
     if (isLocked) {
       valEl.textContent = '\uD83D\uDD12 Valeur masqu\u00e9e';
       valEl.className = 'modal__value locked';
+    } else if (modalOverride) {
+      valEl.textContent = modalOverride;
+      valEl.className = 'modal__value';
     } else {
       valEl.textContent = val != null ? formatVal(val, def.unit) : 'N/A';
       valEl.className = 'modal__value';
@@ -286,8 +307,25 @@
     if (!arc || !val) return;
     arc.style.transition = 'stroke-dashoffset 1.5s ease-out';
     arc.style.strokeDashoffset = 327 - (target / 100) * 327;
-    arc.style.stroke = target >= 70 ? '#00c896' : target >= 40 ? '#ffb432' : '#ff6b6b';
+    var color = target >= 70 ? '#00c896' : target >= 50 ? '#ffb432' : target >= 30 ? '#ff8c00' : '#ff6b6b';
+    arc.style.stroke = color;
     var cur = 0, step = Math.ceil(target / 30);
     var iv = setInterval(function () { cur += step; if (cur >= target) { cur = target; clearInterval(iv); } val.textContent = cur; }, 40);
+    // Score context label
+    var label = document.getElementById('score-context');
+    if (!label) {
+      label = document.createElement('span');
+      label.id = 'score-context';
+      label.className = 'score-context';
+      var scoreLabel = document.querySelector('.score-label');
+      if (scoreLabel) scoreLabel.parentNode.insertBefore(label, scoreLabel.nextSibling);
+    }
+    var text, cls;
+    if (target < 30) { text = 'Situation financi\u00e8re critique'; cls = 'score-context--red'; }
+    else if (target < 50) { text = 'Situation financi\u00e8re fragile'; cls = 'score-context--orange'; }
+    else if (target < 70) { text = 'Situation financi\u00e8re correcte'; cls = 'score-context--yellow'; }
+    else { text = 'Bonne sant\u00e9 financi\u00e8re'; cls = 'score-context--green'; }
+    label.textContent = text;
+    label.className = 'score-context ' + cls;
   }
 })();

@@ -63,6 +63,11 @@
 .score-value{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:800;color:#fff}
 .score-value small{font-size:.9rem;color:#5a7fa0;font-weight:400;margin-left:2px}
 .score-label{color:#8fa3bf;font-size:.85rem;margin-top:4px;display:block}
+.score-context{display:block;font-size:.78rem;font-weight:600;margin-top:4px}
+.score-context--red{color:#ff6b6b}
+.score-context--orange{color:#ff8c00}
+.score-context--yellow{color:#ffb432}
+.score-context--green{color:#00c896}
 
 /* Metric cards */
 .grid--4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}

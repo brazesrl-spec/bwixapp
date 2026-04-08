@@ -70,11 +70,16 @@ var RATIOS_DATA = {
     benchmarks: { 'Construction / BTP': [0.3,1.5], 'Tech / SaaS': [0.0,0.8], 'Services': [0.2,1.2], 'Commerce': [0.5,2.0], 'Industrie': [0.3,1.5] },
     interpret: function (v, s) {
       if (v == null) return '';
+      if (v < 0) return "Tr\u00e9sorerie nette positive (cash > dettes financi\u00e8res) \u2014 situation excellente.";
       var b = this.benchmarks[s];
       if (!b) return "Gearing de " + v.toFixed(2) + ".";
       if (v <= b[0]) return "Gearing de " + v.toFixed(2) + " \u2014 tr\u00e8s peu endett\u00e9 pour " + s + " (benchmark : " + b[0] + "-" + b[1] + ").";
       if (v <= b[1]) return "Gearing de " + v.toFixed(2) + " \u2014 dans la norme " + s + " (benchmark : " + b[0] + "-" + b[1] + ").";
       return "Gearing de " + v.toFixed(2) + " \u2014 endettement \u00e9lev\u00e9 pour " + s + " (" + b[0] + "-" + b[1] + "). Risque de d\u00e9pendance.";
+    },
+    formatOverride: function (v) {
+      if (v != null && v < 0) return 'Tr\u00e9sorerie nette \u2705';
+      return null;
     },
     path: function (r) { return r.structure ? r.structure.gearing : null; }
   },
@@ -114,11 +119,15 @@ var RATIOS_DATA = {
     slug: 'bfr',
     explain: "Nombre de jours de chiffre d'affaires immobilis\u00e9s dans le cycle d'exploitation (stocks + cr\u00e9ances - dettes fournisseurs). Moins c'est \u00e9lev\u00e9, mieux c'est pour la tr\u00e9sorerie.",
     interpret: function (v) {
-      if (v == null) return '';
+      if (v == null) return 'Non calculable \u2014 chiffre d\u2019affaires non disponible (sch\u00e9ma abr\u00e9g\u00e9 BNB).';
       var d = Math.round(v);
       if (d < 30) return d + " jours \u2014 BFR l\u00e9ger, bonne gestion du cycle d'exploitation.";
       if (d < 90) return d + " jours \u2014 BFR mod\u00e9r\u00e9, dans la norme pour la plupart des secteurs.";
       return d + " jours \u2014 BFR \u00e9lev\u00e9, capital immobilis\u00e9 important. Optimiser les d\u00e9lais de paiement.";
+    },
+    formatOverride: function (v) {
+      if (v == null) return 'N/A (sch\u00e9ma abr\u00e9g\u00e9)';
+      return null;
     },
     path: function (r) { return r.liquidite ? r.liquidite.bfr_jours_ca : null; }
   },
@@ -141,8 +150,12 @@ var RATIOS_DATA = {
     slug: 'valorisation-ebitda',
     explain: "Valeur d'entreprise calcul\u00e9e en multipliant l'EBITDA par un multiple sectoriel. C'est la m\u00e9thode la plus utilis\u00e9e pour valoriser une PME.",
     interpret: function (v) {
-      if (v == null) return '';
+      if (v == null || v <= 0) return 'Non applicable \u2014 EBITDA n\u00e9gatif ou nul. La valorisation par les multiples n\u00e9cessite un EBITDA positif.';
       return "Valeur d'entreprise estim\u00e9e \u00e0 " + Math.round(v).toLocaleString('fr-BE') + "\u00a0\u20ac par la m\u00e9thode EV/EBITDA.";
+    },
+    formatOverride: function (v) {
+      if (v != null && v <= 0) return 'N/A (EBITDA n\u00e9gatif)';
+      return null;
     },
     path: function (r) { return r.valorisation_resume ? r.valorisation_resume.ev_ebitda : null; }
   },
@@ -152,8 +165,12 @@ var RATIOS_DATA = {
     slug: 'valorisation-dcf',
     explain: "Valorisation bas\u00e9e sur la projection des flux de tr\u00e9sorerie futurs, actualis\u00e9s au co\u00fbt du capital. M\u00e9thode privil\u00e9gi\u00e9e pour les entreprises en croissance.",
     interpret: function (v) {
-      if (v == null) return 'Non disponible (n\u00e9cessite minimum 2 exercices avec EBITDA positif).';
+      if (v == null) return 'Non calculable \u2014 n\u00e9cessite minimum 2 exercices avec EBITDA positif, ou cashflows n\u00e9gatifs sur les exercices disponibles.';
       return "Valeur des fonds propres estim\u00e9e \u00e0 " + Math.round(v).toLocaleString('fr-BE') + "\u00a0\u20ac par DCF.";
+    },
+    formatOverride: function (v) {
+      if (v == null) return 'Non calculable';
+      return null;
     },
     path: function (r) { return r.valorisation_resume ? r.valorisation_resume.dcf_equity : null; }
   },
