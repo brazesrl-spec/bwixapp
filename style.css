@@ -72,6 +72,9 @@ a:hover{text-decoration:underline}
 /* ===== CARDS ===== */
 .card{background:#162d4a;border:1px solid rgba(30,58,95,.6);border-radius:14px;padding:32px 24px;text-align:center;transition:transform .2s,border-color .2s}
 .card:hover{transform:translateY(-4px);border-color:#00c896}
+.card--link{text-decoration:none;display:block}
+.card--link:hover{text-decoration:none}
+.card--link h3{color:#00c896}
 .card__icon{font-size:2.4rem;display:block;margin-bottom:14px}
 .card h3{font-size:1.05rem;font-weight:600;color:#fff;margin-bottom:8px}
 .card p{font-size:.9rem;color:#8fa3bf;line-height:1.5}
@@ -113,13 +116,20 @@ a:hover{text-decoration:underline}
 .disclaimer-box-sm--warning strong{color:#ffb432}
 
 /* ===== FOOTER ===== */
-.footer{border-top:1px solid #1e3a5f;padding:32px 0;font-size:.85rem;color:#5a7fa0}
+.footer{border-top:1px solid #1e3a5f;padding:40px 0 32px;font-size:.85rem;color:#5a7fa0}
 .footer__inner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.footer__grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:40px}
+.footer__col{display:flex;flex-direction:column;gap:6px}
+.footer__col a{color:#8fa3bf;text-decoration:none;transition:color .2s}
+.footer__col a:hover{color:#fff}
+.footer__col a:visited{color:#8fa3bf}
+.footer__brand{font-size:1.3rem;font-weight:800;color:#fff;margin-bottom:4px}
+.footer__heading{color:#fff;font-weight:600;font-size:.8rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
 .footer__links{display:flex;gap:20px}
 .footer__links a{color:#8fa3bf;text-decoration:none;transition:color .2s}
 .footer__links a:hover{color:#fff;text-decoration:none}
 .footer__links a:visited{color:#8fa3bf}
-.footer__love{color:#5a7fa0}
+.footer__love{color:#5a7fa0;margin-top:8px}
 
 /* ===== RESPONSIVE ===== */
 @media(max-width:900px){
@@ -139,4 +149,5 @@ a:hover{text-decoration:underline}
   .hero__title{font-size:1.8rem}
   .grid--5{grid-template-columns:1fr 1fr}
   .footer__inner{flex-direction:column;text-align:center}
+  .footer__grid{grid-template-columns:1fr;text-align:center;gap:24px}
 }
