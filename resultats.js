@@ -45,6 +45,30 @@
     if (pctEl) pctEl.textContent = pct + '%';
   }
 
+  // ── Shared: render multi-exercise info ──
+  function renderMultiInfo(data) {
+    var nb = data.nb_exercices || 1;
+    var info = document.getElementById('multi-info');
+    if (info && nb >= 2) {
+      info.hidden = false;
+      info.innerHTML = '\uD83D\uDCCA Analyse bas\u00e9e sur ' + nb + ' exercices (' + data.annee + ' + ' + data.annee_precedente + ' inclus dans ce bilan)<br>\u26A1 3 \u00e0 5 exercices recommand\u00e9s pour une valorisation fiable';
+    }
+    // EBITDA breakdown
+    var bd = document.getElementById('ebitda-breakdown');
+    if (bd && data.ebitda_n != null) {
+      bd.hidden = false;
+      var parts = ['EBITDA ' + data.annee + ' : <strong>' + fmtEur(data.ebitda_n) + '</strong>'];
+      if (data.ebitda_n1 != null) parts.push('EBITDA ' + data.annee_precedente + ' : <strong>' + fmtEur(data.ebitda_n1) + '</strong>');
+      if (data.ebitda_moyenne != null && nb >= 2) parts.push('Moyenne : <strong>' + fmtEur(data.ebitda_moyenne) + '</strong> \u2190 utilis\u00e9e pour la valorisation');
+      bd.innerHTML = parts.join(' &nbsp;|&nbsp; ');
+    }
+    // EBITDA variation warning
+    var warn = document.getElementById('ebitda-warning');
+    if (warn && data.ebitda_variation != null && data.ebitda_variation > 0.30) {
+      warn.hidden = false;
+    }
+  }
+
   // ── Preview (freemium) ──
   function renderPreview(data) {
     var results = document.getElementById('results-section');
@@ -53,6 +77,7 @@
     if (data.is_consolidated) document.getElementById('consolidated-notice').hidden = false;
     document.getElementById('result-year').textContent = data.annee ? '(' + data.annee + ')' : '';
     animateScore(data.score_sante || 50);
+    renderMultiInfo(data);
 
     var f = data.freemium || {};
     document.getElementById('m-ebitda').textContent = fmtEur(f.ebitda);
@@ -68,6 +93,10 @@
     if (vf.fourchette_high != null) valHigh.textContent = fmtEurRaw(vf.fourchette_high);
     valLow.classList.add('blurred');
     valHigh.classList.add('blurred');
+
+    // Show locked add-exercise button
+    var addLocked = document.getElementById('add-exercise-locked');
+    if (addLocked) addLocked.hidden = false;
 
     document.getElementById('paywall').hidden = false;
     document.getElementById('full-results').hidden = true;
@@ -97,6 +126,11 @@
     if (data.is_consolidated) document.getElementById('consolidated-notice').hidden = false;
     document.getElementById('result-year').textContent = data.annee ? '(' + data.annee + ')' : '';
     animateScore(data.score_sante || 50);
+    renderMultiInfo(data);
+
+    // Hide locked button
+    var addLocked = document.getElementById('add-exercise-locked');
+    if (addLocked) addLocked.hidden = true;
 
     var f = data.freemium || {};
     document.getElementById('m-ebitda').textContent = fmtEur(f.ebitda);
