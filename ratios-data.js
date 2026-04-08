@@ -10,7 +10,8 @@ var RATIOS_DATA = {
       if (v < 0) return "Un EBITDA n\u00e9gatif signifie que l'activit\u00e9 op\u00e9rationnelle ne g\u00e9n\u00e8re pas de cash \u2014 situation \u00e0 corriger rapidement.";
       return "L'activit\u00e9 g\u00e9n\u00e8re " + Math.round(v).toLocaleString('fr-BE') + "\u00a0\u20ac de cash op\u00e9rationnel avant amortissements.";
     },
-    path: function (r) { return r.rentabilite ? r.rentabilite.ebitda : null; }
+    path: function (r) { return r.rentabilite ? r.rentabilite.ebitda : null; },
+    path_n1: function (r, data) { return data.ebitda_n1; }
   },
   roe: {
     key: 'roe', label: 'ROE', unit: 'pct', free: false,
@@ -90,9 +91,14 @@ var RATIOS_DATA = {
     explain: "Nombre d'ann\u00e9es n\u00e9cessaires pour rembourser la dette nette avec l'EBITDA. En dessous de 3 = sain. Au-dessus de 5 = risqu\u00e9.",
     interpret: function (v) {
       if (v == null) return '';
+      if (v < 0) return "Tr\u00e9sorerie nette positive \u2014 l'entreprise n'a pas de dette nette \u00e0 rembourser.";
       if (v < 2) return v.toFixed(1) + " ann\u00e9es \u2014 excellent, dette facilement remboursable.";
       if (v < 4) return v.toFixed(1) + " ann\u00e9es \u2014 raisonnable, dans la norme.";
       return v.toFixed(1) + " ann\u00e9es \u2014 endettement lourd, capacit\u00e9 de remboursement tendue.";
+    },
+    formatOverride: function (v) {
+      if (v != null && v < 0) return 'Tr\u00e9sorerie nette \u2705';
+      return null;
     },
     path: function (r) { return r.structure ? r.structure.dettes_ebitda : null; }
   },

@@ -121,8 +121,20 @@
         formatted = val != null ? formatVal(val, def.unit) : 'N/A';
       }
 
+      // N-1 secondary value (for unlocked multi-year ratios)
+      var n1Html = '';
+      if (unlocked && data.annee_precedente && !isLocked && def.path_n1) {
+        var valN1 = def.path_n1(ratios, data);
+        if (valN1 != null) {
+          var fmtN1 = def.formatOverride ? def.formatOverride(valN1) : null;
+          n1Html = '<span class="ratio-card__n1">' + data.annee_precedente + ' : ' + (fmtN1 || formatVal(valN1, def.unit)) + '</span>';
+        }
+      }
+      var yearLabel = data.annee ? '<span class="ratio-card__year">' + data.annee + '</span>' : '';
+
       card.innerHTML = '<span class="ratio-card__label">' + def.label + '</span>'
         + '<span class="ratio-card__value">' + formatted + '</span>'
+        + yearLabel + n1Html
         + (isLocked ? '<span class="ratio-card__hover">D\u00e9bloquer</span>' : '');
 
       card.onclick = function () { openModal(key, val, isLocked, unlocked, secteur, data); };
