@@ -6,6 +6,8 @@
   },
   "cleanUrls": true,
   "rewrites": [
+    { "source": "/ratio/:slug", "destination": "/ratio/:slug--:secteur.html", "has": [{ "type": "query", "key": "secteur", "value": "(?<secteur>.+)" }] },
+    { "source": "/ratio/:slug", "destination": "/ratio/:slug--construction-btp.html" },
     { "source": "/api/waitlist/count", "destination": "/api/waitlist/count" },
     { "source": "/api/waitlist", "destination": "/api/waitlist" }
   ]
