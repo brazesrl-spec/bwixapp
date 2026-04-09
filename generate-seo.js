@@ -182,9 +182,40 @@ var CSS = '<style>\n'
   + '.secteur-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-top:12px}\n'
   + '.secteur-cards a{display:block;background:#162d4a;border:1px solid rgba(30,58,95,.6);border-radius:8px;padding:12px;text-align:center;color:#8fa3bf;text-decoration:none;font-size:.85rem;transition:border-color .2s}\n'
   + '.secteur-cards a:hover{border-color:#00c896;color:#fff}\n'
+  + '.ratio-cta{background:#1a2535;padding:60px 20px;text-align:center;border-top:1px solid rgba(255,255,255,.05)}\n'
+  + '.ratio-cta-inner{max-width:640px;margin:0 auto}\n'
+  + '.ratio-cta h2{font-size:1.6rem;font-weight:700;color:#fff;max-width:600px;margin:0 auto 16px;line-height:1.3}\n'
+  + '.ratio-cta p{font-size:1rem;color:rgba(255,255,255,.6);max-width:500px;margin:0 auto}\n'
+  + '.ratio-cta-btn{display:inline-block;background:#00c896;color:#0f1923;padding:16px 36px;border-radius:8px;font-weight:700;font-size:1.05rem;text-decoration:none;margin-top:24px;transition:transform .2s}\n'
+  + '.ratio-cta-btn:hover{transform:translateY(-2px);text-decoration:none}\n'
+  + '.ratio-cta-sub{display:block;margin-top:12px;font-size:.75rem;color:rgba(255,255,255,.35)}\n'
   + '</style>\n';
 
-var HEADER = '<header class="header"><div class="container header__inner"><a href="/" class="logo">BWIX<span class="logo__dot">.</span></a><a href="/" class="btn btn--small">Analyser</a></div></header>\n';
+var HEADER = '<header class="header"><div class="container header__inner"><a href="/" class="logo">BWIX<span class="logo__dot">.</span></a><a href="https://bwix.app/#analyse" class="btn btn--small">Lancer une analyse</a></div></header>\n';
+
+// CTA verb per ratio for dynamic button text
+var CTA_VERBS = {
+  'ebitda': "Calculer l'EBITDA",
+  'roe': "Calculer le ROE",
+  'roa': "Calculer le ROA",
+  'gearing': "Analyser l'endettement",
+  'solvabilite': "Analyser la solvabilit\u00e9",
+  'liquidite-generale': "Analyser la liquidit\u00e9",
+  'bfr': "Calculer le BFR",
+  'dette-ebitda': "Analyser la dette/EBITDA",
+  'marge-nette': "Calculer la marge nette",
+  'couverture-interets': "Analyser la couverture int\u00e9r\u00eats",
+  'valorisation-ebitda': "Obtenir la valorisation",
+  'valorisation-dcf': "Obtenir la valorisation DCF",
+};
+
+var SECTEUR_SHORT = {
+  'construction-btp': 'BTP',
+  'tech-saas': 'tech',
+  'services': 'services',
+  'commerce': 'commerce',
+  'industrie': 'industrie',
+};
 
 var FOOTER = '<footer class="footer"><div class="container footer__grid">'
   + '<div class="footer__col"><p class="footer__brand">BWIX<span style="color:#00c896">.</span></p><p>\u00a9 2026 Braze SRL</p></div>'
@@ -281,12 +312,17 @@ function buildPage(r, s, isGeneric) {
     + voirAussi + '\n'
     + otherRatios + '\n'
     + prevnext + '\n'
-    + '<div class="seo-cta">\n'
-    + '<h2>Calculez le ' + r.label.split(' (')[0] + ' de n\'importe quelle soci\u00e9t\u00e9 belge</h2>\n'
-    + '<p>Importez un bilan BNB et obtenez tous les ratios financiers + valorisation en 2 minutes.</p>\n'
-    + '<a href="/" class="btn btn--large">Analyser une entreprise \u2192</a>\n'
-    + '</div>\n'
     + '</main>\n'
+    + '<section class="ratio-cta"><div class="ratio-cta-inner">\n'
+    + '<h2>Obtenez la valorisation et la sant\u00e9 financi\u00e8re de n\u2019importe quelle soci\u00e9t\u00e9 belge</h2>\n'
+    + '<p>Uploadez un bilan BNB officiel \u2014 ratios cl\u00e9s, score de sant\u00e9, valorisation 3 m\u00e9thodes et diagnostic financier complet en moins de 2 minutes.</p>\n'
+    + '<a href="https://bwix.app/#analyse" class="ratio-cta-btn">' + (function(){
+      var verb = CTA_VERBS[r.slug] || ('Analyser le ' + r.label.split(' (')[0]);
+      if (isGeneric) return verb + ' de ma soci\u00e9t\u00e9 belge \u2192';
+      return verb + ' de ma soci\u00e9t\u00e9 ' + (SECTEUR_SHORT[s.slug] || s.label) + ' \u2192';
+    })() + '</a>\n'
+    + '<span class="ratio-cta-sub">PDF BNB uniquement \u00b7 consult.cbso.nbb.be</span>\n'
+    + '</div></section>\n'
     + FOOTER
     + '</body></html>';
 }

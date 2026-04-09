@@ -36,9 +36,16 @@
 .secteur-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-top:12px}
 .secteur-cards a{display:block;background:#162d4a;border:1px solid rgba(30,58,95,.6);border-radius:8px;padding:12px;text-align:center;color:#8fa3bf;text-decoration:none;font-size:.85rem;transition:border-color .2s}
 .secteur-cards a:hover{border-color:#00c896;color:#fff}
+.ratio-cta{background:#1a2535;padding:60px 20px;text-align:center;border-top:1px solid rgba(255,255,255,.05)}
+.ratio-cta-inner{max-width:640px;margin:0 auto}
+.ratio-cta h2{font-size:1.6rem;font-weight:700;color:#fff;max-width:600px;margin:0 auto 16px;line-height:1.3}
+.ratio-cta p{font-size:1rem;color:rgba(255,255,255,.6);max-width:500px;margin:0 auto}
+.ratio-cta-btn{display:inline-block;background:#00c896;color:#0f1923;padding:16px 36px;border-radius:8px;font-weight:700;font-size:1.05rem;text-decoration:none;margin-top:24px;transition:transform .2s}
+.ratio-cta-btn:hover{transform:translateY(-2px);text-decoration:none}
+.ratio-cta-sub{display:block;margin-top:12px;font-size:.75rem;color:rgba(255,255,255,.35)}
 </style>
 </head><body>
-<header class="header"><div class="container header__inner"><a href="/" class="logo">BWIX<span class="logo__dot">.</span></a><a href="/" class="btn btn--small">Analyser</a></div></header>
+<header class="header"><div class="container header__inner"><a href="/" class="logo">BWIX<span class="logo__dot">.</span></a><a href="https://bwix.app/#analyse" class="btn btn--small">Lancer une analyse</a></div></header>
 <main class="seo">
 <nav class="breadcrumb"><a href="/">bwix.app</a> <span>›</span> <a href="/ratio/ebitda">Ratios</a> <span>›</span> <a href="/ratio/valorisation-dcf">Valorisation DCF</a></nav>
 <h1>DCF — Discounted Cash Flow (Flux de trésorerie actualisés) — Guide pour les PME belges</h1>
@@ -59,11 +66,12 @@ FCF = EBITDA - Impôts - Capex</div>
 
 <h2>Autres ratios financiers</h2><div class="other-ratios"><a href="/ratio/ebitda">EBITDA<span>undefined</span></a><a href="/ratio/roe">ROE<span>Return on Equity (Rentabilité des capitaux propres)</span></a><a href="/ratio/roa">ROA<span>Return on Assets (Rentabilité des actifs)</span></a><a href="/ratio/gearing">Gearing<span>Ratio d'endettement net</span></a><a href="/ratio/solvabilite">Solvabilité<span>Autonomie financière</span></a></div>
 <div class="prevnext"><a href="/ratio/valorisation-ebitda">← Valorisation EV/EBITDA</a><span></span></div>
-<div class="seo-cta">
-<h2>Calculez le Valorisation DCF de n'importe quelle société belge</h2>
-<p>Importez un bilan BNB et obtenez tous les ratios financiers + valorisation en 2 minutes.</p>
-<a href="/" class="btn btn--large">Analyser une entreprise →</a>
-</div>
 </main>
+<section class="ratio-cta"><div class="ratio-cta-inner">
+<h2>Obtenez la valorisation et la santé financière de n’importe quelle société belge</h2>
+<p>Uploadez un bilan BNB officiel — ratios clés, score de santé, valorisation 3 méthodes et diagnostic financier complet en moins de 2 minutes.</p>
+<a href="https://bwix.app/#analyse" class="ratio-cta-btn">Obtenir la valorisation DCF de ma société belge →</a>
+<span class="ratio-cta-sub">PDF BNB uniquement · consult.cbso.nbb.be</span>
+</div></section>
 <footer class="footer"><div class="container footer__grid"><div class="footer__col"><p class="footer__brand">BWIX<span style="color:#00c896">.</span></p><p>© 2026 Braze SRL</p></div><div class="footer__col"><p class="footer__heading">Légal</p><a href="/mentions-legales">Mentions légales</a><a href="/confidentialite">Confidentialité</a><a href="/conditions-utilisation">CGU</a></div><div class="footer__col"><p class="footer__heading">Ratios</p><a href="/ratio/ebitda">EBITDA</a><a href="/ratio/roe">ROE</a><a href="/ratio/roa">ROA</a><a href="/ratio/gearing">Gearing</a><a href="/ratio/solvabilite">Solvabilité</a><a href="/ratio/liquidite-generale">Liquidité générale</a><a href="/ratio/bfr">BFR en jours de CA</a><a href="/ratio/dette-ebitda">Dette nette / EBITDA</a><a href="/ratio/marge-nette">Marge nette</a><a href="/ratio/couverture-interets">Couverture des intérêts</a><a href="/ratio/valorisation-ebitda">Valorisation EV/EBITDA</a><a href="/ratio/valorisation-dcf">Valorisation DCF</a></div></div></footer>
 </body></html>
