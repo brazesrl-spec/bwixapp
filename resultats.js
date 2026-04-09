@@ -160,22 +160,34 @@
     grid.innerHTML = '';
     var lockedCount = 0;
 
+    // Map ratio keys to badge keys
+    var BADGE_MAP = {
+      'roe': 'roe', 'liquidite_generale': 'liquidite', 'solvabilite': 'solvabilite',
+      'gearing': 'gearing', 'dettes_ebitda': 'dette_ebitda', 'couverture_interets': 'couverture'
+    };
+    var BADGE_COLORS = { 'vert': '#00c896', 'jaune': '#f59e0b', 'rouge': '#ef4444', 'gris': '#5a7fa0' };
+    var allBadges = ratios.badges || {};
+
     RATIOS_ORDER.forEach(function (key) {
       var def = RATIOS_DATA[key];
       if (!def) return;
       var val = unlocked ? def.path(ratios) : (def.free ? def.path(data.freemium || {}) : def.path(ratios));
-      // For freemium, extract from freemium object differently
       if (!unlocked && def.free && key === 'ebitda') val = (data.freemium || {}).ebitda;
       var isFree = def.free;
       var isLocked = !unlocked && !isFree;
       if (isLocked) lockedCount++;
 
+      // Get badge for this ratio
+      var badgeKey = BADGE_MAP[key];
+      var badge = badgeKey ? allBadges[badgeKey] : null;
+      var badgeColor = badge ? (BADGE_COLORS[badge.badge] || '') : '';
+
       var card = document.createElement('div');
       card.className = 'ratio-card' + (isLocked ? ' ratio-card--locked' : '');
       card.setAttribute('data-ratio', key);
+      if (badgeColor && !isLocked) card.style.borderTop = '3px solid ' + badgeColor;
 
       var formatted;
-      // Check for special display override (negative gearing, N/A DCF, etc.)
       var override = def.formatOverride ? def.formatOverride(val) : null;
       if (override && !isLocked) {
         formatted = override;
@@ -186,7 +198,7 @@
         formatted = val != null ? formatVal(val, def.unit) : 'N/A';
       }
 
-      // N-1 secondary value (for unlocked multi-year ratios)
+      // N-1 secondary value
       var n1Html = '';
       if (unlocked && data.annee_precedente && !isLocked && def.path_n1) {
         var valN1 = def.path_n1(ratios, data);
@@ -197,10 +209,16 @@
       }
       var yearLabel = data.annee ? '<span class="ratio-card__year">' + data.annee + '</span>' : '';
 
+      // Badge pill HTML
+      var badgeHtml = '';
+      if (badge && !isLocked) {
+        badgeHtml = '<span class="ratio-card__badge" style="background:' + badgeColor + '15;color:' + badgeColor + '">' + badge.label + '</span>';
+      }
+
       card.innerHTML = '<span class="ratio-card__info">\u24d8</span>'
         + '<span class="ratio-card__label">' + def.label + '</span>'
         + '<span class="ratio-card__value">' + formatted + '</span>'
-        + yearLabel + n1Html
+        + yearLabel + n1Html + badgeHtml
         + (isLocked ? '<span class="ratio-card__hover">D\u00e9bloquer</span>' : '');
 
       card.onclick = function () { openModal(key, val, isLocked, unlocked, secteur, data); };
@@ -272,6 +290,25 @@
     }
 
     document.getElementById('modal-explain').textContent = def.explain;
+
+    // Benchmark from backend badges
+    var benchEl = document.getElementById('modal-benchmark');
+    if (!benchEl) {
+      benchEl = document.createElement('p');
+      benchEl.id = 'modal-benchmark';
+      benchEl.className = 'modal__benchmark';
+      document.getElementById('modal-value').parentNode.insertBefore(benchEl, document.getElementById('modal-explain'));
+    }
+    var badgeKey2 = {roe:'roe',liquidite_generale:'liquidite',solvabilite:'solvabilite',gearing:'gearing',dettes_ebitda:'dette_ebitda',couverture_interets:'couverture'}[key];
+    var fullRatios = fullData ? ((fullData.full || {}).ratios || {}) : {};
+    var allB = fullRatios.badges || {};
+    var b2 = badgeKey2 ? allB[badgeKey2] : null;
+    if (b2 && b2.benchmark && !isLocked) {
+      benchEl.textContent = b2.benchmark;
+      benchEl.hidden = false;
+    } else {
+      benchEl.hidden = true;
+    }
 
     var interp = document.getElementById('modal-interpret');
     var extra = fullData ? (fullData.valorisation || {}) : {};
