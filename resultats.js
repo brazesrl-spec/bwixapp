@@ -197,7 +197,8 @@
       }
       var yearLabel = data.annee ? '<span class="ratio-card__year">' + data.annee + '</span>' : '';
 
-      card.innerHTML = '<span class="ratio-card__label">' + def.label + '</span>'
+      card.innerHTML = '<span class="ratio-card__info">\u24d8</span>'
+        + '<span class="ratio-card__label">' + def.label + '</span>'
         + '<span class="ratio-card__value">' + formatted + '</span>'
         + yearLabel + n1Html
         + (isLocked ? '<span class="ratio-card__hover">D\u00e9bloquer</span>' : '');
@@ -213,6 +214,22 @@
       fomo.innerHTML = '\uD83D\uDD12 <strong>' + lockedCount + ' indicateurs masqu\u00e9s</strong> \u2014 d\u00e9bloquez l\u2019analyse compl\u00e8te pour 19,99\u00a0\u20ac';
     }
 
+    // Onboarding tooltip (once)
+    if (!localStorage.getItem('bwix_ratio_tip')) {
+      var tip = document.createElement('div');
+      tip.className = 'ratio-onboarding';
+      tip.id = 'ratio-tip';
+      tip.innerHTML = '\u24d8 Cliquez sur un ratio pour l\u2019explication d\u00e9taill\u00e9e et les benchmarks sectoriels';
+      grid.parentNode.insertBefore(tip, grid.nextSibling);
+      setTimeout(function(){ var t = document.getElementById('ratio-tip'); if(t) t.style.opacity='0'; setTimeout(function(){if(t)t.remove();},300); }, 5000);
+      // Dismiss on first card click
+      grid.addEventListener('click', function dismissTip() {
+        localStorage.setItem('bwix_ratio_tip','1');
+        var t = document.getElementById('ratio-tip'); if(t) t.remove();
+        grid.removeEventListener('click', dismissTip);
+      });
+    }
+
     // Paywall
     if (unlocked) {
       document.getElementById('paywall').hidden = true;
@@ -224,6 +241,9 @@
       fillList('ai-risques', ai.risques);
       fillList('ai-reco', ai.recommandations);
       document.getElementById('ai-valo').textContent = ai.valorisation_commentaire || '';
+
+      // Add exercises upsell
+      renderAddExercises(data);
     } else {
       document.getElementById('paywall').hidden = false;
       document.getElementById('full-results').hidden = true;
@@ -302,7 +322,7 @@
     var info = document.getElementById('multi-info');
     if (info && nb >= 2) {
       info.hidden = false;
-      info.innerHTML = '\uD83D\uDCCA Analyse bas\u00e9e sur ' + nb + ' exercices (' + data.annee + ' + ' + data.annee_precedente + ')<br>\u26A1 3 \u00e0 5 exercices recommand\u00e9s pour une valorisation fiable';
+      info.innerHTML = '\uD83D\uDCCA Analyse bas\u00e9e sur ' + nb + ' exercices (' + data.annee + ' + ' + data.annee_precedente + ')<br><a href="#add-exercises" style="color:#00c896;text-decoration:none">\u26A1 3 \u00e0 5 exercices recommand\u00e9s pour une valorisation fiable \u2192</a>';
     }
     var bd = document.getElementById('ebitda-breakdown');
     if (bd && data.ebitda_n != null) {
@@ -382,6 +402,37 @@
           codeMsg.textContent = err.message;
         });
     };
+  }
+
+  // ── Add exercises upsell ──────────────────────────────────────────────────
+  function renderAddExercises(data) {
+    var el = document.getElementById('add-exercises');
+    if (!el) return;
+    var nb = data.nb_exercices || 1;
+    if (nb >= 5) return; // Already have 5 years
+
+    el.hidden = false;
+    var sub = document.getElementById('add-exercises-sub');
+    sub.textContent = 'Bas\u00e9e sur ' + nb + ' exercice' + (nb > 1 ? 's' : '') + '. Les experts recommandent 3 \u00e0 5 ans pour une valorisation fiable.';
+
+    var btns = document.getElementById('add-exercises-btns');
+    btns.innerHTML = '';
+    var baseYear = data.annee_precedente || (data.annee - 1);
+    var yearsToPropose = [];
+    for (var y = baseYear - 1; y >= baseYear - 3 && yearsToPropose.length < 3; y--) {
+      yearsToPropose.push(y);
+    }
+
+    yearsToPropose.forEach(function(year) {
+      var btn = document.createElement('button');
+      btn.className = 'add-exercises__btn';
+      btn.innerHTML = '+ Ajouter ' + year + ' <span>19,99\u00a0\u20ac</span>';
+      btn.onclick = function() {
+        // Redirect to home with prefilled year context
+        window.location.href = '/#analyse';
+      };
+      btns.appendChild(btn);
+    });
   }
 
   // ── Helpers ──────────────────────────────────────────────────────────────
