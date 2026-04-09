@@ -38,10 +38,15 @@ a:hover{text-decoration:underline}
 .hero__subtitle{font-size:1.1rem;color:#8fa3bf;margin-bottom:32px;max-width:480px}
 .hero__visual{display:flex;justify-content:center}
 .hero__upload{background:#0f2440;border:1px solid rgba(30,58,95,.6);border-radius:16px;padding:28px 24px}
-.free-slots-banner{background:rgba(0,200,150,.08);border:1px solid rgba(0,200,150,.2);border-radius:10px;padding:12px 16px;margin-bottom:16px;text-align:center}
-.free-slots__text{color:#00c896;font-size:.88rem;margin:0 0 8px}
-.free-bar{height:6px;background:#1e3a5f;border-radius:3px;overflow:hidden}
-.free-bar__fill{height:100%;background:#00c896;border-radius:3px;transition:width .6s}
+/* Launch banner */
+.launch-banner{background:#1a2535;border-bottom:1px solid rgba(255,255,255,.08);padding:0}
+.launch-banner-content{display:flex;align-items:center;justify-content:center;height:64px;flex-wrap:wrap;gap:4px;padding:0 20px}
+.launch-count{font-size:1.4rem;font-weight:700;color:#fff}
+.launch-label{font-size:1.1rem;font-weight:600;color:#fff;margin-left:6px}
+.launch-sep{color:rgba(255,255,255,.3);margin:0 12px}
+.launch-sub{font-size:.8rem;color:rgba(255,255,255,.5);font-weight:400}
+.launch-progress{height:3px;background:rgba(255,255,255,.08);width:100%}
+.launch-progress-bar{height:3px;background:#00c896;width:100%;transition:width .5s ease}
 .hero__upload .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .hero__upload .upload-note{text-align:center;font-size:.78rem;color:#5a7fa0;margin-top:10px}
 .hero__upload .upload-note a{color:#00c896}
@@ -147,6 +152,8 @@ a:hover{text-decoration:underline}
   .hero__subtitle{margin-left:auto;margin-right:auto}
   .waitlist-form{flex-direction:column;align-items:stretch;margin:0 auto}
   .hero__visual{margin-top:40px}
+  .launch-banner-content{flex-direction:column;height:auto;padding:12px 20px;gap:2px}
+  .launch-sep{display:none}
   .hero__upload{margin-top:32px}
   .hero__upload .form-row{grid-template-columns:1fr}
   .grid--3{grid-template-columns:1fr}
