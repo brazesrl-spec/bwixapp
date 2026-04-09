@@ -259,7 +259,9 @@
       // Badge pill HTML
       var badgeHtml = '';
       if (badge && !isLocked) {
-        badgeHtml = '<span class="ratio-card__badge" style="background:' + badgeColor + '15;color:' + badgeColor + '">' + badge.label + '</span>';
+        var bgMap = {'#00c896':'rgba(0,200,150,.15)','#f59e0b':'rgba(245,158,11,.15)','#ef4444':'rgba(239,68,68,.15)','#5a7fa0':'rgba(90,127,160,.15)'};
+        var bgColor = bgMap[badgeColor] || 'rgba(255,255,255,.1)';
+        badgeHtml = '<span class="ratio-card__badge" style="background:' + bgColor + ';color:' + badgeColor + ';border:1px solid ' + badgeColor + '44">' + badge.label + '</span>';
       }
 
       card.innerHTML = '<span class="ratio-card__info">\u24d8</span>'
