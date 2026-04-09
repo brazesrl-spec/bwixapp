@@ -59,7 +59,7 @@
   <header class="header">
     <div class="container header__inner">
       <a href="/" class="logo" aria-label="BWIX accueil">BWIX<span class="logo__dot">.</span></a>
-      <a href="#upload" class="btn btn--small">Lancer une analyse</a>
+      <a href="#analyse" class="btn btn--small">Lancer une analyse</a>
     </div>
   </header>
 
@@ -80,48 +80,42 @@
       <div class="hero__content">
         <span class="badge"><span class="badge__flag">&#127463;&#127466;</span> Toutes les soci&eacute;t&eacute;s belges &mdash; PME &middot; Holdings &middot; Ind&eacute;pendants</span>
         <h1 class="hero__title">Le bilan BNB de n'importe quelle soci&eacute;t&eacute; belge. <span class="highlight">Analys&eacute; en moins de 2 minutes.</span></h1>
-        <p class="hero__subtitle">Ratios financiers &middot; Valorisation &middot; Analyse IA &mdash; depuis le document officiel BNB, sans interm&eacute;diaire.</p>
+        <p class="hero__subtitle">Ratios financiers &middot; Valorisation &middot; Diagnostic financier &mdash; depuis le document officiel BNB, sans interm&eacute;diaire.</p>
       </div>
-      <div class="hero__upload" id="upload">
+      <div class="hero__upload" id="analyse">
         <form id="analyse-form" class="upload-form">
-          <div class="form-row">
-            <div class="form-group">
-              <label for="email">Email de livraison</label>
-              <input type="email" id="email" name="email" placeholder="email@exemple.com" required autocomplete="email">
-            </div>
-            <div class="form-group">
-              <label for="secteur">Secteur</label>
-              <select id="secteur" name="secteur">
-                <option value="">-- S&eacute;lectionnez --</option>
-                <optgroup label="Secteur d'activit&eacute;">
-                  <option value="Construction / BTP">Construction / BTP</option>
-                  <option value="Tech / SaaS">Tech / SaaS</option>
-                  <option value="Services">Services</option>
-                  <option value="Commerce">Commerce</option>
-                  <option value="Industrie">Industrie</option>
-                </optgroup>
-                <optgroup label="Structure particuli&egrave;re">
-                  <option value="Management / Holding">Management / Holding</option>
-                  <option value="Immobilier / SCI">Immobilier / SCI</option>
-                  <option value="ASBL">ASBL</option>
-                  <option value="Startup">Startup</option>
-                </optgroup>
-              </select>
-            </div>
+          <div class="form-group">
+            <label for="secteur">Secteur d'activit&eacute;</label>
+            <select id="secteur" name="secteur">
+              <option value="">-- S&eacute;lectionnez --</option>
+              <optgroup label="Secteur d'activit&eacute;">
+                <option value="Construction / BTP">Construction / BTP</option>
+                <option value="Tech / SaaS">Tech / SaaS</option>
+                <option value="Services">Services</option>
+                <option value="Commerce">Commerce</option>
+                <option value="Industrie">Industrie</option>
+              </optgroup>
+              <optgroup label="Structure particuli&egrave;re">
+                <option value="Management / Holding">Management / Holding</option>
+                <option value="Immobilier / SCI">Immobilier / SCI</option>
+                <option value="ASBL">ASBL</option>
+                <option value="Startup">Startup</option>
+              </optgroup>
+            </select>
           </div>
           <div class="form-group">
-            <label for="pdf">Comptes annuels BNB (PDF)</label>
+            <label for="pdf">Bilan BNB (PDF)</label>
             <div class="drop-zone" id="drop-zone">
               <input type="file" id="pdf" name="file" accept=".pdf" required>
               <div class="drop-zone__prompt">
                 <span class="drop-zone__icon">&#128196;</span>
-                <span>Glissez le PDF ici ou <strong>cliquez pour parcourir</strong></span>
+                <span>Glissez le bilan BNB ici ou <strong>parcourir mes fichiers</strong></span>
+                <span class="drop-zone__hint">T&eacute;l&eacute;chargez le bilan sur <a href="https://consult.cbso.nbb.be" target="_blank" rel="noopener" style="color:#00c896">consult.cbso.nbb.be &rarr;</a></span>
               </div>
               <div class="drop-zone__file" hidden></div>
             </div>
           </div>
           <button type="submit" class="btn btn--full" id="submit-btn">Lancer l'analyse</button>
-          <p class="upload-note">PDF BNB uniquement &mdash; <a href="https://consult.cbso.nbb.be" target="_blank" rel="noopener">consult.cbso.nbb.be</a></p>
         </form>
         <p class="upload-msg" id="upload-msg" hidden></p>
         <!-- Loading with progress bar -->
@@ -141,65 +135,87 @@
     <div class="container">
       <h2 class="section__title">Aujourd'hui, valoriser une entreprise c'est&hellip;</h2>
       <div class="grid grid--3">
-        <div class="card card--problem">
+        <a href="/guide/cession-entreprise" class="card card--problem card--clickable">
           <span class="card__icon">&#128340;</span>
           <h3>2-3 semaines d'attente</h3>
           <p>chez le comptable pour obtenir une estimation approximative.</p>
-        </div>
-        <div class="card card--problem">
+        </a>
+        <a href="/guide/acquisition-rachat" class="card card--problem card--clickable">
           <span class="card__icon">&#128182;</span>
-          <h3>Des honoraires élevés</h3>
-          <p>pour un rapport basique, souvent hors de portée des petites structures.</p>
-        </div>
-        <div class="card card--problem">
+          <h3>Des milliers d'euros d'honoraires</h3>
+          <p>pour un rapport basique, avant m&ecirc;me de savoir si le dossier vaut la peine.</p>
+        </a>
+        <a href="/guide/convention-actionnaires-valorisation" class="card card--problem card--clickable">
           <span class="card__icon">&#128552;</span>
-          <h3>Négocier à l'aveugle</h3>
-          <p>sans chiffres fiables, sans benchmark sectoriel, sans vision claire.</p>
-        </div>
+          <h3>Des chiffres contest&eacute;s entre associ&eacute;s</h3>
+          <p>sans m&eacute;thode commune ni r&eacute;f&eacute;rence objective pour trancher.</p>
+        </a>
       </div>
     </div>
   </section>
 
-  <!-- ============ 3. SOLUTION ============ -->
-  <section class="section" id="solution">
+  <!-- ============ 3. FAKE DASHBOARD ============ -->
+  <section class="section" id="demo">
     <div class="container">
-      <h2 class="section__title">Avec BWIX, en <span class="highlight">2 minutes</span> :</h2>
-      <div class="steps">
-        <div class="step">
-          <span class="step__icon">&#128196;</span>
-          <div>
-            <h3>Importez un bilan BNB</h3>
-            <p>PDF ou numéro BCE &mdash; c'est tout ce qu'il faut.</p>
+      <h2 class="section__title">Un rapport complet en <span class="highlight">2 minutes</span></h2>
+      <p class="section__subtitle" style="text-align:center">Voici ce que vous obtenez &mdash; sur n'importe quelle soci&eacute;t&eacute; belge.</p>
+      <div class="demo-dash">
+        <span class="demo-badge">EXEMPLE</span>
+        <p class="demo-company">CONSTRUCTION DUPONT SRL &mdash; 2024</p>
+
+        <!-- Row 1: Score + EBITDA -->
+        <div class="demo-row demo-row--2">
+          <div class="demo-card demo-card--score">
+            <svg viewBox="0 0 120 120" width="100" height="100">
+              <circle cx="60" cy="60" r="52" fill="none" stroke="#1e3a5f" stroke-width="8"/>
+              <circle cx="60" cy="60" r="52" fill="none" stroke="#00c896" stroke-width="8" stroke-dasharray="255 72" stroke-linecap="round" transform="rotate(-90 60 60)"/>
+            </svg>
+            <div class="demo-score-num"><strong>78</strong><small>/100</small></div>
+            <span class="demo-score-label" style="color:#00c896">Bonne sant&eacute; financi&egrave;re</span>
+          </div>
+          <div class="demo-card">
+            <p class="demo-kv">EBITDA 2024 : <strong>187&nbsp;340&nbsp;&euro;</strong></p>
+            <p class="demo-kv">EBITDA 2023 : <strong>142&nbsp;800&nbsp;&euro;</strong></p>
+            <p class="demo-kv" style="color:#00c896">Moyenne : <strong>165&nbsp;070&nbsp;&euro;</strong> &larr; valorisation</p>
+            <p class="demo-hint">&#9889; 3 &agrave; 5 exercices conseill&eacute;s</p>
           </div>
         </div>
-        <div class="step">
-          <span class="step__icon">&#128202;</span>
-          <div>
-            <h3>Obtenez tous les ratios financiers cl&eacute;s</h3>
-            <p>Liquidité, solvabilité, rentabilité, endettement&hellip;</p>
+
+        <!-- Row 2: 4 ratio cards -->
+        <div class="demo-row demo-row--4">
+          <div class="demo-ratio"><span class="demo-ratio__label">ROE</span><span class="demo-ratio__val">11.4%</span><span class="demo-pill demo-pill--green">Bon</span></div>
+          <div class="demo-ratio"><span class="demo-ratio__label">Liquidit&eacute;</span><span class="demo-ratio__val">3.82</span><span class="demo-pill demo-pill--green">Bon</span></div>
+          <div class="demo-ratio"><span class="demo-ratio__label">Solvabilit&eacute;</span><span class="demo-ratio__val">67%</span><span class="demo-pill demo-pill--yellow">Correct</span></div>
+          <div class="demo-ratio"><span class="demo-ratio__label">Gearing</span><span class="demo-ratio__val">0.18</span><span class="demo-pill demo-pill--green">Faible</span></div>
+        </div>
+
+        <!-- Row 3: Valuation blurred -->
+        <div class="demo-card" style="text-align:center;padding:24px">
+          <h3 style="color:#fff;font-size:1rem;margin-bottom:14px">Valorisation de l'entreprise</h3>
+          <p style="color:#8fa3bf;font-size:.85rem;margin-bottom:8px">L'entreprise vaut entre</p>
+          <span class="demo-blur">648&nbsp;000</span> <span style="color:#5a7fa0">&euro; et</span> <span class="demo-blur">1&nbsp;120&nbsp;000</span> <span style="color:#5a7fa0">&euro;</span>
+          <div class="demo-row demo-row--3" style="margin-top:16px">
+            <div class="demo-mini"><span>EV/EBITDA</span><span class="demo-blur-sm">825&nbsp;350&nbsp;&euro;</span></div>
+            <div class="demo-mini"><span>DCF</span><span class="demo-blur-sm">978&nbsp;200&nbsp;&euro;</span></div>
+            <div class="demo-mini"><span>Actif net</span><span class="demo-blur-sm">412&nbsp;680&nbsp;&euro;</span></div>
           </div>
         </div>
-        <div class="step">
-          <span class="step__icon">&#128176;</span>
-          <div>
-            <h3>Visualisez la valorisation</h3>
-            <p>EBITDA, capitaux propres, DCF &mdash; trois méthodes comparées.</p>
+
+        <!-- Row 4: AI extract -->
+        <div class="demo-card">
+          <h3 style="color:#fff;font-size:1rem;margin-bottom:10px">Diagnostic financier</h3>
+          <p style="color:#a0b4cc;font-size:.9rem;line-height:1.6;margin-bottom:8px">Soci&eacute;t&eacute; du secteur construction en bonne sant&eacute; financi&egrave;re. Solvabilit&eacute; solide &agrave; 67%.</p>
+          <div class="demo-fade">
+            <p style="color:#8fa3bf;font-size:.88rem;line-height:1.5">L'EBITDA en croissance (+31% sur 2 ans) t&eacute;moigne d'une dynamique positive. La tr&eacute;sorerie nette est positive, l'endettement bancaire est tr&egrave;s faible&hellip;</p>
+          </div>
+          <div class="demo-row demo-row--2" style="margin-top:12px">
+            <div><strong style="color:#00c896;font-size:.82rem">Points forts</strong><p class="demo-blur-sm" style="margin-top:4px">&#10003; Solvabilit&eacute; solide &bull; &#10003; Tr&eacute;sorerie&hellip;</p></div>
+            <div><strong style="color:#ffb432;font-size:.82rem">Points d'attention</strong><p class="demo-blur-sm" style="margin-top:4px">&#9888; D&eacute;pendance au dirigeant&hellip;</p></div>
           </div>
         </div>
-        <div class="step">
-          <span class="step__icon">&#129302;</span>
-          <div>
-            <h3>Recevez une analyse IA contextuelle</h3>
-            <p>Points forts, points d'attention, recommandations personnalisées.</p>
-          </div>
-        </div>
-        <div class="step">
-          <span class="step__icon">&#128203;</span>
-          <div>
-            <h3>Exportez un rapport professionnel</h3>
-            <p>PDF pr&ecirc;t &agrave; partager avec un banquier, avocat ou acqu&eacute;reur.</p>
-          </div>
-        </div>
+      </div>
+      <div style="text-align:center;margin-top:32px">
+        <a href="#analyse" class="btn btn--large">Analyser un vrai bilan maintenant &rarr;</a>
       </div>
     </div>
   </section>
@@ -209,30 +225,30 @@
     <div class="container">
       <h2 class="section__title">Cas d'usage</h2>
       <div class="grid grid--3">
-        <div class="card card--usecase">
+        <a href="/guide/acquisition-rachat" class="card card--usecase card--clickable">
           <span class="card__icon">&#128269;</span>
-          <h3>Je veux analyser un concurrent</h3>
-        </div>
-        <div class="card card--usecase">
+          <h3>Analyser un concurrent</h3>
+        </a>
+        <a href="/guide/cession-entreprise" class="card card--usecase card--clickable">
           <span class="card__icon">&#128176;</span>
-          <h3>Je veux conna&icirc;tre la valeur de mon entreprise</h3>
-        </div>
-        <div class="card card--usecase">
+          <h3>Conna&icirc;tre la valeur d'une entreprise</h3>
+        </a>
+        <a href="/guide/acquisition-rachat" class="card card--usecase card--clickable">
           <span class="card__icon">&#129309;</span>
-          <h3>Je veux &eacute;valuer une acquisition</h3>
-        </div>
-        <div class="card card--usecase">
+          <h3>&Eacute;valuer une acquisition</h3>
+        </a>
+        <a href="/guide/credit-bancaire" class="card card--usecase card--clickable">
           <span class="card__icon">&#127974;</span>
-          <h3>Je pr&eacute;pare un dossier bancaire</h3>
-        </div>
-        <div class="card card--usecase">
-          <span class="card__icon">&#9888;&#65039;</span>
-          <h3>Je veux v&eacute;rifier un fournisseur/client</h3>
-        </div>
-        <div class="card card--usecase">
-          <span class="card__icon">&#128202;</span>
-          <h3>Mon comptable analyse ses dossiers</h3>
-        </div>
+          <h3>Pr&eacute;parer un dossier bancaire</h3>
+        </a>
+        <a href="/guide/convention-actionnaires-valorisation" class="card card--usecase card--clickable">
+          <span class="card__icon">&#129309;</span>
+          <h3>Convention d'actionnaires</h3>
+        </a>
+        <a href="/guide/cession-entreprise" class="card card--usecase card--clickable">
+          <span class="card__icon">&#128200;</span>
+          <h3>Sant&eacute; financi&egrave;re &amp; points d'am&eacute;lioration</h3>
+        </a>
       </div>
     </div>
   </section>
@@ -381,7 +397,7 @@
     <div class="container container--narrow" style="text-align:center">
       <h2 class="section__title">Pr&ecirc;t &agrave; analyser ?</h2>
       <p class="section__subtitle">Importez un PDF BNB et obtenez l'analyse en 2 minutes.</p>
-      <a href="#upload" class="btn btn--large">Lancer une analyse &uarr;</a>
+      <a href="#analyse" class="btn btn--large">Lancer une analyse &uarr;</a>
       <p style="margin-top:16px;font-size:.85rem;color:#5a7fa0">Gratuit : score sant&eacute; + ratios de base. Analyse compl&egrave;te : 19,99&nbsp;&euro;</p>
     </div>
   </section>

@@ -63,7 +63,8 @@
   }
 
   function submitAnalysis(file) {
-    var email = document.getElementById('email').value.trim();
+    var emailEl = document.getElementById('email');
+    var email = emailEl ? emailEl.value.trim() : 'analyse@bwix.app';
     var secteur = document.getElementById('secteur').value;
     var msgEl = document.getElementById('upload-msg');
     var loading = document.getElementById('loading');
