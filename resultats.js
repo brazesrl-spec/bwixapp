@@ -166,7 +166,7 @@
       'gearing': 'gearing', 'dettes_ebitda': 'dette_ebitda', 'couverture_interets': 'couverture'
     };
     var BADGE_COLORS = { 'vert': '#00c896', 'jaune': '#f59e0b', 'rouge': '#ef4444', 'gris': '#5a7fa0' };
-    var allBadges = ratios.badges || {};
+    var allBadges = data.badges || ratios.badges || {};
 
     RATIOS_ORDER.forEach(function (key) {
       var def = RATIOS_DATA[key];
@@ -300,8 +300,7 @@
       document.getElementById('modal-value').parentNode.insertBefore(benchEl, document.getElementById('modal-explain'));
     }
     var badgeKey2 = {roe:'roe',liquidite_generale:'liquidite',solvabilite:'solvabilite',gearing:'gearing',dettes_ebitda:'dette_ebitda',couverture_interets:'couverture'}[key];
-    var fullRatios = fullData ? ((fullData.full || {}).ratios || {}) : {};
-    var allB = fullRatios.badges || {};
+    var allB = fullData ? (fullData.badges || ((fullData.full || {}).ratios || {}).badges || {}) : {};
     var b2 = badgeKey2 ? allB[badgeKey2] : null;
     if (b2 && b2.benchmark && !isLocked) {
       benchEl.textContent = b2.benchmark;
