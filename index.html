@@ -76,16 +76,16 @@
 
   <!-- ============ 1. HERO ============ -->
   <section class="hero" id="hero">
-    <div class="container hero__inner">
-      <div class="hero__content">
-        <span class="badge"><span class="badge__flag">&#127463;&#127466;</span> Toutes les soci&eacute;t&eacute;s belges &mdash; PME &middot; Holdings &middot; Ind&eacute;pendants</span>
-        <h1 class="hero__title">Le bilan BNB de n'importe quelle soci&eacute;t&eacute; belge. <span class="highlight">Analys&eacute; en moins de 2 minutes.</span></h1>
-        <p class="hero__subtitle">Ratios financiers &middot; Valorisation &middot; Diagnostic financier &mdash; depuis le document officiel BNB, sans interm&eacute;diaire.</p>
-      </div>
-      <div class="hero__upload" id="analyse">
+    <div class="container hero__split">
+      <!-- LEFT: Form -->
+      <div class="hero__left" id="analyse">
+        <span class="badge"><span class="badge__flag">&#127463;&#127466;</span> Toutes les soci&eacute;t&eacute;s belges</span>
+        <h1 class="hero__title">Analysez n'importe quelle soci&eacute;t&eacute; belge.</h1>
+        <p class="hero__highlight">R&eacute;sultats en moins de 2 minutes.</p>
+        <p class="hero__subtitle">Ratios financiers &middot; Valorisation &middot; Diagnostic &mdash; depuis le bilan BNB officiel.</p>
         <form id="analyse-form" class="upload-form">
           <div class="form-group">
-            <label for="secteur">Secteur d'activit&eacute;</label>
+            <label for="secteur">Secteur</label>
             <select id="secteur" name="secteur">
               <option value="">-- S&eacute;lectionnez --</option>
               <optgroup label="Secteur d'activit&eacute;">
@@ -104,26 +104,68 @@
             </select>
           </div>
           <div class="form-group">
-            <label for="pdf">Bilan BNB (PDF)</label>
             <div class="drop-zone" id="drop-zone">
               <input type="file" id="pdf" name="file" accept=".pdf" required>
               <div class="drop-zone__prompt">
                 <span class="drop-zone__icon">&#128196;</span>
-                <span>Glissez le bilan BNB ici ou <strong>parcourir mes fichiers</strong></span>
-                <span class="drop-zone__hint">T&eacute;l&eacute;chargez le bilan sur <a href="https://consult.cbso.nbb.be" target="_blank" rel="noopener" style="color:#00c896">consult.cbso.nbb.be &rarr;</a></span>
+                <span>Glissez le bilan BNB ici ou <strong>parcourir</strong></span>
+                <span class="drop-zone__hint">T&eacute;l&eacute;chargez sur <a href="https://consult.cbso.nbb.be" target="_blank" rel="noopener" style="color:#00c896">consult.cbso.nbb.be &rarr;</a></span>
               </div>
               <div class="drop-zone__file" hidden></div>
             </div>
           </div>
-          <button type="submit" class="btn btn--full" id="submit-btn">Lancer l'analyse</button>
+          <button type="submit" class="btn btn--full" id="submit-btn">Lancer l'analyse &rarr;</button>
         </form>
         <p class="upload-msg" id="upload-msg" hidden></p>
-        <!-- Loading with progress bar -->
         <div id="loading" class="loading" hidden>
           <div class="progress-container">
             <p class="progress-label" id="progress-label">Pr&eacute;paration...</p>
             <div class="progress-bar"><div class="progress-bar__fill" id="progress-fill"></div></div>
             <p class="progress-pct" id="progress-pct">0%</p>
+          </div>
+        </div>
+      </div>
+      <!-- RIGHT: Dashboard example -->
+      <div class="hero__right">
+        <div class="demo-dash demo-dash--hero">
+          <span class="demo-badge">EXEMPLE</span>
+          <p class="demo-company">CONSTRUCTION DUPONT SRL &mdash; 2024</p>
+          <div class="demo-row demo-row--2">
+            <div class="demo-card demo-card--score">
+              <svg viewBox="0 0 120 120" width="90" height="90"><circle cx="60" cy="60" r="52" fill="none" stroke="#1e3a5f" stroke-width="8"/><circle cx="60" cy="60" r="52" fill="none" stroke="#00c896" stroke-width="8" stroke-dasharray="255 72" stroke-linecap="round" transform="rotate(-90 60 60)"/></svg>
+              <div class="demo-score-num"><strong>78</strong><small>/100</small></div>
+              <span class="demo-score-label" style="color:#00c896">Bonne sant&eacute;</span>
+            </div>
+            <div class="demo-card">
+              <p class="demo-kv">EBITDA 2024 : <strong>187&nbsp;340&nbsp;&euro;</strong></p>
+              <p class="demo-kv">EBITDA 2023 : <strong>142&nbsp;800&nbsp;&euro;</strong></p>
+              <p class="demo-kv" style="color:#00c896">Moyenne : <strong>165&nbsp;070&nbsp;&euro;</strong></p>
+            </div>
+          </div>
+          <div class="demo-card" style="text-align:center;padding:16px">
+            <p style="color:#5a7fa0;font-size:.78rem;margin-bottom:6px">L'entreprise vaut entre</p>
+            <span style="font-size:1.3rem;font-weight:800;color:#00c896">748&nbsp;000&nbsp;&euro;</span>
+            <span style="color:#5a7fa0;font-size:.9rem"> et </span>
+            <span style="font-size:1.3rem;font-weight:800;color:#00c896">1&nbsp;050&nbsp;000&nbsp;&euro;</span>
+            <div class="demo-row demo-row--3" style="margin-top:10px">
+              <div class="demo-mini"><span>EV/EBITDA</span><span style="color:#fff;font-weight:600;font-size:.82rem">825&nbsp;350&nbsp;&euro;</span></div>
+              <div class="demo-mini"><span>DCF</span><span style="color:#fff;font-weight:600;font-size:.82rem">1&nbsp;031&nbsp;200&nbsp;&euro;</span></div>
+              <div class="demo-mini"><span>Actif net</span><span style="color:#fff;font-weight:600;font-size:.82rem">748&nbsp;000&nbsp;&euro;</span></div>
+            </div>
+          </div>
+          <div class="demo-row demo-row--4">
+            <div class="demo-ratio"><span class="demo-ratio__label">ROE</span><span class="demo-ratio__val">11.4%</span><span class="demo-pill demo-pill--green">Bon</span></div>
+            <div class="demo-ratio"><span class="demo-ratio__label">Liquidit&eacute;</span><span class="demo-ratio__val">3.82</span><span class="demo-pill demo-pill--green">Bon</span></div>
+            <div class="demo-ratio"><span class="demo-ratio__label">Solvabilit&eacute;</span><span class="demo-ratio__val">67%</span><span class="demo-pill demo-pill--yellow">Correct</span></div>
+            <div class="demo-ratio"><span class="demo-ratio__label">Gearing</span><span class="demo-ratio__val">0.18</span><span class="demo-pill demo-pill--green">Faible</span></div>
+          </div>
+          <div class="demo-card" style="padding:14px 16px">
+            <p style="color:#fff;font-size:.85rem;font-weight:600;margin-bottom:6px">Diagnostic financier</p>
+            <p style="color:#a0b4cc;font-size:.82rem;line-height:1.5;margin-bottom:8px">Soci&eacute;t&eacute; BTP en bonne sant&eacute; financi&egrave;re. Solvabilit&eacute; solide &agrave; 67%, aucune dette bancaire, tr&eacute;sorerie nette positive.</p>
+            <div class="demo-row demo-row--2" style="margin:0;gap:8px">
+              <div style="font-size:.78rem"><span style="color:#00c896">&#10003;</span> Aucune dette bancaire<br><span style="color:#00c896">&#10003;</span> ROE satisfaisant</div>
+              <div style="font-size:.78rem"><span style="color:#ffb432">&#9888;</span> BFR &eacute;lev&eacute; &agrave; 1.4x CA<br><span style="color:#ffb432">&#9888;</span> Stocks importants</div>
+            </div>
           </div>
         </div>
       </div>
@@ -154,71 +196,6 @@
     </div>
   </section>
 
-  <!-- ============ 3. FAKE DASHBOARD ============ -->
-  <section class="section" id="demo">
-    <div class="container">
-      <h2 class="section__title">Un rapport complet en <span class="highlight">2 minutes</span></h2>
-      <p class="section__subtitle" style="text-align:center">Voici ce que vous obtenez &mdash; sur n'importe quelle soci&eacute;t&eacute; belge.</p>
-      <div class="demo-dash">
-        <span class="demo-badge">EXEMPLE</span>
-        <p class="demo-company">CONSTRUCTION DUPONT SRL &mdash; 2024</p>
-
-        <!-- Row 1: Score + EBITDA -->
-        <div class="demo-row demo-row--2">
-          <div class="demo-card demo-card--score">
-            <svg viewBox="0 0 120 120" width="100" height="100">
-              <circle cx="60" cy="60" r="52" fill="none" stroke="#1e3a5f" stroke-width="8"/>
-              <circle cx="60" cy="60" r="52" fill="none" stroke="#00c896" stroke-width="8" stroke-dasharray="255 72" stroke-linecap="round" transform="rotate(-90 60 60)"/>
-            </svg>
-            <div class="demo-score-num"><strong>78</strong><small>/100</small></div>
-            <span class="demo-score-label" style="color:#00c896">Bonne sant&eacute; financi&egrave;re</span>
-          </div>
-          <div class="demo-card">
-            <p class="demo-kv">EBITDA 2024 : <strong>187&nbsp;340&nbsp;&euro;</strong></p>
-            <p class="demo-kv">EBITDA 2023 : <strong>142&nbsp;800&nbsp;&euro;</strong></p>
-            <p class="demo-kv" style="color:#00c896">Moyenne : <strong>165&nbsp;070&nbsp;&euro;</strong> &larr; valorisation</p>
-            <p class="demo-hint">&#9889; 3 &agrave; 5 exercices conseill&eacute;s</p>
-          </div>
-        </div>
-
-        <!-- Row 2: 4 ratio cards -->
-        <div class="demo-row demo-row--4">
-          <div class="demo-ratio"><span class="demo-ratio__label">ROE</span><span class="demo-ratio__val">11.4%</span><span class="demo-pill demo-pill--green">Bon</span></div>
-          <div class="demo-ratio"><span class="demo-ratio__label">Liquidit&eacute;</span><span class="demo-ratio__val">3.82</span><span class="demo-pill demo-pill--green">Bon</span></div>
-          <div class="demo-ratio"><span class="demo-ratio__label">Solvabilit&eacute;</span><span class="demo-ratio__val">67%</span><span class="demo-pill demo-pill--yellow">Correct</span></div>
-          <div class="demo-ratio"><span class="demo-ratio__label">Gearing</span><span class="demo-ratio__val">0.18</span><span class="demo-pill demo-pill--green">Faible</span></div>
-        </div>
-
-        <!-- Row 3: Valuation blurred -->
-        <div class="demo-card" style="text-align:center;padding:24px">
-          <h3 style="color:#fff;font-size:1rem;margin-bottom:14px">Valorisation de l'entreprise</h3>
-          <p style="color:#8fa3bf;font-size:.85rem;margin-bottom:8px">L'entreprise vaut entre</p>
-          <span class="demo-blur">648&nbsp;000</span> <span style="color:#5a7fa0">&euro; et</span> <span class="demo-blur">1&nbsp;120&nbsp;000</span> <span style="color:#5a7fa0">&euro;</span>
-          <div class="demo-row demo-row--3" style="margin-top:16px">
-            <div class="demo-mini"><span>EV/EBITDA</span><span class="demo-blur-sm">825&nbsp;350&nbsp;&euro;</span></div>
-            <div class="demo-mini"><span>DCF</span><span class="demo-blur-sm">978&nbsp;200&nbsp;&euro;</span></div>
-            <div class="demo-mini"><span>Actif net</span><span class="demo-blur-sm">412&nbsp;680&nbsp;&euro;</span></div>
-          </div>
-        </div>
-
-        <!-- Row 4: AI extract -->
-        <div class="demo-card">
-          <h3 style="color:#fff;font-size:1rem;margin-bottom:10px">Diagnostic financier</h3>
-          <p style="color:#a0b4cc;font-size:.9rem;line-height:1.6;margin-bottom:8px">Soci&eacute;t&eacute; du secteur construction en bonne sant&eacute; financi&egrave;re. Solvabilit&eacute; solide &agrave; 67%.</p>
-          <div class="demo-fade">
-            <p style="color:#8fa3bf;font-size:.88rem;line-height:1.5">L'EBITDA en croissance (+31% sur 2 ans) t&eacute;moigne d'une dynamique positive. La tr&eacute;sorerie nette est positive, l'endettement bancaire est tr&egrave;s faible&hellip;</p>
-          </div>
-          <div class="demo-row demo-row--2" style="margin-top:12px">
-            <div><strong style="color:#00c896;font-size:.82rem">Points forts</strong><p class="demo-blur-sm" style="margin-top:4px">&#10003; Solvabilit&eacute; solide &bull; &#10003; Tr&eacute;sorerie&hellip;</p></div>
-            <div><strong style="color:#ffb432;font-size:.82rem">Points d'attention</strong><p class="demo-blur-sm" style="margin-top:4px">&#9888; D&eacute;pendance au dirigeant&hellip;</p></div>
-          </div>
-        </div>
-      </div>
-      <div style="text-align:center;margin-top:32px">
-        <a href="#analyse" class="btn btn--large">Analyser un vrai bilan maintenant &rarr;</a>
-      </div>
-    </div>
-  </section>
 
   <!-- ============ 4. CAS D'USAGE ============ -->
   <section class="section section--dark" id="cas-usage">

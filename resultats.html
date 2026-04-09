@@ -43,11 +43,7 @@
   <!-- Results -->
   <section class="section" id="results-section" hidden>
     <div class="container">
-      <div id="consolidated-notice" class="disclaimer-box disclaimer-box--warning" hidden>
-        <strong>&#9888;&#65039; Comptes consolid&eacute;s d&eacute;tect&eacute;s</strong>
-        <p>BWIX analyse uniquement les comptes annuels individuels. Les r&eacute;sultats peuvent &ecirc;tre inexacts.</p>
-      </div>
-
+      <!-- 1. HEADER + SCORE -->
       <div class="results-header">
         <div>
           <h2 class="results-title">R&eacute;sultats de l'analyse</h2>
@@ -64,26 +60,9 @@
           <span class="score-label">Score sant&eacute;</span>
         </div>
       </div>
-
-      <!-- Score deductions -->
       <div class="score-deductions" id="score-deductions" hidden></div>
 
-      <!-- Structure particulière notice -->
-      <div class="disclaimer-box" id="structure-notice" hidden>
-        <strong>&#9881;&#65039; Structure particuli&egrave;re d&eacute;tect&eacute;e</strong>
-        <p>Les seuils d'analyse ont &eacute;t&eacute; adapt&eacute;s pour ce type de structure (holdings, SCI, ASBL, startups). Les ratios classiques (ROE, liquidit&eacute;) ne s'interpr&egrave;tent pas de la m&ecirc;me mani&egrave;re que pour une soci&eacute;t&eacute; op&eacute;rationnelle.</p>
-      </div>
-      <!-- Multi-exercise info -->
-      <div class="multi-info" id="multi-info" hidden></div>
-      <!-- EBITDA variation warning -->
-      <div class="disclaimer-box disclaimer-box--warning" id="ebitda-warning" hidden>
-        <strong>&#9888;&#65039; Variation EBITDA importante</strong>
-        <p>R&eacute;sultats tr&egrave;s variables entre les exercices &mdash; valorisation &agrave; interpr&eacute;ter avec prudence. Un retraitement normatif est conseill&eacute;.</p>
-      </div>
-      <!-- EBITDA breakdown -->
-      <div class="ebitda-breakdown" id="ebitda-breakdown" hidden></div>
-
-      <!-- Valuation (always visible, blurred or clear) -->
+      <!-- 2. VALORISATION EN PREMIER -->
       <div class="valuation-card">
         <h3>Valorisation de l'entreprise</h3>
         <div class="valuation-range">
@@ -94,21 +73,39 @@
           <span class="valuation-currency">&euro;</span>
         </div>
       </div>
+      <div class="ebitda-breakdown" id="ebitda-breakdown" hidden></div>
 
-      <!-- Ratio grid (JS-generated: free cards visible, locked cards blurred) -->
+      <!-- 3. GRILLE RATIOS -->
       <div class="ratio-grid" id="ratio-grid"></div>
-
-      <!-- FOMO counter -->
       <p class="fomo-counter" id="fomo-counter" hidden></p>
 
-      <!-- Paywall -->
+      <!-- 4. DIAGNOSTIC (visible intro + paywall or full) -->
+      <div id="full-results" hidden>
+        <div class="detail-section">
+          <h3>Diagnostic financier</h3>
+          <div class="ai-card">
+            <div class="ai-synthese" id="ai-synthese"></div>
+            <div class="grid grid--2">
+              <div class="ai-list ai-list--green"><h4>Points forts</h4><ul id="ai-forts"></ul></div>
+              <div class="ai-list ai-list--orange"><h4>Points d'attention</h4><ul id="ai-attention"></ul></div>
+            </div>
+            <div class="grid grid--2">
+              <div class="ai-list ai-list--red"><h4>Risques</h4><ul id="ai-risques"></ul></div>
+              <div class="ai-list ai-list--blue"><h4>Recommandations</h4><ul id="ai-reco"></ul></div>
+            </div>
+            <div class="ai-valo" id="ai-valo"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAYWALL -->
       <div id="paywall" class="paywall">
         <div class="paywall__overlay">
           <h3>D&eacute;bloquer l'analyse compl&egrave;te &mdash; 19,99&nbsp;&euro;</h3>
           <ul class="paywall__features">
             <li>&#10003; Valorisation d&eacute;taill&eacute;e 3 m&eacute;thodes</li>
             <li>&#10003; Tous les ratios complets</li>
-            <li>&#10003; Analyse forces / risques / recommandations</li>
+            <li>&#10003; Diagnostic forces / risques / recommandations</li>
             <li>&#10003; Ajouter des exercices suppl&eacute;mentaires</li>
             <li>&#10003; Export rapport PDF professionnel</li>
           </ul>
@@ -123,23 +120,19 @@
         </div>
       </div>
 
-      <!-- Full results (AI analysis, shown after unlock) -->
-      <div id="full-results" hidden>
-        <div class="detail-section">
-          <h3>&#129302; Analyse IA</h3>
-          <div class="ai-card">
-            <div class="ai-synthese" id="ai-synthese"></div>
-            <div class="grid grid--2">
-              <div class="ai-list ai-list--green"><h4>Points forts</h4><ul id="ai-forts"></ul></div>
-              <div class="ai-list ai-list--orange"><h4>Points d'attention</h4><ul id="ai-attention"></ul></div>
-            </div>
-            <div class="grid grid--2">
-              <div class="ai-list ai-list--red"><h4>Risques</h4><ul id="ai-risques"></ul></div>
-              <div class="ai-list ai-list--blue"><h4>Recommandations</h4><ul id="ai-reco"></ul></div>
-            </div>
-            <div class="ai-valo" id="ai-valo"></div>
-          </div>
-        </div>
+      <!-- 5. WARNINGS (bas de page, discrets) -->
+      <div id="consolidated-notice" class="disclaimer-box disclaimer-box--warning" hidden style="margin-top:24px">
+        <strong>&#9888;&#65039; Comptes consolid&eacute;s d&eacute;tect&eacute;s</strong>
+        <p>BWIX analyse uniquement les comptes annuels individuels. Les r&eacute;sultats peuvent &ecirc;tre inexacts.</p>
+      </div>
+      <div class="disclaimer-box" id="structure-notice" hidden>
+        <strong>&#9881;&#65039; Structure particuli&egrave;re</strong>
+        <p>Seuils adapt&eacute;s pour ce type de structure.</p>
+      </div>
+      <div class="multi-info" id="multi-info" hidden></div>
+      <div class="disclaimer-box disclaimer-box--warning" id="ebitda-warning" hidden>
+        <strong>&#9888;&#65039; Variation EBITDA importante</strong>
+        <p>R&eacute;sultats variables entre exercices &mdash; valorisation &agrave; interpr&eacute;ter avec prudence.</p>
       </div>
     </div>
   </section>
