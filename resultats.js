@@ -90,6 +90,53 @@
 
         // Also allow Enter key
         input.onkeydown = function(e){ if (e.key === 'Enter') { e.preventDefault(); btn.click(); } };
+
+        // Code access in email modal
+        var showCode = document.getElementById('modal-show-code');
+        var codeSection = document.getElementById('modal-code-section');
+        var codeInput = document.getElementById('modal-promo-code');
+        var codeBtn = document.getElementById('modal-redeem-btn');
+        var codeMsg2 = document.getElementById('modal-code-msg');
+
+        if (showCode) showCode.onclick = function(e) {
+          e.preventDefault();
+          codeSection.hidden = false;
+          showCode.parentElement.hidden = true;
+          codeInput.focus();
+        };
+
+        if (codeBtn) codeBtn.onclick = function() {
+          var code = codeInput.value.trim();
+          if (!code) return;
+          codeBtn.disabled = true;
+          codeBtn.textContent = 'V\u00e9rification...';
+          codeMsg2.hidden = true;
+
+          fetch(API + '/api/redeem-code', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({code: code, token: token}),
+          })
+            .then(function(r) {
+              if (!r.ok) return r.json().then(function(d) { throw new Error(d.detail || 'Code invalide'); });
+              return r.json();
+            })
+            .then(function() {
+              codeMsg2.hidden = false;
+              codeMsg2.style.color = '#00c896';
+              codeMsg2.textContent = 'Analyse d\u00e9bloqu\u00e9e !';
+              setTimeout(function() { window.location.reload(); }, 800);
+            })
+            .catch(function(err) {
+              codeBtn.disabled = false;
+              codeBtn.textContent = 'Valider';
+              codeMsg2.hidden = false;
+              codeMsg2.style.color = '#ff6b6b';
+              codeMsg2.textContent = err.message;
+            });
+        };
+
+        if (codeInput) codeInput.onkeydown = function(e) { if (e.key === 'Enter') { e.preventDefault(); codeBtn.click(); } };
       } else {
         // No free slots — render normally with paywall
         render(data);
