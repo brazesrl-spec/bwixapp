@@ -21,7 +21,12 @@
       setProgress(100, 'Termin\u00e9');
       setTimeout(function () {
         document.getElementById('loading').hidden = true;
-        render(data);
+        // If not unlocked and free slots available → show email modal
+        if (!data.unlocked) {
+          showEmailModal(data);
+        } else {
+          render(data);
+        }
       }, 300);
     })
     .catch(function () { window.location.href = '/'; });
@@ -33,6 +38,66 @@
     if (f) f.style.width = pct + '%';
     if (l) l.textContent = label;
     if (p) p.textContent = pct + '%';
+  }
+
+  // ── Email capture modal (free slots) ──────────────────────────────────────
+  function showEmailModal(data) {
+    // Check if free slots remain
+    fetch(API + '/api/free-slots').then(function(r){return r.json();}).then(function(d){
+      if (d.free_slots > 0) {
+        // Show email modal
+        var modal = document.getElementById('email-modal');
+        modal.hidden = false;
+        var input = document.getElementById('free-email');
+        var btn = document.getElementById('free-email-btn');
+        var msg = document.getElementById('free-email-msg');
+        input.focus();
+
+        btn.onclick = function() {
+          var email = input.value.trim();
+          if (!email || email.indexOf('@') < 0) { msg.hidden = false; msg.style.color = '#ff6b6b'; msg.textContent = 'Email invalide.'; return; }
+          btn.disabled = true;
+          btn.textContent = 'V\u00e9rification...';
+          msg.hidden = true;
+
+          fetch(API + '/api/claim-free', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({email: email, token: token}),
+          })
+            .then(function(r){ return r.json().then(function(j){ j._status = r.status; return j; }); })
+            .then(function(j){
+              if (j.already_used && j.previous_token) {
+                msg.hidden = false; msg.style.color = '#ffb432';
+                msg.textContent = 'Cet email a d\u00e9j\u00e0 utilis\u00e9 son analyse gratuite.';
+                setTimeout(function(){ window.location.href = '/resultats?token=' + j.previous_token; }, 1500);
+                return;
+              }
+              if (j._status >= 400) {
+                throw new Error(j.detail || 'Erreur');
+              }
+              // Success — reload to show unlocked results
+              modal.hidden = true;
+              window.location.reload();
+            })
+            .catch(function(err){
+              btn.disabled = false;
+              btn.textContent = 'Acc\u00e9der \u00e0 mon analyse gratuite \u2192';
+              msg.hidden = false; msg.style.color = '#ff6b6b';
+              msg.textContent = err.message || 'Erreur.';
+            });
+        };
+
+        // Also allow Enter key
+        input.onkeydown = function(e){ if (e.key === 'Enter') { e.preventDefault(); btn.click(); } };
+      } else {
+        // No free slots — render normally with paywall
+        render(data);
+      }
+    }).catch(function(){
+      // API error — fallback to normal render
+      render(data);
+    });
   }
 
   // ── Main render ──────────────────────────────────────────────────────────
