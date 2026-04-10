@@ -50,6 +50,7 @@
   <section class="section" id="results-section" hidden>
     <div class="container">
       <!-- 1. HEADER + SCORE -->
+      <p class="results-denom" id="results-denom"></p>
       <div class="results-header">
         <div>
           <h2 class="results-title">R&eacute;sultats de l'analyse</h2>
@@ -80,6 +81,16 @@
         </div>
       </div>
       <div class="ebitda-breakdown" id="ebitda-breakdown" hidden></div>
+
+      <!-- AFFINEZ / UPSELL (between valuation and ratios) -->
+      <div class="add-exercises" id="add-exercises" hidden>
+        <div class="add-exercises__inner">
+          <h3 id="add-exercises-title">&#128202; Affinez la valorisation</h3>
+          <p class="add-exercises__sub" id="add-exercises-sub"></p>
+          <div class="add-exercises__btns" id="add-exercises-btns"></div>
+          <p class="add-exercises__note" id="add-exercises-note"></p>
+        </div>
+      </div>
 
       <!-- 3. GRILLE RATIOS -->
       <div class="ratio-grid" id="ratio-grid"></div>
@@ -123,16 +134,6 @@
             <button class="btn btn--small" id="redeem-btn">Valider</button>
           </div>
           <p class="paywall__code-msg" id="code-msg" hidden></p>
-        </div>
-      </div>
-
-      <!-- Add exercises upsell (shown after unlock) -->
-      <div class="add-exercises" id="add-exercises" hidden>
-        <div class="add-exercises__inner">
-          <h3>&#128202; Affinez la valorisation</h3>
-          <p class="add-exercises__sub" id="add-exercises-sub"></p>
-          <div class="add-exercises__btns" id="add-exercises-btns"></div>
-          <p class="add-exercises__note">Chaque exercice ajout&eacute; recalcule automatiquement la valorisation et affine le score de sant&eacute;.</p>
         </div>
       </div>
 

@@ -157,6 +157,10 @@
 
     if (data.is_consolidated) document.getElementById('consolidated-notice').hidden = false;
 
+    // Denomination
+    var denomEl = document.getElementById('results-denom');
+    if (denomEl && data.denomination) denomEl.textContent = data.denomination;
+
     // CORRECTION 4a: dynamic header
     var sub = document.getElementById('results-sub');
     var annees = data.annees_disponibles || [data.annee];
@@ -264,11 +268,12 @@
         badgeHtml = '<span class="ratio-card__badge" style="background:' + bgColor + ';color:' + badgeColor + ';border:1px solid ' + badgeColor + '44">' + badge.label + '</span>';
       }
 
+      var ctaText = isLocked ? '<span class="ratio-card__hover">D\u00e9bloquer</span>' : '<span class="ratio-card__cta">Voir analyse \u2192</span>';
+
       card.innerHTML = '<span class="ratio-card__info">\u24d8</span>'
         + '<span class="ratio-card__label">' + def.label + '</span>'
         + '<span class="ratio-card__value">' + formatted + '</span>'
-        + yearLabel + n1Html + badgeHtml
-        + (isLocked ? '<span class="ratio-card__hover">D\u00e9bloquer</span>' : '');
+        + yearLabel + n1Html + badgeHtml + ctaText;
 
       card.onclick = function () { openModal(key, val, isLocked, unlocked, secteur, data); };
       grid.appendChild(card);
@@ -309,11 +314,11 @@
       fillList('ai-reco', ai.recommandations);
       document.getElementById('ai-valo').textContent = ai.valorisation_commentaire || '';
 
-      // Add exercises upsell
-      renderAddExercises(data);
+      renderAddExercises(data, true);
     } else {
       document.getElementById('paywall').hidden = false;
       document.getElementById('full-results').hidden = true;
+      renderAddExercises(data, false);
       setupPaywall(data);
     }
   }
@@ -489,35 +494,46 @@
     };
   }
 
-  // ── Add exercises upsell ──────────────────────────────────────────────────
-  function renderAddExercises(data) {
+  // ── Add exercises / upsell block ──────────────────────────────────────────
+  function renderAddExercises(data, unlocked) {
     var el = document.getElementById('add-exercises');
     if (!el) return;
     var nb = data.nb_exercices || 1;
-    if (nb >= 5) return; // Already have 5 years
+    if (nb >= 5) return;
 
     el.hidden = false;
+    var title = document.getElementById('add-exercises-title');
     var sub = document.getElementById('add-exercises-sub');
-    sub.textContent = 'Bas\u00e9e sur ' + nb + ' exercice' + (nb > 1 ? 's' : '') + '. Les experts recommandent 3 \u00e0 5 ans pour une valorisation fiable.';
-
     var btns = document.getElementById('add-exercises-btns');
+    var note = document.getElementById('add-exercises-note');
     btns.innerHTML = '';
-    var baseYear = data.annee_precedente || (data.annee - 1);
-    var yearsToPropose = [];
-    for (var y = baseYear - 1; y >= baseYear - 3 && yearsToPropose.length < 3; y--) {
-      yearsToPropose.push(y);
-    }
 
-    yearsToPropose.forEach(function(year) {
-      var btn = document.createElement('button');
-      btn.className = 'add-exercises__btn';
-      btn.innerHTML = '+ Ajouter ' + year + ' <span>19,99\u00a0\u20ac</span>';
-      btn.onclick = function() {
-        // Redirect to home with prefilled year context
-        window.location.href = '/#analyse';
+    if (unlocked) {
+      // Unlocked: free additional exercises
+      title.innerHTML = '\uD83D\uDCCA Affinez la valorisation';
+      sub.textContent = 'Bas\u00e9e sur ' + nb + ' exercice' + (nb > 1 ? 's' : '') + '. Ajoutez des exercices pour une valorisation plus fiable.';
+      var baseYear = data.annee_precedente || (data.annee - 1);
+      for (var y = baseYear - 1; y >= baseYear - 3; y--) {
+        var btn = document.createElement('button');
+        btn.className = 'add-exercises__btn';
+        btn.textContent = '+ Ajouter ' + y;
+        btn.onclick = function() { window.location.href = '/#analyse'; };
+        btns.appendChild(btn);
+      }
+      note.textContent = 'Gratuit \u2014 inclus dans votre acc\u00e8s';
+    } else {
+      // Freemium: upsell
+      title.innerHTML = '\uD83D\uDCCA D\u00e9bloquez l\u2019analyse compl\u00e8te';
+      sub.textContent = 'Acc\u00e9dez \u00e0 la valorisation d\u00e9taill\u00e9e, tous les ratios et le diagnostic complet. Ajoutez autant d\u2019exercices que vous voulez.';
+      var payBtn = document.createElement('button');
+      payBtn.className = 'btn btn--large';
+      payBtn.textContent = 'D\u00e9bloquer \u2014 19,99 \u20ac';
+      payBtn.onclick = function() {
+        document.getElementById('pay-btn').scrollIntoView({behavior:'smooth'});
       };
-      btns.appendChild(btn);
-    });
+      btns.appendChild(payBtn);
+      note.innerHTML = '<a href="#" id="add-ex-code-link" style="color:#5a7fa0;font-size:.82rem">Vous avez un code d\u2019acc\u00e8s ?</a>';
+    }
   }
 
   // ── Helpers ──────────────────────────────────────────────────────────────
