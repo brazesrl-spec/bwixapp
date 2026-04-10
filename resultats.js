@@ -161,6 +161,38 @@
     var denomEl = document.getElementById('results-denom');
     if (denomEl && data.denomination) denomEl.textContent = data.denomination;
 
+    // Tabs (if 2+ exercises)
+    var tabsEl = document.getElementById('analyse-tabs');
+    var nbEx = data.exercices_count || data.nb_exercices || 1;
+    var annees = data.annees_disponibles || [data.annee];
+    if (nbEx >= 2 && tabsEl) {
+      tabsEl.hidden = false;
+      tabsEl.innerHTML = '<button class="tab active" data-tab="synthese">Synth\u00e8se ' + annees.filter(Boolean).join('-') + '</button>';
+      annees.filter(Boolean).sort(function(a,b){return b-a;}).forEach(function(y){
+        tabsEl.innerHTML += '<button class="tab" data-tab="' + y + '">' + y + '</button>';
+      });
+      tabsEl.innerHTML += '<button class="tab tab-add" data-tab="add">+ Ajouter</button>';
+    } else if (tabsEl) {
+      tabsEl.hidden = false;
+      tabsEl.innerHTML = '<button class="tab active" data-tab="' + data.annee + '">' + data.annee + '</button>';
+      tabsEl.innerHTML += '<button class="tab tab-add" data-tab="add">+ Ajouter</button>';
+    }
+
+    // Productivity card
+    var prod = data.productivite;
+    var prodCard = document.getElementById('productivite-card');
+    if (prod && prod.etp && prod.etp > 0 && prodCard) {
+      prodCard.hidden = false;
+      var badgeColor2 = {'vert':'#00c896','jaune':'#f59e0b','rouge':'#ef4444','gris':'#5a7fa0'}[prod.badge_ebitda_etp] || '#5a7fa0';
+      prodCard.style.borderTop = '3px solid ' + badgeColor2;
+      var items = '<div class="productivite-card__item"><span class="productivite-card__label">EBITDA/ETP</span><span class="productivite-card__val" style="color:' + badgeColor2 + '">' + (prod.ebitda_par_etp ? Math.round(prod.ebitda_par_etp).toLocaleString('fr-BE') + ' \u20ac' : 'N/A') + '</span></div>';
+      if (prod.marge_par_etp) items += '<div class="productivite-card__item"><span class="productivite-card__label">Marge/ETP</span><span class="productivite-card__val">' + Math.round(prod.marge_par_etp).toLocaleString('fr-BE') + ' \u20ac</span></div>';
+      if (prod.ca_par_etp) items += '<div class="productivite-card__item"><span class="productivite-card__label">CA/ETP</span><span class="productivite-card__val">' + Math.round(prod.ca_par_etp).toLocaleString('fr-BE') + ' \u20ac</span></div>';
+      prodCard.innerHTML = '<div class="productivite-card__header"><span class="productivite-card__title">Productivit\u00e9 par employ\u00e9</span><span class="productivite-card__etp">' + prod.etp + ' ETP</span></div>'
+        + '<div class="productivite-card__grid">' + items + '</div>'
+        + (prod.benchmark ? '<p class="productivite-card__bench">' + prod.benchmark + '</p>' : '');
+    }
+
     // CORRECTION 4a: dynamic header
     var sub = document.getElementById('results-sub');
     var annees = data.annees_disponibles || [data.annee];

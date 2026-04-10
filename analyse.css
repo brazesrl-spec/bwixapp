@@ -204,6 +204,38 @@
 /* Ratio card tooltip */
 .ratio-onboarding{background:#1a2535;border-radius:8px;padding:10px 16px;text-align:center;font-size:.8rem;color:#5a7fa0;margin-bottom:20px;transition:opacity .3s}
 
+/* Tabs */
+.analyse-tabs{display:flex;gap:4px;margin-bottom:24px;border-bottom:1px solid rgba(255,255,255,.08);padding-bottom:0;overflow-x:auto}
+.analyse-tabs .tab{padding:10px 18px;border:none;background:transparent;color:rgba(255,255,255,.5);font-size:.88rem;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;font-family:inherit;white-space:nowrap;transition:all .2s}
+.analyse-tabs .tab:hover{color:#fff}
+.analyse-tabs .tab.active{color:#fff;border-bottom-color:#00c896;background:rgba(0,200,150,.08)}
+.analyse-tabs .tab-add{border:1px dashed rgba(255,255,255,.3);border-radius:6px;margin-left:8px;border-bottom:none}
+.analyse-tabs .tab-add:hover{border-color:#00c896;color:#00c896}
+
+/* Productivity card */
+.productivite-card{background:#1a2535;border:1px solid rgba(30,58,95,.6);border-radius:12px;padding:20px;margin-bottom:20px;cursor:pointer;transition:border-color .2s}
+.productivite-card:hover{border-color:rgba(0,200,150,.3)}
+.productivite-card__header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.productivite-card__title{color:#fff;font-size:.95rem;font-weight:600}
+.productivite-card__etp{color:#5a7fa0;font-size:.82rem}
+.productivite-card__grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
+.productivite-card__item{text-align:center}
+.productivite-card__label{display:block;font-size:.72rem;color:#5a7fa0;text-transform:uppercase;letter-spacing:.5px}
+.productivite-card__val{display:block;font-size:1.1rem;font-weight:700;color:#fff;margin:4px 0}
+.productivite-card__bench{font-size:.72rem;color:#5a7fa0;margin-top:8px}
+
+/* Evolution block */
+.evolution-block{margin:20px 0}
+.evolution-row{display:grid;grid-template-columns:140px 1fr;gap:12px;padding:10px 0;border-bottom:1px solid rgba(30,58,95,.3)}
+.evolution-row__label{color:#fff;font-size:.88rem;font-weight:600}
+.evolution-row__points{display:flex;gap:12px;flex-wrap:wrap}
+.evolution-point{font-size:.82rem;color:#8fa3bf}
+.evolution-point strong{color:#fff}
+.evolution-trend{font-size:.78rem;font-weight:600;margin-left:8px}
+.evolution-trend--up{color:#00c896}
+.evolution-trend--down{color:#ef4444}
+.evolution-trend--stable{color:#5a7fa0}
+
 /* Responsive */
 @media(max-width:900px){
   .ratio-grid{grid-template-columns:repeat(2,1fr)}
