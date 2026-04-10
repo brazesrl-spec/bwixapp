@@ -216,7 +216,43 @@
           // Show main content, hide add panel
           mainContent.forEach(function(el){ el.style.display = ''; });
           if (addPanel) addPanel.hidden = true;
-          // Scroll to top of results
+
+          // Render correct data for this tab
+          var exercicesList = (data.full || {}).exercices || data.exercices || [];
+          if (tabId === 'synthese') {
+            // Re-render with synthese data (default view)
+            renderTabContent(data, ratios, secteur, unlocked);
+          } else {
+            // Find the exercice for this year
+            var yearNum = parseInt(tabId);
+            var ex = exercicesList.find(function(e){ return e.annee === yearNum; });
+            if (ex) {
+              renderTabContent({
+                annee: ex.annee,
+                score_sante: data.score_sante,
+                freemium: {
+                  ebitda: (ex.ratios || {}).rentabilite ? ex.ratios.rentabilite.ebitda : null,
+                  roe: (ex.ratios || {}).rentabilite ? ex.ratios.rentabilite.roe : null,
+                  liquidite_generale: (ex.ratios || {}).liquidite ? ex.ratios.liquidite.liquidite_generale : null,
+                  solvabilite: (ex.ratios || {}).structure ? ex.ratios.structure.solvabilite : null,
+                },
+                badges: ex.badges || {},
+                valorisation_floue: {
+                  fourchette_low: (ex.valorisation || {}).ev_ebitda,
+                  fourchette_high: (ex.valorisation || {}).ev_ebitda,
+                },
+                valorisation: ex.valorisation || {},
+                ebitda_n: ex.ebitda,
+                ebitda_reference: ex.ebitda,
+                ebitda_reference_label: String(ex.annee),
+                nb_exercices: 1,
+                unlocked: data.unlocked,
+                full: data.unlocked ? { ratios: ex.ratios || {}, ai_analysis: (data.full || {}).ai_analysis || {} } : null,
+                _isYearTab: true,
+              }, ex.ratios || {}, secteur, unlocked);
+            }
+          }
+
           document.getElementById('results-section').scrollIntoView({behavior: 'smooth'});
         }
       });
@@ -468,6 +504,104 @@
   document.getElementById('ratio-modal').onclick = function (e) {
     if (e.target === this) this.hidden = true;
   };
+
+  // ── Tab content renderer (re-renders dynamic parts) ──────────────────────
+  function renderTabContent(tabData, tabRatios, secteur, unlocked) {
+    // Score
+    var scoreVal = tabData.score_sante || 50;
+    var arc = document.getElementById('score-arc');
+    var val = document.getElementById('score-val');
+    if (arc && val) {
+      arc.style.strokeDashoffset = 327 - (scoreVal / 100) * 327;
+      arc.style.stroke = scoreVal >= 70 ? '#00c896' : scoreVal >= 50 ? '#ffb432' : scoreVal >= 30 ? '#ff8c00' : '#ff6b6b';
+      val.textContent = scoreVal;
+    }
+    // Score context
+    var ctx = document.getElementById('score-context');
+    if (ctx) {
+      if (scoreVal < 30) { ctx.textContent = 'Situation financi\u00e8re critique'; ctx.className = 'score-context score-context--red'; }
+      else if (scoreVal < 50) { ctx.textContent = 'Situation financi\u00e8re fragile'; ctx.className = 'score-context score-context--orange'; }
+      else if (scoreVal < 70) { ctx.textContent = 'Situation financi\u00e8re correcte'; ctx.className = 'score-context score-context--yellow'; }
+      else { ctx.textContent = 'Bonne sant\u00e9 financi\u00e8re'; ctx.className = 'score-context score-context--green'; }
+    }
+
+    // Valuation
+    var valLow = document.getElementById('val-low');
+    var valHigh = document.getElementById('val-high');
+    var vf = tabData.valorisation_floue || tabData.valorisation || {};
+    if (valLow && valHigh) {
+      valLow.className = 'valuation-amount';
+      valHigh.className = 'valuation-amount';
+      if (unlocked || tabData._isYearTab) {
+        valLow.textContent = fmtEurRaw(vf.fourchette_low || vf.fourchette_basse || vf.ev_ebitda);
+        valHigh.textContent = fmtEurRaw(vf.fourchette_high || vf.fourchette_haute || vf.ev_ebitda);
+      } else {
+        valLow.textContent = fmtEurRaw(vf.fourchette_low);
+        valHigh.textContent = fmtEurRaw(vf.fourchette_high);
+        valLow.classList.add('blurred');
+        valHigh.classList.add('blurred');
+      }
+    }
+
+    // EBITDA breakdown
+    var bd = document.getElementById('ebitda-breakdown');
+    if (bd) {
+      if (tabData._isYearTab) {
+        bd.hidden = false;
+        bd.innerHTML = 'EBITDA ' + tabData.annee + ' : <strong>' + fmtEur(tabData.ebitda_n) + '</strong>';
+      } else if (tabData.ebitda_n != null) {
+        bd.hidden = false;
+        var parts = ['EBITDA ' + tabData.annee + ' : <strong>' + fmtEur(tabData.ebitda_n) + '</strong>'];
+        if (tabData.ebitda_n1 != null) parts.push('EBITDA ' + tabData.annee_precedente + ' : <strong>' + fmtEur(tabData.ebitda_n1) + '</strong>');
+        if (tabData.ebitda_reference != null && (tabData.nb_exercices || 1) >= 2) parts.push('Moyenne : <strong>' + fmtEur(tabData.ebitda_reference) + '</strong> \u2190 valorisation');
+        bd.innerHTML = parts.join(' &nbsp;|&nbsp; ');
+      }
+    }
+
+    // Ratio grid (rebuild)
+    var grid = document.getElementById('ratio-grid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    var allBadges = tabData.badges || tabRatios.badges || {};
+    var BADGE_MAP2 = {'roe':'roe','liquidite_generale':'liquidite','solvabilite':'solvabilite','gearing':'gearing','dettes_ebitda':'dette_ebitda','couverture_interets':'couverture'};
+    var BADGE_COLORS2 = {'vert':'#00c896','jaune':'#f59e0b','rouge':'#ef4444','gris':'#5a7fa0'};
+
+    RATIOS_ORDER.forEach(function(key) {
+      var def = RATIOS_DATA[key];
+      if (!def) return;
+      var valR = unlocked || tabData._isYearTab ? def.path(tabRatios) : (def.free ? (tabData.freemium || {})[key === 'ebitda' ? 'ebitda' : key] : def.path(tabRatios));
+      if (!unlocked && !tabData._isYearTab && def.free && key === 'ebitda') valR = (tabData.freemium || {}).ebitda;
+      var isFree = def.free;
+      var isLocked = !unlocked && !tabData._isYearTab && !isFree;
+
+      var badgeKey = BADGE_MAP2[key];
+      var badge = badgeKey ? allBadges[badgeKey] : null;
+      var badgeColor = badge ? (BADGE_COLORS2[badge.badge] || '') : '';
+
+      var card = document.createElement('div');
+      card.className = 'ratio-card' + (isLocked ? ' ratio-card--locked' : '');
+      if (badgeColor && !isLocked) card.style.borderTop = '3px solid ' + badgeColor;
+
+      var override = def.formatOverride ? def.formatOverride(valR) : null;
+      var formatted;
+      if (override && !isLocked) formatted = override;
+      else if (isLocked) { formatted = def.unit === 'eur' ? '---' : def.unit === 'pct' ? '--%' : '--'; if (valR != null) formatted = formatVal(valR, def.unit); }
+      else formatted = valR != null ? formatVal(valR, def.unit) : 'N/A';
+
+      var bgMap = {'#00c896':'rgba(0,200,150,.15)','#f59e0b':'rgba(245,158,11,.15)','#ef4444':'rgba(239,68,68,.15)','#5a7fa0':'rgba(90,127,160,.15)'};
+      var badgeHtml = (badge && !isLocked) ? '<span class="ratio-card__badge" style="background:' + (bgMap[badgeColor]||'rgba(255,255,255,.1)') + ';color:' + badgeColor + ';border:1px solid ' + badgeColor + '44">' + badge.label + '</span>' : '';
+      var yearLabel = tabData.annee ? '<span class="ratio-card__year">' + tabData.annee + '</span>' : '';
+      var ctaText = isLocked ? '<span class="ratio-card__hover">D\u00e9bloquer</span>' : '<span class="ratio-card__cta">Voir analyse \u2192</span>';
+
+      card.innerHTML = '<span class="ratio-card__info">\u24d8</span>'
+        + '<span class="ratio-card__label">' + def.label + '</span>'
+        + '<span class="ratio-card__value">' + formatted + '</span>'
+        + yearLabel + badgeHtml + ctaText;
+
+      card.onclick = function() { openModal(key, valR, isLocked, unlocked, secteur, tabData); };
+      grid.appendChild(card);
+    });
+  }
 
   // ── Score deductions ──────────────────────────────────────────────────────
   function renderDeductions(deductions) {
