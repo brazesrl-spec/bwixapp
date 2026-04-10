@@ -227,6 +227,14 @@
             var yearNum = parseInt(tabId);
             var ex = exercicesList.find(function(e){ return e.annee === yearNum; });
             if (ex) {
+              // Per-year fourchette: EBITDA × multiples sectoriels
+              var exValo = ex.valorisation || {};
+              var exMultiple = exValo.multiple_sectoriel || 5;
+              var exEbitda = ex.ebitda || 0;
+              // Approximate low/high using ±20% of central (backend has exact multiples)
+              var exFLow = exEbitda > 0 ? Math.round(exEbitda * exMultiple * 0.8) : 0;
+              var exFHigh = exEbitda > 0 ? Math.round(exEbitda * exMultiple * 1.2) : 0;
+
               renderTabContent({
                 annee: ex.annee,
                 score_sante: data.score_sante,
@@ -238,10 +246,11 @@
                 },
                 badges: ex.badges || {},
                 valorisation_floue: {
-                  fourchette_low: (ex.valorisation || {}).ev_ebitda,
-                  fourchette_high: (ex.valorisation || {}).ev_ebitda,
+                  fourchette_low: exFLow,
+                  fourchette_high: exFHigh,
                 },
-                valorisation: ex.valorisation || {},
+                valorisation: exValo,
+                productivite: ex.productivite || null,
                 ebitda_n: ex.ebitda,
                 ebitda_reference: ex.ebitda,
                 ebitda_reference_label: String(ex.annee),
@@ -255,6 +264,39 @@
 
           document.getElementById('results-section').scrollIntoView({behavior: 'smooth'});
         }
+      });
+    }
+
+    // Upload handler for "+" tab
+    var addPdfInput = document.getElementById('add-pdf');
+    if (addPdfInput) {
+      addPdfInput.addEventListener('change', function() {
+        var file = addPdfInput.files[0];
+        if (!file) return;
+        var addDesc = document.getElementById('tab-add-desc');
+        addDesc.innerHTML = '<div class="spinner" style="width:32px;height:32px;margin:12px auto"></div><p>Extraction en cours...</p>';
+
+        var fd = new FormData();
+        fd.append('file', file);
+        fd.append('token', token);
+        fd.append('secteur', secteur);
+
+        fetch(API + '/api/analyse/add-exercice', { method: 'POST', body: fd })
+          .then(function(r) {
+            if (!r.ok) return r.json().then(function(d) { throw new Error(d.detail || 'Erreur'); });
+            return r.json();
+          })
+          .then(function(result) {
+            if (result.warning === 'doublon') {
+              addDesc.innerHTML = '\u26a0\ufe0f Ann\u00e9e(s) d\u00e9j\u00e0 pr\u00e9sente(s) : ' + result.annees_deja_presentes.join(', ') + '. Aucun nouvel exercice ajout\u00e9.';
+            } else {
+              addDesc.innerHTML = '\u2705 Exercice(s) ' + result.annees_nouvelles.join(', ') + ' ajout\u00e9(s). Rechargement...';
+              setTimeout(function() { window.location.reload(); }, 1000);
+            }
+          })
+          .catch(function(err) {
+            addDesc.innerHTML = '<span style="color:#ff6b6b">' + err.message + '</span>';
+          });
       });
     }
 
@@ -601,6 +643,41 @@
       card.onclick = function() { openModal(key, valR, isLocked, unlocked, secteur, tabData); };
       grid.appendChild(card);
     });
+
+    // Update productivity card for this tab
+    var prodCard = document.getElementById('productivite-card');
+    var tabProd = tabData.productivite || (tabData.full || {}).productivite;
+    if (prodCard) {
+      if (tabProd && tabProd.etp && tabProd.etp > 0) {
+        prodCard.hidden = false;
+        var bc2 = {'vert':'#00c896','jaune':'#f59e0b','rouge':'#ef4444','gris':'#5a7fa0'}[tabProd.badge_ebitda_etp] || '#5a7fa0';
+        prodCard.style.borderTop = '3px solid ' + bc2;
+        var items2 = '<div class="productivite-card__item"><span class="productivite-card__label">EBITDA / ETP</span><span class="productivite-card__val" style="color:' + bc2 + '">' + (tabProd.ebitda_par_etp ? Math.round(tabProd.ebitda_par_etp).toLocaleString('fr-BE') + ' \u20ac' : 'N/A') + '</span></div>';
+        if (tabProd.marge_par_etp) items2 += '<div class="productivite-card__item"><span class="productivite-card__label">Marge brute / ETP</span><span class="productivite-card__val">' + Math.round(tabProd.marge_par_etp).toLocaleString('fr-BE') + ' \u20ac</span></div>';
+        prodCard.innerHTML = '<div class="productivite-card__header"><span class="productivite-card__title">Productivit\u00e9 par employ\u00e9</span><span class="productivite-card__etp">' + tabProd.etp + ' ETP</span></div>'
+          + '<div class="productivite-card__grid">' + items2 + '</div>'
+          + (tabProd.benchmark ? '<p class="productivite-card__bench">' + tabProd.benchmark + '</p>' : '');
+      } else {
+        prodCard.hidden = true;
+      }
+    }
+
+    // Per-year disclaimer for individual tabs
+    var valCard = document.querySelector('.valuation-card h3');
+    if (valCard && tabData._isYearTab) {
+      var disc = document.getElementById('valo-year-disclaimer');
+      if (!disc) {
+        disc = document.createElement('p');
+        disc.id = 'valo-year-disclaimer';
+        disc.style.cssText = 'font-size:.78rem;color:#5a7fa0;text-align:center;margin-top:8px';
+        document.querySelector('.valuation-card').appendChild(disc);
+      }
+      disc.textContent = 'Valorisation indicative sur 1 exercice. La synth\u00e8se multi-ann\u00e9es est plus fiable.';
+      disc.hidden = false;
+    } else {
+      var disc2 = document.getElementById('valo-year-disclaimer');
+      if (disc2) disc2.hidden = true;
+    }
   }
 
   // ── Score deductions ──────────────────────────────────────────────────────
