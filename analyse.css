@@ -211,6 +211,9 @@
 .analyse-tabs .tab.active{color:#fff;border-bottom-color:#00c896;background:rgba(0,200,150,.08)}
 .analyse-tabs .tab-add{border:1px dashed rgba(255,255,255,.3);border-radius:6px;margin-left:8px;border-bottom:none}
 .analyse-tabs .tab-add:hover{border-color:#00c896;color:#00c896}
+.tab-panel{animation:tabFade .15s ease-in}
+@keyframes tabFade{from{opacity:0}to{opacity:1}}
+.add-upload{text-align:center;padding:40px 20px;background:#1a2535;border-radius:12px;margin:20px 0}
 
 /* Productivity card */
 .productivite-card{background:#1a2535;border:1px solid rgba(30,58,95,.6);border-radius:12px;padding:20px;margin-bottom:20px;cursor:pointer;transition:border-color .2s}

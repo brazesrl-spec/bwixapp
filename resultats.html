@@ -54,9 +54,6 @@
 
       <!-- 1. HEADER + SCORE -->
       <p class="results-denom" id="results-denom"></p>
-
-      <!-- Productivity card -->
-      <div class="productivite-card" id="productivite-card" hidden></div>
       <div class="results-header">
         <div>
           <h2 class="results-title">R&eacute;sultats de l'analyse</h2>
@@ -87,6 +84,9 @@
         </div>
       </div>
       <div class="ebitda-breakdown" id="ebitda-breakdown" hidden></div>
+
+      <!-- Productivity card -->
+      <div class="productivite-card" id="productivite-card" hidden></div>
 
       <!-- AFFINEZ / UPSELL (between valuation and ratios) -->
       <div class="add-exercises" id="add-exercises" hidden>
@@ -140,6 +140,21 @@
             <button class="btn btn--small" id="redeem-btn">Valider</button>
           </div>
           <p class="paywall__code-msg" id="code-msg" hidden></p>
+        </div>
+      </div>
+
+      <!-- TAB: Add exercise panel -->
+      <div id="tab-add-panel" class="tab-panel" hidden>
+        <div class="add-upload">
+          <h3 id="tab-add-title">Ajoutez un exercice suppl&eacute;mentaire</h3>
+          <p id="tab-add-desc" style="color:#8fa3bf;font-size:.9rem;margin-bottom:16px">Les donn&eacute;es seront fusionn&eacute;es automatiquement dans la synth&egrave;se.</p>
+          <div class="drop-zone" id="add-drop-zone" style="max-width:400px;margin:0 auto">
+            <input type="file" id="add-pdf" accept=".pdf">
+            <div class="drop-zone__prompt">
+              <span class="drop-zone__icon">&#128196;</span>
+              <span>Glissez le bilan BNB ici ou <strong>parcourir</strong></span>
+            </div>
+          </div>
         </div>
       </div>
 

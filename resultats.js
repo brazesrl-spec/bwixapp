@@ -178,6 +178,50 @@
       tabsEl.innerHTML += '<button class="tab tab-add" data-tab="add">+ Ajouter</button>';
     }
 
+    // Tab switching
+    if (tabsEl) {
+      var mainContent = document.querySelectorAll('.results-header,.score-deductions,.valuation-card,.ebitda-breakdown,.productivite-card,.add-exercises,.ratio-grid,.fomo-counter,#full-results,#paywall');
+      var addPanel = document.getElementById('tab-add-panel');
+
+      tabsEl.addEventListener('click', function(e) {
+        var btn = e.target.closest('.tab');
+        if (!btn) return;
+        var tabId = btn.getAttribute('data-tab');
+
+        // Update active tab
+        tabsEl.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+        btn.classList.add('active');
+
+        if (tabId === 'add') {
+          // Hide main content, show add panel
+          mainContent.forEach(function(el){ el.style.display = 'none'; });
+          if (addPanel) {
+            addPanel.hidden = false;
+            addPanel.style.display = '';
+            // Show paywall or upload based on unlock status
+            var addTitle = document.getElementById('tab-add-title');
+            var addDesc = document.getElementById('tab-add-desc');
+            var addDrop = document.getElementById('add-drop-zone');
+            if (unlocked) {
+              addTitle.textContent = 'Ajoutez un exercice suppl\u00e9mentaire';
+              addDesc.textContent = 'Les donn\u00e9es seront fusionn\u00e9es automatiquement dans la synth\u00e8se.';
+              addDrop.style.display = '';
+            } else {
+              addTitle.textContent = 'D\u00e9bloquez l\u2019analyse compl\u00e8te';
+              addDesc.innerHTML = 'Acc\u00e9dez \u00e0 la valorisation d\u00e9taill\u00e9e + ajoutez autant d\u2019exercices que vous voulez \u2014 19,99\u00a0\u20ac<br><br><a href="#" class="btn btn--large" onclick="document.getElementById(\'pay-btn\').scrollIntoView({behavior:\'smooth\'});return false;">D\u00e9bloquer \u2014 19,99 \u20ac</a>';
+              addDrop.style.display = 'none';
+            }
+          }
+        } else {
+          // Show main content, hide add panel
+          mainContent.forEach(function(el){ el.style.display = ''; });
+          if (addPanel) addPanel.hidden = true;
+          // Scroll to top of results
+          document.getElementById('results-section').scrollIntoView({behavior: 'smooth'});
+        }
+      });
+    }
+
     // Productivity card
     var prod = data.productivite;
     var prodCard = document.getElementById('productivite-card');
@@ -185,9 +229,9 @@
       prodCard.hidden = false;
       var badgeColor2 = {'vert':'#00c896','jaune':'#f59e0b','rouge':'#ef4444','gris':'#5a7fa0'}[prod.badge_ebitda_etp] || '#5a7fa0';
       prodCard.style.borderTop = '3px solid ' + badgeColor2;
-      var items = '<div class="productivite-card__item"><span class="productivite-card__label">EBITDA/ETP</span><span class="productivite-card__val" style="color:' + badgeColor2 + '">' + (prod.ebitda_par_etp ? Math.round(prod.ebitda_par_etp).toLocaleString('fr-BE') + ' \u20ac' : 'N/A') + '</span></div>';
-      if (prod.marge_par_etp) items += '<div class="productivite-card__item"><span class="productivite-card__label">Marge/ETP</span><span class="productivite-card__val">' + Math.round(prod.marge_par_etp).toLocaleString('fr-BE') + ' \u20ac</span></div>';
-      if (prod.ca_par_etp) items += '<div class="productivite-card__item"><span class="productivite-card__label">CA/ETP</span><span class="productivite-card__val">' + Math.round(prod.ca_par_etp).toLocaleString('fr-BE') + ' \u20ac</span></div>';
+      var items = '<div class="productivite-card__item"><span class="productivite-card__label">EBITDA / ETP</span><span class="productivite-card__val" style="color:' + badgeColor2 + '">' + (prod.ebitda_par_etp ? Math.round(prod.ebitda_par_etp).toLocaleString('fr-BE') + ' \u20ac' : 'N/A') + '</span></div>';
+      if (prod.marge_par_etp) items += '<div class="productivite-card__item"><span class="productivite-card__label">Marge brute / ETP</span><span class="productivite-card__val">' + Math.round(prod.marge_par_etp).toLocaleString('fr-BE') + ' \u20ac</span><span style="display:block;font-size:.68rem;color:#5a7fa0;margin-top:2px">(R\u00e9sultat d\u2019exploitation avant charges de personnel)</span></div>';
+      if (prod.ca_par_etp) items += '<div class="productivite-card__item"><span class="productivite-card__label">CA / ETP</span><span class="productivite-card__val">' + Math.round(prod.ca_par_etp).toLocaleString('fr-BE') + ' \u20ac</span></div>';
       prodCard.innerHTML = '<div class="productivite-card__header"><span class="productivite-card__title">Productivit\u00e9 par employ\u00e9</span><span class="productivite-card__etp">' + prod.etp + ' ETP</span></div>'
         + '<div class="productivite-card__grid">' + items + '</div>'
         + (prod.benchmark ? '<p class="productivite-card__bench">' + prod.benchmark + '</p>' : '');
