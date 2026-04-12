@@ -227,14 +227,6 @@
             var yearNum = parseInt(tabId);
             var ex = exercicesList.find(function(e){ return e.annee === yearNum; });
             if (ex) {
-              // Per-year fourchette: EBITDA × multiples sectoriels
-              var exValo = ex.valorisation || {};
-              var exMultiple = exValo.multiple_sectoriel || 5;
-              var exEbitda = ex.ebitda || 0;
-              // Approximate low/high using ±20% of central (backend has exact multiples)
-              var exFLow = exEbitda > 0 ? Math.round(exEbitda * exMultiple * 0.8) : 0;
-              var exFHigh = exEbitda > 0 ? Math.round(exEbitda * exMultiple * 1.2) : 0;
-
               renderTabContent({
                 annee: ex.annee,
                 score_sante: data.score_sante,
@@ -245,15 +237,8 @@
                   solvabilite: (ex.ratios || {}).structure ? ex.ratios.structure.solvabilite : null,
                 },
                 badges: ex.badges || {},
-                valorisation_floue: {
-                  fourchette_low: exFLow,
-                  fourchette_high: exFHigh,
-                },
-                valorisation: exValo,
                 productivite: ex.productivite || null,
                 ebitda_n: ex.ebitda,
-                ebitda_reference: ex.ebitda,
-                ebitda_reference_label: String(ex.annee),
                 nb_exercices: 1,
                 unlocked: data.unlocked,
                 full: data.unlocked ? { ratios: ex.ratios || {}, ai_analysis: (data.full || {}).ai_analysis || {} } : null,
@@ -567,21 +552,28 @@
       else { ctx.textContent = 'Bonne sant\u00e9 financi\u00e8re'; ctx.className = 'score-context score-context--green'; }
     }
 
-    // Valuation
+    // Valuation — only on synthese tab
+    var valCard = document.querySelector('.valuation-card');
     var valLow = document.getElementById('val-low');
     var valHigh = document.getElementById('val-high');
-    var vf = tabData.valorisation_floue || tabData.valorisation || {};
-    if (valLow && valHigh) {
-      valLow.className = 'valuation-amount';
-      valHigh.className = 'valuation-amount';
-      if (unlocked || tabData._isYearTab) {
-        valLow.textContent = fmtEurRaw(vf.fourchette_low || vf.fourchette_basse || vf.ev_ebitda);
-        valHigh.textContent = fmtEurRaw(vf.fourchette_high || vf.fourchette_haute || vf.ev_ebitda);
-      } else {
-        valLow.textContent = fmtEurRaw(vf.fourchette_low);
-        valHigh.textContent = fmtEurRaw(vf.fourchette_high);
-        valLow.classList.add('blurred');
-        valHigh.classList.add('blurred');
+    if (tabData._isYearTab) {
+      // Hide valorisation on year tabs
+      if (valCard) valCard.style.display = 'none';
+    } else {
+      if (valCard) valCard.style.display = '';
+      var vf = tabData.valorisation_floue || tabData.valorisation || {};
+      if (valLow && valHigh) {
+        valLow.className = 'valuation-amount';
+        valHigh.className = 'valuation-amount';
+        if (unlocked) {
+          valLow.textContent = fmtEurRaw(vf.fourchette_low || vf.fourchette_basse);
+          valHigh.textContent = fmtEurRaw(vf.fourchette_high || vf.fourchette_haute);
+        } else {
+          valLow.textContent = fmtEurRaw(vf.fourchette_low);
+          valHigh.textContent = fmtEurRaw(vf.fourchette_high);
+          valLow.classList.add('blurred');
+          valHigh.classList.add('blurred');
+        }
       }
     }
 
@@ -591,12 +583,34 @@
       if (tabData._isYearTab) {
         bd.hidden = false;
         bd.innerHTML = 'EBITDA ' + tabData.annee + ' : <strong>' + fmtEur(tabData.ebitda_n) + '</strong>';
-      } else if (tabData.ebitda_n != null) {
+      } else {
+        // Synthese: show EBITDA pondéré with dropdown detail
+        var valo = tabData.valorisation || {};
+        var detail = valo.ebitda_pondere_detail || ((tabData.full || {}).synthese || {}).ebitda_pondere_detail || [];
+        var nbEx = tabData.nb_exercices || detail.length || 1;
         bd.hidden = false;
-        var parts = ['EBITDA ' + tabData.annee + ' : <strong>' + fmtEur(tabData.ebitda_n) + '</strong>'];
-        if (tabData.ebitda_n1 != null) parts.push('EBITDA ' + tabData.annee_precedente + ' : <strong>' + fmtEur(tabData.ebitda_n1) + '</strong>');
-        if (tabData.ebitda_reference != null && (tabData.nb_exercices || 1) >= 2) parts.push('Moyenne : <strong>' + fmtEur(tabData.ebitda_reference) + '</strong> \u2190 valorisation');
-        bd.innerHTML = parts.join(' &nbsp;|&nbsp; ');
+        var pondVal = tabData.ebitda_reference || valo.ebitda_reference || 0;
+        var html = 'EBITDA pond\u00e9r\u00e9 : <strong>' + fmtEur(pondVal) + '</strong> \u2190 base de valorisation';
+        if (detail.length > 1) {
+          html += ' <a href="#" id="ebitda-detail-toggle" style="color:#00c896;font-size:.78rem;margin-left:8px">D\u00e9tail \u25be</a>';
+          html += '<div id="ebitda-detail" hidden style="margin-top:8px;font-size:.8rem;color:#5a7fa0">';
+          detail.forEach(function(d) {
+            html += d.annee + ' : ' + fmtEur(d.ebitda) + ' \u00d7 ' + d.poids_pct + '% = ' + fmtEur(d.contribution) + '<br>';
+          });
+          html += '</div>';
+        }
+        // Reliability warning
+        var warnStyle, warnText;
+        if (nbEx <= 1) { warnStyle = 'background:rgba(239,68,68,.1);color:#ef4444;border:1px solid rgba(239,68,68,.2)'; warnText = '\u26a0\ufe0f Valorisation non fiable sur 1 exercice. Ajoutez au moins 2 ans.'; }
+        else if (nbEx === 2) { warnStyle = 'background:rgba(245,158,11,.1);color:#f59e0b;border:1px solid rgba(245,158,11,.2)'; warnText = '\u26a1 Valorisation indicative. 2 exercices \u2014 3 minimum recommand\u00e9s.'; }
+        else if (nbEx === 3) { warnStyle = 'background:rgba(0,200,150,.06);color:#00c896;border:1px solid rgba(0,200,150,.15)'; warnText = '\u2713 Valorisation correcte sur 3 exercices.'; }
+        else if (nbEx === 4) { warnStyle = 'background:rgba(0,200,150,.08);color:#00c896;border:1px solid rgba(0,200,150,.2)'; warnText = '\u2713 Valorisation fiable sur 4 exercices.'; }
+        else { warnStyle = 'background:rgba(0,200,150,.1);color:#00c896;border:1px solid rgba(0,200,150,.25)'; warnText = '\u2713 Valorisation solide \u2014 r\u00e9f\u00e9rence M&A sur 5+ exercices.'; }
+        html += '<div style="' + warnStyle + ';border-radius:8px;padding:8px 12px;margin-top:10px;font-size:.82rem">' + warnText + '</div>';
+        bd.innerHTML = html;
+        // Toggle handler
+        var toggle = document.getElementById('ebitda-detail-toggle');
+        if (toggle) toggle.onclick = function(e) { e.preventDefault(); var d2 = document.getElementById('ebitda-detail'); d2.hidden = !d2.hidden; toggle.textContent = d2.hidden ? 'D\u00e9tail \u25be' : 'D\u00e9tail \u25b4'; };
       }
     }
 
@@ -662,22 +676,9 @@
       }
     }
 
-    // Per-year disclaimer for individual tabs
-    var valCard = document.querySelector('.valuation-card h3');
-    if (valCard && tabData._isYearTab) {
-      var disc = document.getElementById('valo-year-disclaimer');
-      if (!disc) {
-        disc = document.createElement('p');
-        disc.id = 'valo-year-disclaimer';
-        disc.style.cssText = 'font-size:.78rem;color:#5a7fa0;text-align:center;margin-top:8px';
-        document.querySelector('.valuation-card').appendChild(disc);
-      }
-      disc.textContent = 'Valorisation indicative sur 1 exercice. La synth\u00e8se multi-ann\u00e9es est plus fiable.';
-      disc.hidden = false;
-    } else {
-      var disc2 = document.getElementById('valo-year-disclaimer');
-      if (disc2) disc2.hidden = true;
-    }
+    // Hide add-exercises block on year tabs, show on synthese
+    var addEx = document.getElementById('add-exercises');
+    if (addEx) addEx.style.display = tabData._isYearTab ? 'none' : '';
   }
 
   // ── Score deductions ──────────────────────────────────────────────────────
