@@ -191,7 +191,7 @@ var CSS = '<style>\n'
   + '.ratio-cta-sub{display:block;margin-top:12px;font-size:.75rem;color:rgba(255,255,255,.35)}\n'
   + '</style>\n';
 
-var HEADER = '<header class="header"><div class="container header__inner"><a href="/" class="logo">BWIX<span class="logo__dot">.</span></a><a href="https://bwix.app/#analyse" class="btn btn--small">Lancer une analyse</a></div></header>\n';
+var HEADER = '<header class="header"><div class="container header__inner"><a href="/" class="logo">BWIX<span class="logo__dot">.</span></a><a href="https://www.bwix.app/#analyse" class="btn btn--small">Lancer une analyse</a></div></header>\n';
 
 // CTA verb per ratio for dynamic button text
 var CTA_VERBS = {
@@ -234,7 +234,7 @@ function buildPage(r, s, isGeneric) {
   if (isGeneric) {
     title = r.label + ' \u2014 Guide complet PME belge | BWIX';
     h1 = r.full + ' \u2014 Guide pour les PME belges';
-    canonical = 'https://bwix.app/ratio/' + r.slug;
+    canonical = 'https://www.bwix.app/ratio/' + r.slug;
     benchBlock = '';
     // Sector pills
     secteurPills = '<div class="pills">'
@@ -248,7 +248,7 @@ function buildPage(r, s, isGeneric) {
   } else {
     title = r.label + ' \u2014 PME ' + s.label + ' belge | BWIX';
     h1 = r.full + ' pour les PME ' + s.label + ' en Belgique';
-    canonical = 'https://bwix.app/ratio/' + r.slug + '--' + s.slug;
+    canonical = 'https://www.bwix.app/ratio/' + r.slug + '--' + s.slug;
     var bench = (r.benchmarks && r.benchmarks[s.value]) || '';
     benchBlock = bench ? '<div class="seo-card"><h3>Benchmark ' + s.label + ' belge</h3><p class="seo-bench-val">' + bench + '</p></div>' : '';
     // Sector pills with active
@@ -316,7 +316,7 @@ function buildPage(r, s, isGeneric) {
     + '<section class="ratio-cta"><div class="ratio-cta-inner">\n'
     + '<h2>Obtenez la valorisation et la sant\u00e9 financi\u00e8re de n\u2019importe quelle soci\u00e9t\u00e9 belge</h2>\n'
     + '<p>Uploadez un bilan BNB officiel \u2014 ratios cl\u00e9s, score de sant\u00e9, valorisation 3 m\u00e9thodes et diagnostic financier complet en moins de 2 minutes.</p>\n'
-    + '<a href="https://bwix.app/#analyse" class="ratio-cta-btn">' + (function(){
+    + '<a href="https://www.bwix.app/#analyse" class="ratio-cta-btn">' + (function(){
       var verb = CTA_VERBS[r.slug] || ('Analyser le ' + r.label.split(' (')[0]);
       if (isGeneric) return verb + ' de ma soci\u00e9t\u00e9 belge \u2192';
       return verb + ' de ma soci\u00e9t\u00e9 ' + (SECTEUR_SHORT[s.slug] || s.label) + ' \u2192';
