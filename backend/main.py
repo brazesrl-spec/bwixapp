@@ -11,26 +11,42 @@ import httpx
 import stripe
 from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 
 from extract import extract_bnb_pdf, detect_consolidated
-from ratios import compute_ratios, compute_dcf, SECTEUR_MULTIPLES
+from pdf_report import generate_pdf, generate_pdf_base64, pdf_filename
+from ratios import (compute_ratios, compute_dcf, compute_score, compute_badges,
+                     compute_productivite, compute_evolution, compute_ebitda_pondere,
+                     SECTEUR_MULTIPLES, SECTEUR_SEUILS, STRUCTURE_PARTICULIERE)
 
 # ── Config ──────────────────────────────────────────────────────────────────
+import logging
+
 SUPABASE_URL = os.environ["SUPABASE_URL"].strip()
 SUPABASE_KEY = os.environ["SUPABASE_KEY"].strip()
-STRIPE_SECRET = os.environ["STRIPE_SECRET_KEY"].strip()
-STRIPE_WEBHOOK_SECRET = os.environ["STRIPE_WEBHOOK_SECRET"].strip()
 RESEND_API_KEY = os.environ["RESEND_API_KEY"].strip()
 ANTHROPIC_API_KEY = os.environ["ANTHROPIC_API_KEY"].strip()
 FRONTEND_URL = os.environ.get("FRONTEND_URL", "https://bwixapp.vercel.app").strip()
+ADMIN_SECRET = os.environ.get("ADMIN_SECRET", "").strip()
+
+# Stripe: test mode support
+STRIPE_TEST_MODE = os.environ.get("STRIPE_TEST_MODE", "false").strip().lower() == "true"
+if STRIPE_TEST_MODE:
+    STRIPE_SECRET = os.environ.get("STRIPE_SECRET_KEY_TEST", "").strip()
+    STRIPE_PRICE_ID = os.environ.get("STRIPE_PRICE_ID_TEST", "").strip()
+    STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET_TEST", "").strip()
+    logging.warning("\u26a0\ufe0f STRIPE TEST MODE ACTIF")
+else:
+    STRIPE_SECRET = os.environ["STRIPE_SECRET_KEY"].strip()
+    STRIPE_PRICE_ID = os.environ.get("STRIPE_PRICE_ID", "price_1TJK3M1XczkPkPz652TlUn4J").strip()
+    STRIPE_WEBHOOK_SECRET = os.environ["STRIPE_WEBHOOK_SECRET"].strip()
 
 stripe.api_key = STRIPE_SECRET
 
 app = FastAPI(title="BWIX API", version="1.0.0")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[FRONTEND_URL, "http://localhost:8080", "http://localhost:5173"],
+    allow_origins=[FRONTEND_URL, "https://bwixapp.vercel.app", "https://bwix.app", "https://www.bwix.app", "http://localhost:8080"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -77,46 +93,78 @@ async def _supabase_update(table: str, match_params: str, data: dict):
 
 
 # ── Claude AI analysis ─────────────────────────────────────────────────────
-def run_claude_analysis(ratios_data: dict, comptes_data: dict, secteur: str) -> dict:
+def run_claude_analysis(ratios_data: dict, comptes_data: dict, secteur: str,
+                        valorisation: dict = None) -> dict:
     client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
 
-    vr = ratios_data.get('valorisation_resume', {})
+    if valorisation is None:
+        valorisation = {}
+
+    badges = ratios_data.get('badges', {})
     ia_summary = {
         'secteur': secteur,
         'schema_abrege': ratios_data.get('schema_abrege', False),
         'rentabilite': ratios_data.get('rentabilite', {}),
         'structure': ratios_data.get('structure', {}),
         'liquidite': ratios_data.get('liquidite', {}),
-        'valorisation': {
-            'ebitda': vr.get('ebitda'),
-            'multiple_sectoriel': vr.get('multiple'),
-            'ev_ebitda': vr.get('ev_ebitda'),
-            'dette_nette': vr.get('dette_nette'),
-            'equity_ev_ebitda': vr.get('equity_ev_ebitda'),
-            'capitaux_propres_comptables': vr.get('capitaux_propres_comptables'),
-            'fourchette_equity': f"{vr.get('fourchette_equity_low', 0):,.0f} — {vr.get('fourchette_equity_high', 0):,.0f}",
-            'dcf_ev': vr.get('dcf_ev'),
-            'dcf_equity': vr.get('dcf_equity'),
-        },
         'indicators': ratios_data.get('indicators', {}),
+        'badges_sectoriels': badges,
     }
+
+    # Build benchmarks context for Claude
+    benchmarks_lines = []
+    for k, b in badges.items():
+        if b.get('benchmark'):
+            benchmarks_lines.append(f"- {k}: valeur={b.get('valeur')}, badge={b.get('badge')}, {b['benchmark']}")
+    benchmarks_block = "\nBENCHMARKS SECTORIELS (" + secteur + ") :\n" + "\n".join(benchmarks_lines) if benchmarks_lines else ""
+
+    valo_block = f"""
+VALORISATIONS (ne pas recalculer) :
+- EBITDA de référence : {valorisation.get('ebitda_reference', 0):,.0f}€ ({valorisation.get('ebitda_reference_label', '')})
+- Multiple sectoriel : {valorisation.get('multiple_sectoriel', 5)}x
+- EV/EBITDA : {valorisation.get('ev_ebitda', 0):,.0f}€
+- DCF : {valorisation.get('dcf', 'Non calculable')}{'€' if isinstance(valorisation.get('dcf'), (int, float)) else ''}
+- Actif net corrigé : {valorisation.get('actif_net', 0):,.0f}€
+- Fourchette : {valorisation.get('fourchette_basse', 0):,.0f}€ → {valorisation.get('fourchette_haute', 0):,.0f}€"""
 
     context = (
         f"Données comptables :\n{json.dumps(comptes_data, indent=2, ensure_ascii=False)}\n\n"
-        f"Ratios et valorisation :\n{json.dumps(ia_summary, indent=2, ensure_ascii=False)}"
+        f"Ratios :\n{json.dumps(ia_summary, indent=2, ensure_ascii=False)}\n\n"
+        f"{valo_block}"
+        f"{benchmarks_block}"
     )
 
     message = client.messages.create(
         model="claude-sonnet-4-20250514",
         max_tokens=2000,
-        system="""Tu es un analyste financier expert en PME belges.
-Analyse ces données financières de façon claire, structurée et actionnable pour le dirigeant.
+        system="""Tu reçois des données financières déjà calculées par le système.
+NE PAS recalculer les valorisations toi-même.
+Utilise UNIQUEMENT les chiffres fournis dans la section VALORISATIONS ci-dessous.
+Quand tu mentionnes une fourchette de valeur, utilise uniquement fourchette_basse et fourchette_haute.
+Quand tu mentionnes la valeur EV/EBITDA, utilise uniquement ev_ebitda.
+
+Tu es un analyste financier expert en PME belges.
+Analyse ces données de façon claire, structurée et actionnable.
 Pas de jargon inutile. Sois direct sur les points forts, les risques et les recommandations prioritaires.
 
 IMPORTANT :
-- Utilise EXACTEMENT les valeurs de valorisation fournies dans le JSON. Ne recalcule pas.
 - Si schema_abrege=true, ne commente pas les marges (EBITDA, nette).
 - La dette nette fournie est la dette nette BANCAIRE retraitée.
+
+CONTEXTUALISATION DES RATIOS FAIBLES :
+Quand un ratio est sous le seuil sectoriel, ne pas se contenter de le signaler. Proposer systématiquement une explication structurelle probable :
+
+- Solvabilité faible : "Peut s'expliquer par une politique de distribution active aux associés, des remontées vers une holding, ou un financement important d'actifs. À contextualiser avec votre comptable."
+- BFR élevé (>1x CA) : "Structurel dans ce secteur (délais de paiement clients 60-90 jours). Surveillez le recouvrement et la rotation des stocks."
+- Dette/EBITDA élevé (>3x) : "Peut refléter un investissement récent (immo, matériel) plutôt qu'une fragilité structurelle. Vérifier la nature et la maturité des dettes."
+- Charges financières sans dette bancaire visible : "Peut indiquer du leasing, des emprunts intra-groupe ou des dettes hors bilan. Clarification conseillée."
+- ROE faible (<8%) : "Peut résulter d'une rémunération des dirigeants via management fees non visibles dans ce bilan, ou d'une année de transition."
+
+RÈGLES :
+- Toujours signaler le ratio en point d'attention si sous le seuil — ne jamais masquer.
+- Toujours proposer une explication probable.
+- Toujours terminer par "À vérifier avec votre comptable/fiduciaire".
+- Ne jamais affirmer avec certitude — BWIX lit un bilan, pas la réalité complète.
 
 Réponds UNIQUEMENT en JSON valide :
 {
@@ -147,25 +195,124 @@ Réponds UNIQUEMENT en JSON valide :
 
 
 # ── Resend email ────────────────────────────────────────────────────────────
-async def send_email(to: str, subject: str, html: str):
+async def send_email(to: str, subject: str, html: str, attachments: list = None):
+    payload = {
+        "from": "BWIX <noreply@bwix.app>",
+        "to": [to],
+        "subject": subject,
+        "html": html,
+    }
+    if attachments:
+        payload["attachments"] = attachments
     async with httpx.AsyncClient() as client:
         await client.post(
             "https://api.resend.com/emails",
             headers={"Authorization": f"Bearer {RESEND_API_KEY}"},
-            json={
-                "from": "BWIX <noreply@bwix.app>",
-                "to": [to],
-                "subject": subject,
-                "html": html,
-            },
+            json=payload,
         )
+
+
+async def send_unlock_email(email: str, token: str):
+    """Send analysis unlock confirmation email with PDF attachment."""
+    link = f"{FRONTEND_URL}/resultats?token={token}"
+
+    # Generate PDF attachment
+    attachments = []
+    try:
+        rows = await _supabase_select("analyses", f"token=eq.{token}&select=data_json")
+        if rows:
+            data = rows[0]["data_json"] if isinstance(rows[0]["data_json"], dict) else json.loads(rows[0]["data_json"])
+            pdf_b64 = generate_pdf_base64(data)
+            fname = pdf_filename(data)
+            attachments.append({"filename": fname, "content": pdf_b64})
+    except Exception:
+        logging.warning("PDF generation failed for email attachment (token=%s)", token)
+
+    await send_email(
+        email,
+        "Votre analyse BWIX est pr\u00eate",
+        f"""<div style="font-family:Inter,sans-serif;max-width:600px;margin:0 auto;padding:40px 20px">
+        <h1 style="color:#1e3a5f">Votre analyse BWIX</h1>
+        <p>Votre analyse financi\u00e8re compl\u00e8te est d\u00e9sormais accessible.</p>
+        <p><a href="{link}" style="display:inline-block;background:#00c896;color:#0b1929;padding:14px 28px;border-radius:8px;text-decoration:none;font-weight:600">
+        Voir l'analyse compl\u00e8te</a></p>
+        <p style="color:#8fa3bf;font-size:14px;margin-top:24px">
+        Votre rapport est \u00e9galement disponible en pi\u00e8ce jointe (PDF) et en ligne via ce lien permanent.</p>
+        <hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0">
+        <p style="color:#8fa3bf;font-size:12px">
+        BWIX est un outil d'aide \u00e0 la d\u00e9cision indicatif. Les r\u00e9sultats ne constituent pas un conseil financier ou comptable.</p>
+        </div>""",
+        attachments=attachments if attachments else None,
+    )
 
 
 # ── Routes ──────────────────────────────────────────────────────────────────
 
+@app.get("/health")
 @app.get("/api/health")
 async def health():
     return {"status": "ok"}
+
+
+# ── Free slots ──────────────────────────────────────────────────────────────
+
+@app.get("/api/free-slots")
+async def get_free_slots():
+    rows = await _supabase_select("settings", "key=eq.free_slots&select=value")
+    count = int(rows[0]["value"]) if rows else 0
+    return {"free_slots": max(0, count)}
+
+
+@app.post("/api/claim-free")
+async def claim_free_slot(request: Request):
+    """Claim a free analysis slot with email. Returns the analysis token."""
+    body = await request.json()
+    email = (body.get("email") or "").strip().lower()
+    analyse_token = body.get("token")
+
+    if not email or "@" not in email or not analyse_token:
+        raise HTTPException(400, "Email et token requis.")
+
+    # Check if email already used a free slot
+    existing = await _supabase_select("waitlist", f"email=eq.{email}&source=eq.free_slot&select=email")
+    if existing:
+        # Find their previous analysis
+        prev = await _supabase_select("analyses", f"email=eq.{email}&unlocked=eq.true&select=token&order=created_at.desc&limit=1")
+        if prev:
+            return {"ok": True, "already_used": True, "previous_token": prev[0]["token"],
+                    "message": "Cet email a d\u00e9j\u00e0 utilis\u00e9 son analyse gratuite."}
+        # Email used but no unlocked analysis found — allow retry
+        pass
+
+    # Check remaining slots
+    rows = await _supabase_select("settings", "key=eq.free_slots&select=value")
+    remaining = int(rows[0]["value"]) if rows else 0
+    if remaining <= 0:
+        raise HTTPException(410, "Plus d'analyses gratuites disponibles.")
+
+    # Check analysis exists
+    analyses = await _supabase_select("analyses", f"token=eq.{analyse_token}&select=token,unlocked")
+    if not analyses:
+        raise HTTPException(404, "Analyse introuvable.")
+    if analyses[0].get("unlocked"):
+        return {"ok": True, "message": "Analyse d\u00e9j\u00e0 d\u00e9bloqu\u00e9e."}
+
+    # Unlock analysis
+    await _supabase_update("analyses", f"token=eq.{analyse_token}", {"unlocked": True})
+
+    # Record email in waitlist
+    try:
+        await _supabase_insert("waitlist", {"email": email, "source": "free_slot"})
+    except Exception:
+        pass  # email might already exist in waitlist from before
+
+    # Decrement free slots
+    await _supabase_update("settings", "key=eq.free_slots", {"value": str(remaining - 1)})
+
+    # Send email
+    await send_unlock_email(email, analyse_token)
+
+    return {"ok": True, "free_slots_remaining": remaining - 1}
 
 
 @app.post("/api/analyse")
@@ -173,8 +320,13 @@ async def create_analyse(
     file: UploadFile = File(...),
     email: str = Form(...),
     secteur: str = Form(""),
+    admin: str = Form(""),
 ):
     """Upload PDF → extract → compute ratios → Claude analysis → store in Supabase."""
+    is_admin = bool(ADMIN_SECRET and admin == ADMIN_SECRET)
+    if is_admin:
+        import logging
+        logging.warning("ADMIN MODE — analyse for %s", email)
     if not file.filename.lower().endswith('.pdf'):
         raise HTTPException(400, "Seuls les fichiers PDF sont acceptés.")
 
@@ -200,22 +352,168 @@ async def create_analyse(
 
     data_n = extracted['exercice']
     data_n1 = extracted['exercice_precedent']
+    has_n1 = bool(data_n1 and any(v for k, v in data_n1.items() if k not in ('_ca_is_marge_brute',) and v))
 
     # Compute ratios for current year
     ratios = compute_ratios(data_n, secteur)
+    ratios_n1 = compute_ratios(data_n1, secteur) if has_n1 else None
+
+    # EBITDA multi-year
+    ebitda_n = ratios['rentabilite']['ebitda']
+    ebitda_n1 = ratios_n1['rentabilite']['ebitda'] if ratios_n1 else None
+    nb_exercices = 2 if has_n1 else 1
+    annee_n = extracted.get('annee_exercice')
+    annee_n1 = extracted.get('annee_precedente')
+
+    # EBITDA variation
+    ebitda_variation = None
+    if ebitda_n1 and ebitda_n1 != 0:
+        ebitda_variation = round(abs(ebitda_n - ebitda_n1) / abs(ebitda_n1), 4)
+
+    # ── CORRECTION 2: single EBITDA reference for valuation ──
+    if nb_exercices >= 2 and ebitda_n1 is not None:
+        ebitda_reference = round((ebitda_n + ebitda_n1) / 2, 2)
+        ebitda_reference_label = f"Moyenne {annee_n}-{annee_n1}"
+    else:
+        ebitda_reference = ebitda_n
+        ebitda_reference_label = f"{annee_n} seul"
+
+    secteur_key = secteur or ''
+    seuils = SECTEUR_SEUILS.get(secteur_key, {})
+    # Use sector-specific multiples if available, fallback to SECTEUR_MULTIPLES
+    if seuils:
+        multiple = seuils.get('multiple_central', 5)
+        mult_low = seuils.get('multiple_bas', 4)
+        mult_high = seuils.get('multiple_haut', 8)
+    else:
+        multiples = SECTEUR_MULTIPLES.get(secteur_key, {'low': 4, 'high': 8, 'default': 5})
+        multiple = multiples['default']
+        mult_low = multiples['low']
+        mult_high = multiples['high']
+    dette_nette = ratios['structure']['dette_nette']
+
+    ev_ebitda = round(ebitda_reference * multiple, 2) if ebitda_reference > 0 else 0
+    actif_net = ratios['valorisation']['valeur_capitaux_propres']
 
     # Compute DCF if we have 2 years
-    if data_n1 and any(v for k, v in data_n1.items() if k not in ('_ca_is_marge_brute',) and v):
+    dcf_equity = None
+    if has_n1:
         dcf = compute_dcf([data_n1, data_n])
         if dcf:
             ratios['valorisation']['dcf'] = dcf
-            dette_nette = ratios['structure']['dette_nette']
-            ratios['valorisation_resume']['dcf_ev'] = dcf['valeur_dcf']
-            ratios['valorisation_resume']['dcf_equity'] = round(dcf['valeur_dcf'] - dette_nette, 2)
+            dcf_equity = round(dcf['valeur_dcf'] - dette_nette, 2)
 
-    # Claude AI analysis
+    # Fourchette: moyenne des méthodes ±15%
+    is_stable = ebitda_variation is None or ebitda_variation <= 0.30
+    valeurs_valo = [v for v in [ev_ebitda, actif_net] if v and v > 0]
+    if is_stable and dcf_equity and dcf_equity > 0:
+        valeurs_valo.append(dcf_equity)
+        fourchette_methode = "Moyenne EV/EBITDA + DCF + Actif net (\u00b115%)"
+    else:
+        fourchette_methode = "Moyenne EV/EBITDA + Actif net (\u00b115%)"
+    if valeurs_valo:
+        moyenne_valo = sum(valeurs_valo) / len(valeurs_valo)
+        fourchette_low = round(moyenne_valo * 0.85, 2)
+        fourchette_high = round(moyenne_valo * 1.15, 2)
+    else:
+        fourchette_low = 0
+        fourchette_high = 0
+
+    # Unified valorisation object
+    valorisation_unified = {
+        'ebitda_reference': ebitda_reference,
+        'ebitda_reference_label': ebitda_reference_label,
+        'nb_exercices': nb_exercices,
+        'multiple_sectoriel': multiple,
+        'ev_ebitda': ev_ebitda,
+        'dcf': dcf_equity,
+        'actif_net': actif_net,
+        'fourchette_basse': fourchette_low,
+        'fourchette_haute': fourchette_high,
+        'fourchette_methode': fourchette_methode,
+        'dette_nette': dette_nette,
+    }
+
+    # Update ratios with unified values (will be overwritten after synthese calc)
+    ratios['valorisation_resume'] = {
+        'ebitda': ebitda_reference,
+        'ebitda_reference': ebitda_reference,
+        'ebitda_reference_label': ebitda_reference_label,
+        'multiple': multiple,
+        'ev_ebitda': ev_ebitda,
+        'dette_nette': dette_nette,
+        'equity_ev_ebitda': round(ev_ebitda - dette_nette, 2) if ev_ebitda else 0,
+        'capitaux_propres_comptables': actif_net,
+        'fourchette_equity_low': fourchette_low,
+        'fourchette_equity_high': fourchette_high,
+        'dcf_ev': dcf['valeur_dcf'] if has_n1 and dcf_equity else None,
+        'dcf_equity': dcf_equity,
+    }
+
+    # Compute sector-specific badges
+    badges = compute_badges(ratios, secteur)
+    ratios['badges'] = badges
+
+    badges_n1 = compute_badges(ratios_n1, secteur) if ratios_n1 else {}
+
+    # Productivity per FTE
+    productivite = compute_productivite(data_n, ratios, secteur)
+
+    # Build exercices array with per-year individual valorisation
+    exercices = []
+    if has_n1 and annee_n1:
+        ev_n1 = round(ebitda_n1 * multiple, 2) if ebitda_n1 and ebitda_n1 > 0 else 0
+        exercices.append({
+            'annee': annee_n1,
+            'ebitda': ebitda_n1,
+            'ratios': ratios_n1,
+            'badges': badges_n1,
+            'valorisation': {
+                'ev_ebitda': ev_n1,
+                'actif_net': ratios_n1.get('valorisation', {}).get('valeur_capitaux_propres', 0) if ratios_n1 else 0,
+                'multiple_sectoriel': multiple,
+            },
+        })
+    ev_n_solo = round(ebitda_n * multiple, 2) if ebitda_n > 0 else 0
+    exercices.append({
+        'annee': annee_n,
+        'ebitda': ebitda_n,
+        'ratios': ratios,
+        'badges': badges,
+        'productivite': productivite,
+        'valorisation': {
+            'ev_ebitda': ev_n_solo,
+            'actif_net': actif_net,
+            'multiple_sectoriel': multiple,
+        },
+    })
+
+    # Multi-year evolution
+    evolution_data = compute_evolution(exercices)
+
+    # Build synthese with weighted EBITDA
+    all_annees = sorted([ex['annee'] for ex in exercices if ex.get('annee')])
+    synthese_label = f"{all_annees[0]}-{all_annees[-1]}" if len(all_annees) >= 2 else str(all_annees[0]) if all_annees else ""
+
+    ebitda_pond = compute_ebitda_pondere(exercices)
+    synthese_ebitda = ebitda_pond['ebitda_pondere']
+
+    # Fourchette: EBITDA pondéré × multiples sectoriels
+    synthese_fourchette_low = round(synthese_ebitda * mult_low, 2) if synthese_ebitda > 0 else 0
+    synthese_fourchette_high = round(synthese_ebitda * mult_high, 2) if synthese_ebitda > 0 else 0
+    synthese_ev = round(synthese_ebitda * multiple, 2) if synthese_ebitda > 0 else 0
+
+    # Update unified valorisation with synthese values
+    valorisation_unified['ebitda_reference'] = synthese_ebitda
+    valorisation_unified['ebitda_reference_label'] = f"EBITDA pond\u00e9r\u00e9 {synthese_label}"
+    valorisation_unified['ev_ebitda'] = synthese_ev
+    valorisation_unified['fourchette_basse'] = synthese_fourchette_low
+    valorisation_unified['fourchette_haute'] = synthese_fourchette_high
+    valorisation_unified['ebitda_pondere_detail'] = ebitda_pond['poids_detail']
+
+    # Claude AI analysis (CORRECTION 3: strict prompt)
     try:
-        ai_analysis = run_claude_analysis(ratios, data_n, secteur)
+        ai_analysis = run_claude_analysis(ratios, data_n, secteur, valorisation_unified)
     except Exception:
         ai_analysis = {
             'synthese': 'Analyse IA indisponible.',
@@ -224,17 +522,63 @@ async def create_analyse(
             'score_sante': 50,
         }
 
+    # Deterministic score with deductions (CORRECTION 1)
+    score_result = compute_score(
+        ratios, secteur, comptes_data=data_n,
+        nb_exercices=nb_exercices, ebitda_variation=ebitda_variation
+    )
+    score_sante = score_result['score']
+    score_deductions = score_result['score_deductions']
+
     # Build full analysis payload
     token = str(uuid.uuid4())
+    denomination = extracted.get('denomination', '')
     full_data = {
+        'denomination': denomination,
         'comptes': data_n,
         'comptes_precedent': data_n1,
-        'annee': extracted.get('annee_exercice'),
-        'annee_precedente': extracted.get('annee_precedente'),
+        'annee': annee_n,
+        'annee_precedente': annee_n1,
+        'annees_disponibles': sorted([ex['annee'] for ex in exercices if ex.get('annee')]),
+        'nb_exercices': nb_exercices,
+        'ebitda_n': ebitda_n,
+        'ebitda_n1': ebitda_n1,
+        'ebitda_reference': synthese_ebitda,
+        'ebitda_reference_label': valorisation_unified['ebitda_reference_label'],
+        'ebitda_variation': ebitda_variation,
+        'valorisation': valorisation_unified,
         'ratios': ratios,
+        'score_sante': score_sante,
+        'score_deductions': score_deductions,
         'ai_analysis': ai_analysis,
         'secteur': secteur,
+        'is_structure_particuliere': secteur in STRUCTURE_PARTICULIERE,
         'is_consolidated': is_consolidated,
+        'exercices': exercices,
+        'productivite': productivite,
+        'evolution': evolution_data,
+        'synthese': {
+            'annees': all_annees,
+            'label': synthese_label,
+            'ebitda_pondere': synthese_ebitda,
+            'ebitda_pondere_detail': ebitda_pond['poids_detail'],
+            'score': score_sante,
+            'score_deductions': score_deductions,
+            'valorisation': {
+                'ebitda_reference': synthese_ebitda,
+                'ebitda_reference_label': valorisation_unified['ebitda_reference_label'],
+                'ev_ebitda': synthese_ev,
+                'dcf': dcf_equity,
+                'actif_net': actif_net,
+                'fourchette_basse': synthese_fourchette_low,
+                'fourchette_haute': synthese_fourchette_high,
+                'multiple_bas': mult_low,
+                'multiple_central': multiple,
+                'multiple_haut': mult_high,
+            },
+            'evolution_ratios': evolution_data.get('evolution_ratios', {}),
+            'tendances': evolution_data.get('tendances', {}),
+        },
     }
 
     # Store in Supabase
@@ -243,30 +587,84 @@ async def create_analyse(
         "email": email.strip().lower(),
         "pdf_hash": pdf_hash,
         "data_json": full_data,
-        "unlocked": False,
+        "unlocked": is_admin,
     })
 
-    # Return freemium preview
-    score = ai_analysis.get('score_sante', 50)
-    vr = ratios.get('valorisation_resume', {})
-    preview = {
+    # Common response fields
+    multi = {
+        "denomination": denomination,
+        "nb_exercices": nb_exercices,
+        "annee": annee_n,
+        "annee_precedente": annee_n1,
+        "annees_disponibles": [annee_n1, annee_n] if has_n1 else [annee_n],
+        "ebitda_n": ebitda_n,
+        "ebitda_n1": ebitda_n1,
+        "ebitda_reference": ebitda_reference,
+        "ebitda_reference_label": ebitda_reference_label,
+        "ebitda_variation": ebitda_variation,
+        "score_deductions": score_deductions,
+        "valorisation": valorisation_unified,
+        "badges": badges,
+        "productivite": productivite,
+        "exercices_count": nb_exercices,
+    }
+
+    # Admin mode → return full results immediately
+    if is_admin:
+        return {
+            "token": token,
+            "is_consolidated": is_consolidated,
+            "score_sante": score_sante,
+            "unlocked": True,
+            **multi,
+            "freemium": {
+                "ebitda": ratios['rentabilite']['ebitda'],
+                "roe": ratios['rentabilite']['roe'],
+                "liquidite_generale": ratios['liquidite']['liquidite_generale'],
+                "solvabilite": ratios['structure']['solvabilite'],
+            },
+            "valorisation_floue": {
+                "fourchette_low": ratios.get('valorisation_resume', {}).get('fourchette_equity_low'),
+                "fourchette_high": ratios.get('valorisation_resume', {}).get('fourchette_equity_high'),
+            },
+            "full": {
+                "comptes": data_n,
+                "ratios": ratios,
+                "ai_analysis": ai_analysis,
+                "valorisation_resume": ratios.get('valorisation_resume', {}),
+                "secteur": secteur,
+                "exercices": exercices,
+                "productivite": productivite,
+                "evolution": evolution_data,
+            },
+        }
+
+    # Return freemium preview — no paid data leaked
+    return {
         "token": token,
         "is_consolidated": is_consolidated,
-        "annee": extracted.get('annee_exercice'),
-        "score_sante": score,
+        "score_sante": score_sante,
+        "unlocked": False,
+        "denomination": denomination,
+        "nb_exercices": nb_exercices,
+        "annee": annee_n,
+        "annee_precedente": annee_n1,
+        "annees_disponibles": [annee_n1, annee_n] if has_n1 else [annee_n],
+        "ebitda_n": ebitda_n,
+        "ebitda_n1": ebitda_n1,
+        "exercices_count": nb_exercices,
         "freemium": {
             "ebitda": ratios['rentabilite']['ebitda'],
             "roe": ratios['rentabilite']['roe'],
             "liquidite_generale": ratios['liquidite']['liquidite_generale'],
             "solvabilite": ratios['structure']['solvabilite'],
         },
-        "valorisation_floue": {
-            "fourchette_low": vr.get('fourchette_equity_low'),
-            "fourchette_high": vr.get('fourchette_equity_high'),
-        },
-        "unlocked": False,
+        "valorisation_floue": None,
+        "valorisation": None,
+        "badges": {k: v for k, v in badges.items() if k in ('roe', 'liquidite', 'solvabilite', 'gearing')} if badges else None,
+        "productivite": None,
+        "score_deductions": None,
     }
-    return preview
 
 
 @app.get("/api/analyse/{token}")
@@ -283,11 +681,24 @@ async def get_analyse(token: str):
     ai = data.get('ai_analysis', {})
     vr = ratios.get('valorisation_resume', {})
 
+    # Compute badges on the fly (handles old analyses without stored badges)
+    stored_badges = ratios.get('badges', {})
+    if not stored_badges:
+        stored_badges = compute_badges(ratios, data.get('secteur', ''))
+
+    valo = data.get('valorisation', {})
+
+    # ── Freemium preview (always visible) ──────────────────────────────
     result = {
         "token": token,
+        "denomination": data.get('denomination', ''),
         "annee": data.get('annee'),
+        "annee_precedente": data.get('annee_precedente'),
+        "annees_disponibles": data.get('annees_disponibles', [data.get('annee')]),
+        "nb_exercices": data.get('nb_exercices', 1),
         "is_consolidated": data.get('is_consolidated', False),
-        "score_sante": ai.get('score_sante', 50),
+        "is_structure_particuliere": data.get('is_structure_particuliere', False),
+        "score_sante": data.get('score_sante') or ai.get('score_sante', 50),
         "unlocked": unlocked,
         "freemium": {
             "ebitda": ratios.get('rentabilite', {}).get('ebitda'),
@@ -295,22 +706,218 @@ async def get_analyse(token: str):
             "liquidite_generale": ratios.get('liquidite', {}).get('liquidite_generale'),
             "solvabilite": ratios.get('structure', {}).get('solvabilite'),
         },
-        "valorisation_floue": {
-            "fourchette_low": vr.get('fourchette_equity_low'),
-            "fourchette_high": vr.get('fourchette_equity_high'),
-        },
     }
 
     if unlocked:
+        # ── Full data (paid only) ──────────────────────────────────────
+        result["ebitda_n"] = data.get('ebitda_n')
+        result["ebitda_n1"] = data.get('ebitda_n1')
+        result["ebitda_reference"] = data.get('ebitda_reference')
+        result["ebitda_reference_label"] = data.get('ebitda_reference_label')
+        result["ebitda_variation"] = data.get('ebitda_variation')
+        result["valorisation"] = valo
+        result["valorisation_floue"] = {
+            "fourchette_low": valo.get('fourchette_basse') or vr.get('fourchette_equity_low'),
+            "fourchette_high": valo.get('fourchette_haute') or vr.get('fourchette_equity_high'),
+        }
+        result["score_deductions"] = data.get('score_deductions', [])
+        result["badges"] = stored_badges
+        result["productivite"] = data.get('productivite')
+        result["exercices_count"] = data.get('nb_exercices', 1)
         result["full"] = {
             "comptes": data.get('comptes'),
             "ratios": ratios,
             "ai_analysis": ai,
             "valorisation_resume": vr,
             "secteur": data.get('secteur', ''),
+            "exercices": data.get('exercices', []),
+            "productivite": data.get('productivite'),
+            "evolution": data.get('evolution', {}),
+            "synthese": data.get('synthese', {}),
         }
+    else:
+        # ── Locked: only teaser data, no detail ────────────────────────
+        result["ebitda_n"] = data.get('ebitda_n')
+        result["ebitda_n1"] = data.get('ebitda_n1')
+        result["valorisation_floue"] = None
+        result["valorisation"] = None
+        result["score_deductions"] = None
+        # Only expose badges for the 4 freemium ratios
+        freemium_badge_keys = {'roe', 'liquidite', 'solvabilite', 'gearing'}
+        result["badges"] = {k: v for k, v in stored_badges.items() if k in freemium_badge_keys} if stored_badges else None
+        result["productivite"] = None
+        result["exercices_count"] = data.get('nb_exercices', 1)
 
     return result
+
+
+@app.get("/api/analyse/{token}/export-pdf")
+async def export_pdf(token: str):
+    """Generate and return a PDF report for an unlocked analysis."""
+    rows = await _supabase_select("analyses", f"token=eq.{token}&select=*")
+    if not rows:
+        raise HTTPException(404, "Analyse introuvable.")
+    row = rows[0]
+    if not row.get("unlocked"):
+        raise HTTPException(403, "Analyse non d\u00e9bloqu\u00e9e.")
+
+    data = row["data_json"] if isinstance(row["data_json"], dict) else json.loads(row["data_json"])
+    pdf_bytes = generate_pdf(data)
+    filename = pdf_filename(data)
+
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
+
+
+# ── Add exercice ────────────────────────────────────────────────────────────
+
+@app.post("/api/analyse/add-exercice")
+async def add_exercice(
+    file: UploadFile = File(...),
+    token: str = Form(...),
+    secteur: str = Form(""),
+):
+    """Add a new exercise to an existing analysis."""
+    if not file.filename.lower().endswith('.pdf'):
+        raise HTTPException(400, "Seuls les fichiers PDF sont acceptés.")
+
+    # Load existing analysis
+    rows = await _supabase_select("analyses", f"token=eq.{token}&select=*")
+    if not rows:
+        raise HTTPException(404, "Analyse introuvable.")
+    row = rows[0]
+    if not row.get("unlocked"):
+        raise HTTPException(403, "Analyse non débloquée.")
+
+    existing_data = row["data_json"] if isinstance(row["data_json"], dict) else json.loads(row["data_json"])
+    existing_exercices = existing_data.get('exercices', [])
+    existing_annees = set(ex.get('annee') for ex in existing_exercices if ex.get('annee'))
+
+    # Parse new PDF
+    content = await file.read()
+    with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
+        tmp.write(content)
+        tmp_path = tmp.name
+    try:
+        extracted = extract_bnb_pdf(tmp_path)
+    finally:
+        os.unlink(tmp_path)
+
+    if 'error' in extracted.get('exercice', {}):
+        raise HTTPException(422, f"Erreur d'extraction : {extracted['exercice']['error']}")
+
+    secteur_key = secteur or existing_data.get('secteur', '')
+
+    # Process new years, detect duplicates
+    new_exercices = []
+    duplicates = []
+    for label, data_ex in [('exercice', extracted['exercice']), ('exercice_precedent', extracted['exercice_precedent'])]:
+        annee = extracted.get('annee_exercice') if label == 'exercice' else extracted.get('annee_precedente')
+        if not annee:
+            continue
+        has_data = any(v for k, v in data_ex.items() if k not in ('_ca_is_marge_brute',) and v)
+        if not has_data:
+            continue
+        if annee in existing_annees:
+            duplicates.append(annee)
+            continue
+
+        ratios_ex = compute_ratios(data_ex, secteur_key)
+        badges_ex = compute_badges(ratios_ex, secteur_key)
+        ebitda_ex = ratios_ex['rentabilite']['ebitda']
+        seuils = SECTEUR_SEUILS.get(secteur_key, {})
+        multiple = seuils.get('multiple_central', 5) if seuils else 5
+        productivite_ex = compute_productivite(data_ex, ratios_ex, secteur_key)
+
+        new_exercices.append({
+            'annee': annee,
+            'ebitda': ebitda_ex,
+            'ratios': ratios_ex,
+            'badges': badges_ex,
+            'productivite': productivite_ex,
+            'valorisation': {
+                'ev_ebitda': round(ebitda_ex * multiple, 2) if ebitda_ex > 0 else 0,
+                'actif_net': ratios_ex['valorisation']['valeur_capitaux_propres'],
+                'multiple_sectoriel': multiple,
+            },
+        })
+
+    if not new_exercices:
+        return {
+            "warning": "doublon",
+            "annees_deja_presentes": duplicates,
+            "annees_nouvelles": [],
+        }
+
+    # Merge exercices and sort by year
+    all_exercices = existing_exercices + new_exercices
+    all_exercices.sort(key=lambda e: e.get('annee', 0))
+
+    # Recalculate synthese with weighted EBITDA
+    all_annees = sorted([ex['annee'] for ex in all_exercices if ex.get('annee')])
+    synthese_label = f"{all_annees[0]}-{all_annees[-1]}" if len(all_annees) >= 2 else str(all_annees[0])
+
+    ebitda_pond = compute_ebitda_pondere(all_exercices)
+    synthese_ebitda = ebitda_pond['ebitda_pondere']
+
+    seuils = SECTEUR_SEUILS.get(secteur_key, {})
+    multiple = seuils.get('multiple_central', 5) if seuils else 5
+    mult_low = seuils.get('multiple_bas', 4) if seuils else 4
+    mult_high = seuils.get('multiple_haut', 8) if seuils else 8
+    synthese_ev = round(synthese_ebitda * multiple, 2) if synthese_ebitda > 0 else 0
+    actif_net = all_exercices[-1]['ratios']['valorisation']['valeur_capitaux_propres'] if all_exercices else 0
+    dette_nette = all_exercices[-1]['ratios']['structure']['dette_nette'] if all_exercices else 0
+
+    fourchette_low = round(synthese_ebitda * mult_low, 2) if synthese_ebitda > 0 else 0
+    fourchette_high = round(synthese_ebitda * mult_high, 2) if synthese_ebitda > 0 else 0
+
+    evolution_data = compute_evolution(all_exercices)
+
+    # Update existing data
+    existing_data['exercices'] = all_exercices
+    existing_data['nb_exercices'] = len(all_exercices)
+    existing_data['annees_disponibles'] = all_annees
+    existing_data['ebitda_reference'] = synthese_ebitda
+    existing_data['ebitda_reference_label'] = f"EBITDA pond\u00e9r\u00e9 {synthese_label}"
+    existing_data['evolution'] = evolution_data
+    existing_data['valorisation'] = {
+        'ebitda_reference': synthese_ebitda,
+        'ebitda_reference_label': f"EBITDA pond\u00e9r\u00e9 {synthese_label}",
+        'nb_exercices': len(all_exercices),
+        'multiple_sectoriel': multiple,
+        'ev_ebitda': synthese_ev,
+        'actif_net': actif_net,
+        'fourchette_basse': fourchette_low,
+        'fourchette_haute': fourchette_high,
+        'multiple_bas': mult_low,
+        'multiple_haut': mult_high,
+        'ebitda_pondere_detail': ebitda_pond['poids_detail'],
+        'dette_nette': dette_nette,
+    }
+    existing_data['synthese'] = {
+        'annees': all_annees,
+        'label': synthese_label,
+        'ebitda_pondere': synthese_ebitda,
+        'ebitda_pondere_detail': ebitda_pond['poids_detail'],
+        'score': existing_data.get('score_sante', 50),
+        'valorisation': existing_data['valorisation'],
+        'evolution_ratios': evolution_data.get('evolution_ratios', {}),
+        'tendances': evolution_data.get('tendances', {}),
+    }
+
+    # Save to Supabase
+    await _supabase_update("analyses", f"token=eq.{token}", {"data_json": existing_data})
+
+    return {
+        "ok": True,
+        "annees_nouvelles": [ex['annee'] for ex in new_exercices],
+        "annees_deja_presentes": duplicates,
+        "nb_exercices": len(all_exercices),
+        "annees_disponibles": all_annees,
+    }
 
 
 # ── Stripe ──────────────────────────────────────────────────────────────────
@@ -331,12 +938,12 @@ async def create_checkout(request: Request):
     session = stripe.checkout.Session.create(
         payment_method_types=["card"],
         line_items=[{
-            "price": "price_1TJK3M1XczkPkPz652TlUn4J",
+            "price": STRIPE_PRICE_ID,
             "quantity": 1,
         }],
         mode="payment",
-        success_url=f"{FRONTEND_URL}/analyse.html?token={token}&success=1",
-        cancel_url=f"{FRONTEND_URL}/analyse.html?token={token}&cancelled=1",
+        success_url=f"{FRONTEND_URL}/resultats?token={token}",
+        cancel_url=f"{FRONTEND_URL}/resultats?token={token}",
         customer_email=rows[0]["email"],
         metadata={"analyse_token": token},
     )
@@ -347,6 +954,11 @@ async def create_checkout(request: Request):
 async def stripe_webhook(request: Request):
     payload = await request.body()
     sig = request.headers.get("stripe-signature")
+
+    # Debug webhook signature mismatch
+    print(f"WEBHOOK_SECRET_TEST = {os.environ.get('STRIPE_WEBHOOK_SECRET_TEST', 'NON TROUVÉ')[:25]}...")
+    print(f"WEBHOOK_SECRET utilisé = {STRIPE_WEBHOOK_SECRET[:25]}...")
+    print(f"Stripe-Signature header = {(sig or 'ABSENT')[:50]}")
 
     try:
         event = stripe.Webhook.construct_event(payload, sig, STRIPE_WEBHOOK_SECRET)
@@ -359,26 +971,9 @@ async def stripe_webhook(request: Request):
         if token:
             await _supabase_update("analyses", f"token=eq.{token}", {"unlocked": True, "stripe_session_id": session["id"]})
 
-            # Send email with link
             rows = await _supabase_select("analyses", f"token=eq.{token}&select=email")
             if rows:
-                email = rows[0]["email"]
-                link = f"{FRONTEND_URL}/analyse.html?token={token}"
-                await send_email(
-                    email,
-                    "Votre analyse BWIX est prête",
-                    f"""<div style="font-family:Inter,sans-serif;max-width:600px;margin:0 auto;padding:40px 20px">
-                    <h1 style="color:#1e3a5f">Votre analyse BWIX</h1>
-                    <p>Merci pour votre achat. Votre analyse financière complète est désormais accessible.</p>
-                    <p><a href="{link}" style="display:inline-block;background:#00c896;color:#0b1929;padding:14px 28px;border-radius:8px;text-decoration:none;font-weight:600">
-                    Voir mon analyse complète</a></p>
-                    <p style="color:#8fa3bf;font-size:14px;margin-top:24px">
-                    Ce lien est unique et reste accessible à tout moment.</p>
-                    <hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0">
-                    <p style="color:#8fa3bf;font-size:12px">
-                    BWIX est un outil d'aide à la décision indicatif. Les résultats ne constituent pas un conseil financier ou comptable.</p>
-                    </div>""",
-                )
+                await send_unlock_email(rows[0]["email"], token)
 
     return {"received": True}
 
@@ -388,3 +983,83 @@ async def stripe_webhook(request: Request):
 @app.get("/api/secteurs")
 async def list_secteurs():
     return {"secteurs": list(SECTEUR_MULTIPLES.keys())}
+
+
+# ── Promo codes ─────────────────────────────────────────────────────────────
+
+@app.post("/api/redeem-code")
+async def redeem_code(request: Request):
+    body = await request.json()
+    code = (body.get("code") or "").strip().upper()
+    analyse_token = body.get("token")
+
+    if not code or not analyse_token:
+        raise HTTPException(400, "Code et token requis.")
+
+    # Check code exists and is valid
+    rows = await _supabase_select("promo_codes", f"code=eq.{code}&select=*")
+    if not rows:
+        raise HTTPException(404, "Code invalide.")
+    promo = rows[0]
+
+    # Check expiry
+    if promo.get("expires_at"):
+        from datetime import datetime, timezone
+        expires = datetime.fromisoformat(promo["expires_at"].replace("Z", "+00:00"))
+        if datetime.now(timezone.utc) > expires:
+            raise HTTPException(410, "Code expiré.")
+
+    # Check usage
+    max_uses = promo.get("max_uses") or 0
+    used = promo.get("used_count") or 0
+    if max_uses > 0 and used >= max_uses:
+        raise HTTPException(410, "Code déjà utilisé.")
+
+    # Check analyse exists and not already unlocked
+    analyses = await _supabase_select("analyses", f"token=eq.{analyse_token}&select=token,unlocked")
+    if not analyses:
+        raise HTTPException(404, "Analyse introuvable.")
+    if analyses[0].get("unlocked"):
+        return {"ok": True, "message": "Analyse déjà débloquée."}
+
+    # Unlock + increment
+    await _supabase_update("analyses", f"token=eq.{analyse_token}", {"unlocked": True})
+    await _supabase_update("promo_codes", f"code=eq.{code}", {"used_count": used + 1})
+
+    # Send unlock email
+    email_rows = await _supabase_select("analyses", f"token=eq.{analyse_token}&select=email")
+    if email_rows:
+        await send_unlock_email(email_rows[0]["email"], analyse_token)
+
+    return {"ok": True, "message": "Analyse débloquée."}
+
+
+# ── Admin ───────────────────────────────────────────────────────────────────
+
+@app.get("/api/admin/codes")
+async def admin_list_codes(key: str = ""):
+    if key != ADMIN_SECRET:
+        raise HTTPException(403, "Accès refusé.")
+    rows = await _supabase_select("promo_codes", "select=*&order=created_at.desc")
+    return {"codes": rows}
+
+
+@app.post("/api/admin/codes")
+async def admin_create_code(request: Request, key: str = ""):
+    if key != ADMIN_SECRET:
+        raise HTTPException(403, "Accès refusé.")
+    body = await request.json()
+    code = (body.get("code") or "").strip().upper()
+    max_uses = body.get("max_uses", 1)
+    expires_at = body.get("expires_at")
+
+    if not code:
+        raise HTTPException(400, "Code requis.")
+
+    record = await _supabase_insert("promo_codes", {
+        "code": code,
+        "max_uses": max_uses,
+        "used_count": 0,
+        "expires_at": expires_at,
+    })
+    return {"ok": True, "code": record}
