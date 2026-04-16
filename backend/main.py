@@ -955,15 +955,21 @@ async def stripe_webhook(request: Request):
     payload = await request.body()
     sig = request.headers.get("stripe-signature")
 
-    # Debug webhook signature mismatch
-    print(f"WEBHOOK_SECRET_TEST = {os.environ.get('STRIPE_WEBHOOK_SECRET_TEST', 'NON TROUVÉ')[:25]}...")
-    print(f"WEBHOOK_SECRET utilisé = {STRIPE_WEBHOOK_SECRET[:25]}...")
-    print(f"Stripe-Signature header = {(sig or 'ABSENT')[:50]}")
+    # Debug webhook signature mismatch (logging.warning flushes immediately)
+    logging.warning("=== STRIPE WEBHOOK DEBUG ===")
+    logging.warning("WEBHOOK_SECRET_TEST env = %s...", os.environ.get('STRIPE_WEBHOOK_SECRET_TEST', 'NON TROUVÉ')[:25])
+    logging.warning("WEBHOOK_SECRET utilisé  = %s...", STRIPE_WEBHOOK_SECRET[:25])
+    logging.warning("Stripe-Signature header = %s", (sig or 'ABSENT')[:80])
+    logging.warning("Payload size = %d bytes", len(payload))
 
     try:
         event = stripe.Webhook.construct_event(payload, sig, STRIPE_WEBHOOK_SECRET)
-    except (ValueError, stripe.error.SignatureVerificationError):
-        raise HTTPException(400, "Invalid signature.")
+    except ValueError as e:
+        logging.error("Webhook ValueError: %s", e)
+        raise HTTPException(400, f"Invalid payload: {e}")
+    except stripe.error.SignatureVerificationError as e:
+        logging.error("Webhook SignatureVerificationError: %s", e)
+        raise HTTPException(400, f"Invalid signature: {e}")
 
     if event["type"] == "checkout.session.completed":
         session = event["data"]["object"]
