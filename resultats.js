@@ -351,8 +351,9 @@
 
     // Map ratio keys to badge keys
     var BADGE_MAP = {
-      'roe': 'roe', 'liquidite_generale': 'liquidite', 'solvabilite': 'solvabilite',
-      'gearing': 'gearing', 'dettes_ebitda': 'dette_ebitda', 'couverture_interets': 'couverture'
+      'ebitda': 'ebitda', 'roe': 'roe', 'liquidite_generale': 'liquidite', 'solvabilite': 'solvabilite',
+      'gearing': 'gearing', 'dettes_ebitda': 'dette_ebitda', 'couverture_interets': 'couverture',
+      'marge_nette': 'marge_nette', 'bfr_jours_ca': 'bfr'
     };
     var BADGE_COLORS = { 'vert': '#00c896', 'jaune': '#f59e0b', 'rouge': '#ef4444', 'gris': '#5a7fa0' };
     var allBadges = data.badges || ratios.badges || {};
@@ -525,7 +526,7 @@
       benchEl.className = 'modal__benchmark';
       document.getElementById('modal-value').parentNode.insertBefore(benchEl, document.getElementById('modal-explain'));
     }
-    var badgeKey2 = {roe:'roe',liquidite_generale:'liquidite',solvabilite:'solvabilite',gearing:'gearing',dettes_ebitda:'dette_ebitda',couverture_interets:'couverture'}[key];
+    var badgeKey2 = {ebitda:'ebitda',roe:'roe',liquidite_generale:'liquidite',solvabilite:'solvabilite',gearing:'gearing',dettes_ebitda:'dette_ebitda',couverture_interets:'couverture',marge_nette:'marge_nette',bfr_jours_ca:'bfr'}[key];
     var allB = fullData ? (fullData.badges || ((fullData.full || {}).ratios || {}).badges || {}) : {};
     var b2 = badgeKey2 ? allB[badgeKey2] : null;
     if (b2 && b2.benchmark && !isLocked) {
@@ -652,7 +653,7 @@
     if (!grid) return;
     grid.innerHTML = '';
     var allBadges = tabData.badges || tabRatios.badges || {};
-    var BADGE_MAP2 = {'roe':'roe','liquidite_generale':'liquidite','solvabilite':'solvabilite','gearing':'gearing','dettes_ebitda':'dette_ebitda','couverture_interets':'couverture'};
+    var BADGE_MAP2 = {'ebitda':'ebitda','roe':'roe','liquidite_generale':'liquidite','solvabilite':'solvabilite','gearing':'gearing','dettes_ebitda':'dette_ebitda','couverture_interets':'couverture','marge_nette':'marge_nette','bfr_jours_ca':'bfr'};
     var BADGE_COLORS2 = {'vert':'#00c896','jaune':'#f59e0b','rouge':'#ef4444','gris':'#5a7fa0'};
 
     RATIOS_ORDER.forEach(function(key) {
