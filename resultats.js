@@ -443,7 +443,13 @@
 
     // PDF export button
     var pdfBtn = document.getElementById('pdf-export-btn');
-    if (pdfBtn && unlocked) {
+    if (pdfBtn && !unlocked) {
+      pdfBtn.hidden = false;
+      pdfBtn.textContent = '\uD83D\uDD12 Rapport PDF \u2014 19,99\u00a0\u20ac';
+      pdfBtn.onclick = function() {
+        document.getElementById('pay-btn').scrollIntoView({behavior: 'smooth'});
+      };
+    } else if (pdfBtn && unlocked) {
       pdfBtn.hidden = false;
       pdfBtn.onclick = function() {
         pdfBtn.disabled = true;
