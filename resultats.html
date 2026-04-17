@@ -73,15 +73,21 @@
       </div>
 
       <!-- 2. VALORISATION EN PREMIER -->
-      <div class="valuation-card">
+      <div class="valuation-card" id="valuation-card">
         <h3>Valorisation de l'entreprise</h3>
-        <div class="valuation-range">
-          <span class="valuation-label">L'entreprise vaut entre</span>
-          <span class="valuation-amount" id="val-low">&mdash;</span>
-          <span class="valuation-sep">et</span>
-          <span class="valuation-amount" id="val-high">&mdash;</span>
-          <span class="valuation-currency">&euro;</span>
+        <p class="valuation-estimate-label">Valeur estim&eacute;e</p>
+        <div class="valuation-central">
+          <span class="valuation-central-amount" id="val-central">&mdash;</span>
+          <span class="valuation-central-currency">&euro;</span>
         </div>
+        <div class="valuation-range">
+          <span class="valuation-range-label">Fourchette :</span>
+          <span class="valuation-range-val" id="val-low">&mdash;</span>
+          <span class="valuation-range-sep">&mdash;</span>
+          <span class="valuation-range-val" id="val-high">&mdash;</span>
+          <span class="valuation-range-unit">&euro;</span>
+        </div>
+        <p class="valuation-method" id="val-method"></p>
       </div>
       <div class="ebitda-breakdown" id="ebitda-breakdown" hidden></div>
 

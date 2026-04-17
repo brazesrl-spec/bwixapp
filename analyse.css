@@ -84,13 +84,19 @@
 
 /* Valuation card */
 .valuation-card{background:linear-gradient(135deg,#162d4a,#1e3a5f);border:1px solid rgba(0,200,150,.2);border-radius:16px;padding:32px;text-align:center;margin-bottom:32px}
-.valuation-card h3{color:#fff;margin-bottom:20px;font-size:1.2rem}
-.valuation-range{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}
-.valuation-label{color:#8fa3bf;font-size:.9rem;width:100%;margin-bottom:8px}
-.valuation-amount{font-size:2rem;font-weight:800;color:#00c896}
-.valuation-amount.blurred{filter:blur(6px);user-select:none;color:#00c896}
-.valuation-sep{color:#5a7fa0;font-size:1rem}
-.valuation-currency{color:#5a7fa0;font-size:1.2rem}
+.valuation-card h3{color:#fff;margin-bottom:4px;font-size:1.1rem}
+.valuation-estimate-label{color:#5a7fa0;font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;margin:0 0 8px}
+.valuation-central{display:flex;align-items:baseline;justify-content:center;gap:6px;margin-bottom:12px}
+.valuation-central-amount{font-size:2.6rem;font-weight:800;color:#00c896;letter-spacing:-.5px}
+.valuation-central-amount.blurred{filter:blur(8px);user-select:none}
+.valuation-central-currency{color:#5a7fa0;font-size:1.3rem;font-weight:600}
+.valuation-range{display:flex;align-items:center;justify-content:center;gap:6px}
+.valuation-range-label{color:#5a7fa0;font-size:.8rem}
+.valuation-range-val{color:#8fa3bf;font-size:.95rem;font-weight:600}
+.valuation-range-val.blurred{filter:blur(5px);user-select:none}
+.valuation-range-sep{color:#3d5a7a;font-size:.8rem}
+.valuation-range-unit{color:#5a7fa0;font-size:.8rem}
+.valuation-method{color:#5a7fa0;font-size:.7rem;margin-top:8px;margin-bottom:0}
 
 /* Paywall */
 .paywall{margin:40px 0}
@@ -243,6 +249,6 @@
 @media(max-width:600px){
   .grid--4{grid-template-columns:1fr 1fr}
   .grid--2{grid-template-columns:1fr}
-  .valuation-amount{font-size:1.4rem}
+  .valuation-central-amount{font-size:1.8rem}
   .loading-steps{flex-direction:column;gap:8px}
 }

@@ -323,23 +323,33 @@
     var valLow = document.getElementById('val-low');
     var valHigh = document.getElementById('val-high');
 
+    var valCentral = document.getElementById('val-central');
+    var valMethod = document.getElementById('val-method');
+
     if (ebitda < 0) {
       // Negative EBITDA — show asset-based valuation only
       var cp = unlocked ? (vr.capitaux_propres_comptables || 0) : null;
       valCard.innerHTML = '<h3>Valorisation de l\u2019entreprise</h3>'
         + '<div class="disclaimer-box disclaimer-box--warning" style="margin:16px 0;text-align:left">'
-        + '<strong>\u26a0\ufe0f Soci\u00e9t\u00e9 en difficult\u00e9 financi\u00e8re</strong>'
-        + '<p>Valorisation par les b\u00e9n\u00e9fices non applicable (EBITDA n\u00e9gatif). '
-        + 'Valorisation bas\u00e9e sur les actifs nets uniquement.</p></div>'
-        + '<div class="valuation-range"><span class="valuation-label">Valeur plancher estim\u00e9e : capitaux propres</span>'
-        + '<span class="valuation-amount' + (unlocked ? '' : ' blurred') + '">' + (cp != null ? fmtEurRaw(cp) : '---') + '</span>'
-        + '<span class="valuation-currency">\u20ac</span></div>';
+        + '<strong>\u26a0\ufe0f EBITDA n\u00e9gatif</strong>'
+        + '<p>Valorisation par les multiples non applicable. '
+        + 'R\u00e9f\u00e9rence : capitaux propres comptables.</p></div>'
+        + '<div class="valuation-central"><span class="valuation-central-amount' + (unlocked ? '' : ' blurred') + '">' + (cp != null ? fmtEurRaw(cp) : '---') + '</span>'
+        + '<span class="valuation-central-currency">\u20ac</span></div>';
     } else if (unlocked) {
-      valLow.textContent = fmtEurRaw(vr.fourchette_equity_low);
-      valHigh.textContent = fmtEurRaw(vr.fourchette_equity_high);
+      var low = vr.fourchette_equity_low;
+      var high = vr.fourchette_equity_high;
+      var central = (low && high) ? Math.round((low + high) / 2) : null;
+      valCentral.textContent = fmtEurRaw(central);
+      valLow.textContent = fmtEurRaw(low);
+      valHigh.textContent = fmtEurRaw(high);
+      var valo = data.valorisation || {};
+      if (valMethod) valMethod.textContent = valo.fourchette_methode || '';
     } else {
-      valLow.textContent = fmtEurRaw(vf.fourchette_low);
-      valHigh.textContent = fmtEurRaw(vf.fourchette_high);
+      valCentral.textContent = '---';
+      valCentral.classList.add('blurred');
+      valLow.textContent = '---';
+      valHigh.textContent = '---';
       valLow.classList.add('blurred');
       valHigh.classList.add('blurred');
     }
@@ -602,17 +612,26 @@
     } else {
       if (valCard) valCard.style.display = '';
       var vf = tabData.valorisation_floue || tabData.valorisation || {};
-      if (valLow && valHigh) {
-        valLow.className = 'valuation-amount';
-        valHigh.className = 'valuation-amount';
+      var tabValCentral = document.getElementById('val-central');
+      var tabValLow = document.getElementById('val-low');
+      var tabValHigh = document.getElementById('val-high');
+      if (tabValLow && tabValHigh) {
+        tabValLow.className = 'valuation-range-val';
+        tabValHigh.className = 'valuation-range-val';
+        if (tabValCentral) tabValCentral.className = 'valuation-central-amount';
         if (unlocked) {
-          valLow.textContent = fmtEurRaw(vf.fourchette_low || vf.fourchette_basse);
-          valHigh.textContent = fmtEurRaw(vf.fourchette_high || vf.fourchette_haute);
+          var tLow = vf.fourchette_low || vf.fourchette_basse;
+          var tHigh = vf.fourchette_high || vf.fourchette_haute;
+          var tCentral = (tLow && tHigh) ? Math.round((tLow + tHigh) / 2) : null;
+          if (tabValCentral) tabValCentral.textContent = fmtEurRaw(tCentral);
+          tabValLow.textContent = fmtEurRaw(tLow);
+          tabValHigh.textContent = fmtEurRaw(tHigh);
         } else {
-          valLow.textContent = fmtEurRaw(vf.fourchette_low);
-          valHigh.textContent = fmtEurRaw(vf.fourchette_high);
-          valLow.classList.add('blurred');
-          valHigh.classList.add('blurred');
+          if (tabValCentral) { tabValCentral.textContent = '---'; tabValCentral.classList.add('blurred'); }
+          tabValLow.textContent = '---';
+          tabValHigh.textContent = '---';
+          tabValLow.classList.add('blurred');
+          tabValHigh.classList.add('blurred');
         }
       }
     }
