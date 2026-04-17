@@ -180,7 +180,7 @@
 
     // Tab switching
     if (tabsEl) {
-      var mainContent = document.querySelectorAll('.results-header,.score-deductions,.valuation-card,.ebitda-breakdown,.productivite-card,.add-exercises,.ratio-grid,.fomo-counter,#full-results,#paywall');
+      var mainContent = document.querySelectorAll('.results-header,.valuation-card,.ebitda-breakdown,.productivite-card,.add-exercises,.ratio-grid,.fomo-counter,#full-results,#paywall');
       var addPanel = document.getElementById('tab-add-panel');
 
       tabsEl.addEventListener('click', function(e) {
@@ -309,7 +309,6 @@
     }
 
     animateScore(data.score_sante || 50);
-    renderDeductions(data.score_deductions || []);
     renderMultiInfo(data);
 
     // Structure particulière
@@ -439,6 +438,40 @@
         var t = document.getElementById('ratio-tip'); if(t) t.remove();
         grid.removeEventListener('click', dismissTip);
       });
+    }
+
+    // PDF export button
+    var pdfBtn = document.getElementById('pdf-export-btn');
+    if (pdfBtn && unlocked) {
+      pdfBtn.hidden = false;
+      pdfBtn.onclick = function() {
+        pdfBtn.disabled = true;
+        pdfBtn.textContent = 'G\u00e9n\u00e9ration...';
+        fetch(API + '/api/analyse/' + token + '/export-pdf')
+          .then(function(r) {
+            if (!r.ok) throw new Error();
+            return r.blob();
+          })
+          .then(function(blob) {
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            var denom = (data.denomination || 'Analyse').replace(/[^a-zA-Z0-9\s\-_]/g, '').replace(/\s+/g, '_');
+            var annee = data.annee || '';
+            a.href = url;
+            a.download = 'BWIX_' + denom + '_' + annee + '.pdf';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            pdfBtn.disabled = false;
+            pdfBtn.textContent = '\u2b07 T\u00e9l\u00e9charger le rapport PDF';
+          })
+          .catch(function() {
+            pdfBtn.disabled = false;
+            pdfBtn.textContent = '\u2b07 T\u00e9l\u00e9charger le rapport PDF';
+            alert('Erreur lors de la g\u00e9n\u00e9ration du PDF.');
+          });
+      };
     }
 
     // Paywall
@@ -679,19 +712,6 @@
     // Hide add-exercises block on year tabs, show on synthese
     var addEx = document.getElementById('add-exercises');
     if (addEx) addEx.style.display = tabData._isYearTab ? 'none' : '';
-  }
-
-  // ── Score deductions ──────────────────────────────────────────────────────
-  function renderDeductions(deductions) {
-    var el = document.getElementById('score-deductions');
-    if (!el || !deductions || deductions.length === 0) return;
-    el.hidden = false;
-    var html = '<p class="score-deductions__title">Pourquoi ce score ?</p><ul class="score-deductions__list">';
-    deductions.forEach(function (d) {
-      html += '<li>' + d.motif + ' <span>' + d.points + ' pts</span></li>';
-    });
-    html += '</ul>';
-    el.innerHTML = html;
   }
 
   // ── Multi-exercise info ──────────────────────────────────────────────────
