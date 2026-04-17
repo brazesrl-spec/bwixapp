@@ -74,12 +74,13 @@
     if (loading) loading.hidden = false;
     if (msgEl) msgEl.hidden = true;
 
-    // Animate progress
-    setProgress(5, 'Envoi du PDF...');
-    setTimeout(function () { setProgress(20, 'Extraction des donn\u00e9es comptables...'); }, 1500);
-    setTimeout(function () { setProgress(45, 'Calcul des ratios financiers...'); }, 5000);
-    setTimeout(function () { setProgress(70, 'Analyse en cours...'); }, 10000);
-    setTimeout(function () { setProgress(85, 'Finalisation...'); }, 18000);
+    // Animate progress with step activation
+    setProgress(5, 'Envoi du PDF');
+    setStep(0);
+    setTimeout(function () { setProgress(20, 'Extraction des donn\u00e9es comptables'); setStep(0); }, 1500);
+    setTimeout(function () { setProgress(45, 'Calcul des ratios financiers'); setStep(1); }, 5000);
+    setTimeout(function () { setProgress(70, 'Analyse IA en cours'); setStep(2); }, 10000);
+    setTimeout(function () { setProgress(85, 'Finalisation'); setStep(3); }, 18000);
 
     var fd = new FormData();
     fd.append('file', file);
@@ -112,5 +113,14 @@
     if (fill) fill.style.width = pct + '%';
     if (lbl) lbl.textContent = label;
     if (pctEl) pctEl.textContent = pct + '%';
+  }
+
+  function setStep(idx) {
+    var steps = document.querySelectorAll('.loading-step');
+    steps.forEach(function (s, i) {
+      s.classList.remove('active', 'done');
+      if (i < idx) s.classList.add('done');
+      else if (i === idx) s.classList.add('active');
+    });
   }
 })();

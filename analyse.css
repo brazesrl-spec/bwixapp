@@ -36,10 +36,22 @@
 /* Loading & Progress bar */
 .loading{text-align:center;padding:60px 0}
 .progress-container{max-width:480px;margin:0 auto}
-.progress-label{color:#fff;font-weight:700;font-size:1.3rem;margin-bottom:20px}
-.progress-bar{width:100%;height:16px;background:#1e3a5f;border-radius:10px;overflow:hidden}
-.progress-bar__fill{height:100%;width:0;background:linear-gradient(90deg,#00c896,#00e0a8);border-radius:10px;transition:width .6s ease-out}
-.progress-pct{color:#00c896;font-size:2rem;font-weight:800;margin-top:16px}
+.progress-label{color:#fff;font-weight:700;font-size:1.3rem;margin-bottom:20px;position:relative;display:inline-block}
+.progress-label::after{content:'';display:inline-block;width:0;animation:dots 1.5s steps(3,end) infinite}
+@keyframes dots{0%{content:''}33%{content:'.'}66%{content:'..'}100%{content:'...'}}
+.progress-bar{width:100%;height:10px;background:#1e3a5f;border-radius:10px;overflow:hidden;position:relative}
+.progress-bar__fill{height:100%;width:0;background:linear-gradient(90deg,#00c896,#00e0a8);border-radius:10px;transition:width .8s ease-out;position:relative}
+.progress-bar__fill::after{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.25),transparent);animation:shimmer 1.5s infinite}
+@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.progress-pct{color:#00c896;font-size:1.6rem;font-weight:800;margin-top:14px}
+.loading-steps{display:flex;justify-content:center;gap:24px;margin-top:24px}
+.loading-step{color:#3d5a7a;font-size:.82rem;font-weight:500;padding:6px 12px;border-radius:20px;background:rgba(30,58,95,.3);transition:all .4s ease}
+.loading-step.active{color:#00c896;background:rgba(0,200,150,.12);border:1px solid rgba(0,200,150,.3)}
+.loading-step.done{color:#5a7fa0;background:rgba(0,200,150,.06)}
+.loading-step.active::before{content:'';display:inline-block;width:6px;height:6px;background:#00c896;border-radius:50%;margin-right:6px;animation:pulse-dot .8s ease-in-out infinite alternate}
+@keyframes pulse-dot{0%{opacity:.4;transform:scale(.8)}100%{opacity:1;transform:scale(1.2)}}
+.spinner{width:48px;height:48px;border:4px solid #1e3a5f;border-top-color:#00c896;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 20px}
+@keyframes spin{to{transform:rotate(360deg)}}
 
 /* Modal */
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.7);align-items:center;justify-content:center;z-index:200;padding:20px}
