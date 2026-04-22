@@ -35,15 +35,15 @@
   <section class="section" id="upload-section">
     <div class="container container--narrow">
       <h1 class="section__title">Analysez votre entreprise</h1>
-      <p class="section__subtitle" style="text-align:center">Importez vos comptes annuels BNB et obtenez votre analyse en 2 minutes.</p>
+      <p class="section__subtitle" style="text-align:center">Importez vos comptes annuels et obtenez votre analyse en 2 minutes.</p>
 
       <!-- Disclaimers -->
       <div class="disclaimer-box">
         <strong>Format accepté</strong>
-        <p>BWIX accepte uniquement les comptes annuels officiels au format PDF BNB (Banque Nationale de Belgique).</p>
+        <p>BWIX analyse les comptes annuels au format PDF.</p>
         <div class="format-list">
-          <span class="format-yes">&#10003; Comptes annuels déposés BNB (PDF natif)</span>
-          <span class="format-no">&#10007; Exports logiciels comptables (Bob, Sage, Winbooks, Excel...)</span>
+          <span class="format-yes">&#10003; Comptes annuels BNB (PDF officiel)</span>
+          <span class="format-yes">&#10003; Export BOB multi-exercices (PDF)</span>
           <span class="format-no">&#10007; Bilans intermédiaires non déposés</span>
           <span class="format-no">&#10007; Documents scannés de mauvaise qualité</span>
         </div>
@@ -81,13 +81,13 @@
           </select>
         </div>
         <div class="form-group">
-          <label for="pdf">Comptes annuels BNB (PDF)</label>
+          <label for="pdf">Comptes annuels (PDF)</label>
           <div class="drop-zone" id="drop-zone">
             <input type="file" id="pdf" name="file" accept=".pdf" required>
             <div class="drop-zone__prompt">
               <span class="drop-zone__icon">&#128196;</span>
               <span>Glissez votre PDF ici ou <strong>cliquez pour parcourir</strong></span>
-              <span class="drop-zone__hint">PDF comptes annuels BNB uniquement</span>
+              <span class="drop-zone__hint">PDF BNB officiel ou export comptable BOB</span>
             </div>
             <div class="drop-zone__file" hidden></div>
           </div>

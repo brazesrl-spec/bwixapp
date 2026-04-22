@@ -3,6 +3,7 @@
 import hashlib
 import json
 import os
+import re
 import tempfile
 import uuid
 
@@ -13,7 +14,7 @@ from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response
 
-from extract import extract_bnb_pdf, detect_consolidated
+from extract import extract_pdf, detect_consolidated
 from pdf_report import generate_pdf, generate_pdf_base64, pdf_filename
 from ratios import (compute_ratios, compute_dcf, compute_score, compute_badges,
                      compute_productivite, compute_evolution, compute_ebitda_pondere,
@@ -195,55 +196,92 @@ Réponds UNIQUEMENT en JSON valide :
 
 
 # ── Resend email ────────────────────────────────────────────────────────────
+def _html_to_text(html: str) -> str:
+    text = re.sub(r'<br\s*/?>', '\n', html)
+    text = re.sub(r'</p>', '\n\n', text)
+    text = re.sub(r'<[^>]+>', '', text)
+    text = re.sub(r'&nbsp;', ' ', text)
+    text = re.sub(r'&mdash;|&emdash;', '\u2014', text)
+    text = re.sub(r'&[a-z]+;', '', text)
+    text = re.sub(r'\n\s*\n\s*\n', '\n\n', text)
+    return text.strip()
+
+
 async def send_email(to: str, subject: str, html: str, attachments: list = None):
     payload = {
-        "from": "BWIX <noreply@bwix.app>",
+        "from": "BWIX <analyses@bwix.app>",
         "to": [to],
         "subject": subject,
         "html": html,
+        "text": _html_to_text(html),
     }
     if attachments:
         payload["attachments"] = attachments
-    async with httpx.AsyncClient() as client:
-        await client.post(
-            "https://api.resend.com/emails",
-            headers={"Authorization": f"Bearer {RESEND_API_KEY}"},
-            json=payload,
-        )
+    try:
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            r = await client.post(
+                "https://api.resend.com/emails",
+                headers={"Authorization": f"Bearer {RESEND_API_KEY}"},
+                json=payload,
+            )
+        logging.warning("[RESEND] to=%s status=%d body=%s", to, r.status_code, r.text[:300])
+        if r.status_code >= 400:
+            logging.error("[RESEND] FAILED to=%s: %s", to, r.text)
+            return False
+        return True
+    except Exception as e:
+        logging.exception("[RESEND] EXCEPTION to=%s: %s", to, e)
+        return False
 
 
 async def send_unlock_email(email: str, token: str):
     """Send analysis unlock confirmation email with PDF attachment."""
-    link = f"{FRONTEND_URL}/resultats?token={token}"
-
-    # Generate PDF attachment
-    attachments = []
+    logging.warning("[UNLOCK_EMAIL] start email=%s token=%s", email, token)
     try:
+        link = f"{FRONTEND_URL}/resultats?token={token}"
+
+        # Fetch data for PDF
         rows = await _supabase_select("analyses", f"token=eq.{token}&select=data_json")
+        data = None
         if rows:
             data = rows[0]["data_json"] if isinstance(rows[0]["data_json"], dict) else json.loads(rows[0]["data_json"])
-            pdf_b64 = generate_pdf_base64(data)
-            fname = pdf_filename(data)
-            attachments.append({"filename": fname, "content": pdf_b64})
-    except Exception:
-        logging.warning("PDF generation failed for email attachment (token=%s)", token)
+            logging.warning("[UNLOCK_EMAIL] data fetched, denomination=%s", data.get("denomination", "?"))
+        else:
+            logging.warning("[UNLOCK_EMAIL] no data_json found for token=%s", token)
 
-    await send_email(
-        email,
-        "Votre analyse BWIX est pr\u00eate",
-        f"""<div style="font-family:Inter,sans-serif;max-width:600px;margin:0 auto;padding:40px 20px">
-        <h1 style="color:#1e3a5f">Votre analyse BWIX</h1>
-        <p>Votre analyse financi\u00e8re compl\u00e8te est d\u00e9sormais accessible.</p>
-        <p><a href="{link}" style="display:inline-block;background:#00c896;color:#0b1929;padding:14px 28px;border-radius:8px;text-decoration:none;font-weight:600">
-        Voir l'analyse compl\u00e8te</a></p>
-        <p style="color:#8fa3bf;font-size:14px;margin-top:24px">
-        Votre rapport est \u00e9galement disponible en pi\u00e8ce jointe (PDF) et en ligne via ce lien permanent.</p>
-        <hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0">
-        <p style="color:#8fa3bf;font-size:12px">
-        BWIX est un outil d'aide \u00e0 la d\u00e9cision indicatif. Les r\u00e9sultats ne constituent pas un conseil financier ou comptable.</p>
-        </div>""",
-        attachments=attachments if attachments else None,
-    )
+        # Generate PDF (non-blocking: email sends even if PDF fails)
+        attachments = []
+        if data:
+            try:
+                pdf_b64 = generate_pdf_base64(data)
+                fname = pdf_filename(data)
+                attachments.append({"filename": fname, "content": pdf_b64})
+                logging.warning("[UNLOCK_EMAIL] PDF ready — %s (%d chars)", fname, len(pdf_b64))
+            except Exception:
+                logging.exception("[UNLOCK_EMAIL] PDF generation FAILED")
+
+        # Send email (with or without PDF)
+        ok = await send_email(
+            email,
+            "Votre analyse BWIX est pr\u00eate",
+            f"""<div style="font-family:Inter,sans-serif;max-width:600px;margin:0 auto;padding:40px 20px">
+            <h1 style="color:#1e3a5f">Votre analyse BWIX</h1>
+            <p>Votre analyse financi\u00e8re compl\u00e8te est d\u00e9sormais accessible.</p>
+            <p><a href="{link}" style="display:inline-block;background:#00c896;color:#0b1929;padding:14px 28px;border-radius:8px;text-decoration:none;font-weight:600">
+            Voir l'analyse compl\u00e8te</a></p>
+            <p style="color:#8fa3bf;font-size:14px;margin-top:24px">
+            Votre rapport est \u00e9galement disponible en pi\u00e8ce jointe (PDF) et en ligne via ce lien permanent.</p>
+            <hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0">
+            <p style="color:#8fa3bf;font-size:12px">
+            BWIX est un outil d'aide \u00e0 la d\u00e9cision indicatif. Les r\u00e9sultats ne constituent pas un conseil financier ou comptable.</p>
+            </div>""",
+            attachments=attachments if attachments else None,
+        )
+        logging.warning("[UNLOCK_EMAIL] send_email returned ok=%s", ok)
+        return ok
+    except Exception:
+        logging.exception("[UNLOCK_EMAIL] TOP-LEVEL FAILURE for token=%s", token)
+        return False
 
 
 # ── Routes ──────────────────────────────────────────────────────────────────
@@ -309,8 +347,11 @@ async def claim_free_slot(request: Request):
     # Decrement free slots
     await _supabase_update("settings", "key=eq.free_slots", {"value": str(remaining - 1)})
 
-    # Send email
-    await send_unlock_email(email, analyse_token)
+    # Send email (non-blocking: slot claim succeeds even if email fails)
+    try:
+        await send_unlock_email(email, analyse_token)
+    except Exception:
+        logging.exception("[CLAIM_FREE] send_unlock_email failed for token=%s", analyse_token)
 
     return {"ok": True, "free_slots_remaining": remaining - 1}
 
@@ -342,11 +383,12 @@ async def create_analyse(
         # Check consolidated
         is_consolidated = detect_consolidated(tmp_path)
 
-        # Extract financial data
-        extracted = extract_bnb_pdf(tmp_path)
+        # Extract financial data (auto-detect BNB vs BOB)
+        extracted = extract_pdf(tmp_path)
     finally:
         os.unlink(tmp_path)  # RGPD: delete PDF immediately
 
+    detected_format = extracted.get('format', 'BNB_OFFICIEL')
     if 'error' in extracted.get('exercice', {}):
         raise HTTPException(422, f"Erreur d'extraction : {extracted['exercice']['error']}")
 
@@ -488,6 +530,34 @@ async def create_analyse(
         },
     })
 
+    # BOB: add supplementary exercises (years beyond N and N-1)
+    for extra in extracted.get('exercices_supplementaires', []):
+        extra_data = extra['comptes']
+        extra_annee = extra['annee']
+        has_data = any(v for k, v in extra_data.items() if k not in ('_ca_is_marge_brute',) and v)
+        if not has_data or extra_annee in {annee_n, annee_n1}:
+            continue
+        extra_ratios = compute_ratios(extra_data, secteur)
+        extra_badges = compute_badges(extra_ratios, secteur)
+        extra_ebitda = extra_ratios['rentabilite']['ebitda']
+        extra_prod = compute_productivite(extra_data, extra_ratios, secteur)
+        exercices.append({
+            'annee': extra_annee,
+            'ebitda': extra_ebitda,
+            'ratios': extra_ratios,
+            'badges': extra_badges,
+            'productivite': extra_prod,
+            'valorisation': {
+                'ev_ebitda': round(extra_ebitda * multiple, 2) if extra_ebitda > 0 else 0,
+                'actif_net': extra_ratios['valorisation']['valeur_capitaux_propres'],
+                'multiple_sectoriel': multiple,
+            },
+        })
+        nb_exercices += 1
+
+    # Sort exercices by year ascending
+    exercices.sort(key=lambda e: e.get('annee', 0))
+
     # Multi-year evolution
     evolution_data = compute_evolution(exercices)
 
@@ -509,7 +579,16 @@ async def create_analyse(
     valorisation_unified['ev_ebitda'] = synthese_ev
     valorisation_unified['fourchette_basse'] = synthese_fourchette_low
     valorisation_unified['fourchette_haute'] = synthese_fourchette_high
+    valorisation_unified['fourchette_methode'] = f"EBITDA pond\u00e9r\u00e9 \u00d7 multiples sectoriels ({mult_low}x \u2014 {mult_high}x)"
     valorisation_unified['ebitda_pondere_detail'] = ebitda_pond['poids_detail']
+
+    # Sync valorisation_resume with synthese values (used by frontend)
+    ratios['valorisation_resume']['ebitda'] = synthese_ebitda
+    ratios['valorisation_resume']['ebitda_reference'] = synthese_ebitda
+    ratios['valorisation_resume']['ebitda_reference_label'] = valorisation_unified['ebitda_reference_label']
+    ratios['valorisation_resume']['ev_ebitda'] = synthese_ev
+    ratios['valorisation_resume']['fourchette_equity_low'] = synthese_fourchette_low
+    ratios['valorisation_resume']['fourchette_equity_high'] = synthese_fourchette_high
 
     # Claude AI analysis (CORRECTION 3: strict prompt)
     try:
@@ -552,6 +631,7 @@ async def create_analyse(
         'score_deductions': score_deductions,
         'ai_analysis': ai_analysis,
         'secteur': secteur,
+        'format': detected_format,
         'is_structure_particuliere': secteur in STRUCTURE_PARTICULIERE,
         'is_consolidated': is_consolidated,
         'exercices': exercices,
@@ -602,7 +682,6 @@ async def create_analyse(
         "ebitda_reference": ebitda_reference,
         "ebitda_reference_label": ebitda_reference_label,
         "ebitda_variation": ebitda_variation,
-        "score_deductions": score_deductions,
         "valorisation": valorisation_unified,
         "badges": badges,
         "productivite": productivite,
@@ -613,6 +692,7 @@ async def create_analyse(
     if is_admin:
         return {
             "token": token,
+            "format": detected_format,
             "is_consolidated": is_consolidated,
             "score_sante": score_sante,
             "unlocked": True,
@@ -642,6 +722,7 @@ async def create_analyse(
     # Return freemium preview — no paid data leaked
     return {
         "token": token,
+        "format": detected_format,
         "is_consolidated": is_consolidated,
         "score_sante": score_sante,
         "unlocked": False,
@@ -663,7 +744,6 @@ async def create_analyse(
         "valorisation": None,
         "badges": {k: v for k, v in badges.items() if k in ('roe', 'liquidite', 'solvabilite', 'gearing')} if badges else None,
         "productivite": None,
-        "score_deductions": None,
     }
 
 
@@ -681,10 +761,8 @@ async def get_analyse(token: str):
     ai = data.get('ai_analysis', {})
     vr = ratios.get('valorisation_resume', {})
 
-    # Compute badges on the fly (handles old analyses without stored badges)
-    stored_badges = ratios.get('badges', {})
-    if not stored_badges:
-        stored_badges = compute_badges(ratios, data.get('secteur', ''))
+    # Always recompute badges (ensures new badge types are included for old analyses)
+    stored_badges = compute_badges(ratios, data.get('secteur', ''))
 
     valo = data.get('valorisation', {})
 
@@ -720,7 +798,6 @@ async def get_analyse(token: str):
             "fourchette_low": valo.get('fourchette_basse') or vr.get('fourchette_equity_low'),
             "fourchette_high": valo.get('fourchette_haute') or vr.get('fourchette_equity_high'),
         }
-        result["score_deductions"] = data.get('score_deductions', [])
         result["badges"] = stored_badges
         result["productivite"] = data.get('productivite')
         result["exercices_count"] = data.get('nb_exercices', 1)
@@ -741,7 +818,6 @@ async def get_analyse(token: str):
         result["ebitda_n1"] = data.get('ebitda_n1')
         result["valorisation_floue"] = None
         result["valorisation"] = None
-        result["score_deductions"] = None
         # Only expose badges for the 4 freemium ratios
         freemium_badge_keys = {'roe', 'liquidite', 'solvabilite', 'gearing'}
         result["badges"] = {k: v for k, v in stored_badges.items() if k in freemium_badge_keys} if stored_badges else None
@@ -944,7 +1020,7 @@ async def create_checkout(request: Request):
         mode="payment",
         success_url=f"{FRONTEND_URL}/resultats?token={token}",
         cancel_url=f"{FRONTEND_URL}/resultats?token={token}",
-        customer_email=rows[0]["email"],
+        customer_email=rows[0]["email"] if rows[0]["email"] != "analyse@bwix.app" else None,
         metadata={"analyse_token": token},
     )
     return {"checkout_url": session.url}
@@ -975,11 +1051,31 @@ async def stripe_webhook(request: Request):
         session = event["data"]["object"]
         token = session.get("metadata", {}).get("analyse_token")
         if token:
-            await _supabase_update("analyses", f"token=eq.{token}", {"unlocked": True, "stripe_session_id": session["id"]})
+            # Get email from Stripe checkout (customer_details.email or customer_email)
+            stripe_email = (
+                (session.get("customer_details") or {}).get("email")
+                or session.get("customer_email")
+                or ""
+            ).strip().lower()
 
+            update_data = {"unlocked": True, "stripe_session_id": session["id"]}
+
+            # Store email if analysis has no real email yet
             rows = await _supabase_select("analyses", f"token=eq.{token}&select=email")
-            if rows:
-                await send_unlock_email(rows[0]["email"], token)
+            existing_email = (rows[0].get("email") or "").strip() if rows else ""
+            if stripe_email and (not existing_email or existing_email == "analyse@bwix.app"):
+                update_data["email"] = stripe_email
+
+            await _supabase_update("analyses", f"token=eq.{token}", update_data)
+
+            # Send unlock email to real email (prefer Stripe over placeholder)
+            # Isolated: email failure must never break the webhook response
+            email = stripe_email or (existing_email if existing_email != "analyse@bwix.app" else "")
+            if email:
+                try:
+                    await send_unlock_email(email, token)
+                except Exception:
+                    logging.exception("[WEBHOOK] send_unlock_email failed but unlock succeeded for token=%s", token)
 
     return {"received": True}
 
@@ -1032,10 +1128,13 @@ async def redeem_code(request: Request):
     await _supabase_update("analyses", f"token=eq.{analyse_token}", {"unlocked": True})
     await _supabase_update("promo_codes", f"code=eq.{code}", {"used_count": used + 1})
 
-    # Send unlock email
-    email_rows = await _supabase_select("analyses", f"token=eq.{analyse_token}&select=email")
-    if email_rows:
-        await send_unlock_email(email_rows[0]["email"], analyse_token)
+    # Send unlock email (non-blocking: promo redeem succeeds even if email fails)
+    try:
+        email_rows = await _supabase_select("analyses", f"token=eq.{analyse_token}&select=email")
+        if email_rows:
+            await send_unlock_email(email_rows[0]["email"], analyse_token)
+    except Exception:
+        logging.exception("[REDEEM_CODE] send_unlock_email failed for token=%s", analyse_token)
 
     return {"ok": True, "message": "Analyse débloquée."}
 
