@@ -80,9 +80,18 @@
       <!-- LEFT: Form -->
       <div class="hero__left" id="analyse">
         <span class="badge"><span class="badge__flag">&#127463;&#127466;</span> Toutes les soci&eacute;t&eacute;s belges</span>
-        <h1 class="hero__title">Analysez n'importe quelle soci&eacute;t&eacute; belge.</h1>
-        <p class="hero__highlight">R&eacute;sultats en moins de 2 minutes.</p>
-        <p class="hero__subtitle">Ratios financiers &middot; Valorisation &middot; Diagnostic &mdash; depuis le bilan BNB officiel.</p>
+        <h1 class="hero__title">Votre entreprise vaut combien&nbsp;? La r&eacute;ponse est dans votre bilan.</h1>
+        <p class="hero__subtitle">Avant d'acheter. Avant de vendre. Avant de rencontrer votre banque. Uploadez les comptes annuels BNB ou votre export BOB &mdash; obtenez en 2 minutes la valorisation, les ratios sectoriels et le diagnostic complet.</p>
+        <p class="hero__highlight">Vous avez d&eacute;j&agrave; le PDF. C'est tout ce qu'il faut.</p>
+
+        <div class="flow-steps" aria-label="&Eacute;tapes">
+          <span class="flow-steps__step">PDF comptes annuels</span>
+          <span class="flow-steps__arrow">&rarr;</span>
+          <span class="flow-steps__step">Analyse sectorielle automatique</span>
+          <span class="flow-steps__arrow">&rarr;</span>
+          <span class="flow-steps__step">Valorisation + ratios + rapport PDF</span>
+        </div>
+
         <form id="analyse-form" class="upload-form">
           <div class="form-group">
             <label for="secteur">Secteur</label>
@@ -103,18 +112,54 @@
               </optgroup>
             </select>
           </div>
+
+          <div class="format-pills" aria-label="Formats accept&eacute;s">
+            <div class="format-pill">
+              <span class="format-pill__icon">&#128196;</span>
+              <span class="format-pill__body">
+                <span class="format-pill__title">BNB officiel</span>
+                <span class="format-pill__sub">consult.cbso.nbb.be</span>
+                <span class="format-pill__badge">D&eacute;tect&eacute; automatiquement</span>
+              </span>
+            </div>
+            <div class="format-pill">
+              <span class="format-pill__icon">&#128203;</span>
+              <span class="format-pill__body">
+                <span class="format-pill__title">Export BOB / Sage BOB</span>
+                <span class="format-pill__sub">Multi-exercices &middot; 2 &agrave; 5 ans</span>
+                <span class="format-pill__badge">D&eacute;tect&eacute; automatiquement</span>
+              </span>
+            </div>
+          </div>
+
           <div class="form-group">
             <div class="drop-zone" id="drop-zone">
               <input type="file" id="pdf" name="file" accept=".pdf" required>
               <div class="drop-zone__prompt">
                 <span class="drop-zone__icon">&#128196;</span>
-                <span>Glissez les comptes annuels ici ou <strong>parcourir</strong></span>
-                <span class="drop-zone__hint">T&eacute;l&eacute;chargez sur <a href="https://consult.cbso.nbb.be" target="_blank" rel="noopener" style="color:#00c896">consult.cbso.nbb.be &rarr;</a></span>
+                <span>Glissez le PDF ici ou <strong>parcourir</strong></span>
+                <span class="drop-zone__hint">BNB ou BOB &mdash; format d&eacute;tect&eacute; automatiquement</span>
               </div>
               <div class="drop-zone__file" hidden></div>
             </div>
+            <p class="drop-zone__formats"><strong>BNB</strong> &rarr; <a href="https://consult.cbso.nbb.be" target="_blank" rel="noopener" style="color:#00c896">consult.cbso.nbb.be</a> &middot; <strong>BOB</strong> &rarr; export PDF depuis votre logiciel</p>
           </div>
-          <button type="submit" class="btn btn--full" id="submit-btn">Lancer l'analyse &rarr;</button>
+
+          <p class="trust-line">
+            &#128274; PDF supprim&eacute; imm&eacute;diatement
+            <span class="trust-line__sep">&middot;</span>
+            Donn&eacute;es h&eacute;berg&eacute;es en Europe (Frankfurt)
+            <span class="trust-line__sep">&middot;</span>
+            Conforme RGPD
+          </p>
+
+          <div class="notice-amber" role="note">
+            <span class="notice-amber__icon">&#9888;</span>
+            <span><strong>Comptes abr&eacute;g&eacute;s (petites soci&eacute;t&eacute;s)&nbsp;:</strong> l'analyse reste disponible mais certains ratios seront partiels &mdash; les comptes abr&eacute;g&eacute;s contiennent moins de d&eacute;tail que les sch&eacute;mas complets.</span>
+          </div>
+
+          <button type="submit" class="btn btn--full" id="submit-btn">Je veux conna&icirc;tre la valeur de cette soci&eacute;t&eacute; &rarr;</button>
+          <p class="fine-print">Con&ccedil;u pour le plan comptable belge &middot; Soci&eacute;t&eacute;s belges uniquement &middot; R&eacute;sultats indicatifs, non contractuels</p>
         </form>
         <p class="upload-msg" id="upload-msg" hidden></p>
         <div id="loading" class="loading" hidden>
@@ -166,6 +211,20 @@
               <div style="font-size:.78rem"><span style="color:#00c896">&#10003;</span> Aucune dette bancaire<br><span style="color:#00c896">&#10003;</span> ROE satisfaisant</div>
               <div style="font-size:.78rem"><span style="color:#ffb432">&#9888;</span> BFR &eacute;lev&eacute; &agrave; 1.4x CA<br><span style="color:#ffb432">&#9888;</span> Stocks importants</div>
             </div>
+          </div>
+        </div>
+        <div class="trust-strip" aria-label="Confidentialit&eacute;">
+          <div class="trust-strip__item">
+            <span class="trust-strip__title">PDF jamais stock&eacute;</span>
+            <span class="trust-strip__sub">Supprim&eacute; apr&egrave;s extraction</span>
+          </div>
+          <div class="trust-strip__item">
+            <span class="trust-strip__title">Chiffrement SSL</span>
+            <span class="trust-strip__sub">Ratios uniquement en base</span>
+          </div>
+          <div class="trust-strip__item">
+            <span class="trust-strip__title">H&eacute;berg&eacute; en Europe</span>
+            <span class="trust-strip__sub">Serveur Frankfurt &middot; Conforme RGPD</span>
           </div>
         </div>
       </div>
@@ -355,9 +414,10 @@
 
       <div class="disclaimers-grid" style="margin-top:40px;text-align:left">
         <div class="disclaimer-box-sm">
-          <strong>Format accept&eacute;</strong>
-          <p>&#10003; PDF BNB natif uniquement</p>
-          <p class="disclaimer-no">&#10007; Exports Bob/Sage/Excel non support&eacute;s</p>
+          <strong>Formats accept&eacute;s</strong>
+          <p>&#10003; PDF BNB officiel (consult.cbso.nbb.be)</p>
+          <p>&#10003; Export BOB / Sage BOB (multi-exercices)</p>
+          <p class="disclaimer-no">&#10007; Exports Excel ou CSV non support&eacute;s</p>
           <p class="disclaimer-no">&#10007; Comptes consolid&eacute;s non support&eacute;s</p>
           <p class="disclaimer-no">&#10007; Scans de mauvaise qualit&eacute;</p>
         </div>
@@ -373,7 +433,7 @@
   <section class="section section--cta" id="cta-bottom">
     <div class="container container--narrow" style="text-align:center">
       <h2 class="section__title">Pr&ecirc;t &agrave; analyser ?</h2>
-      <p class="section__subtitle">Importez un PDF BNB et obtenez l'analyse en 2 minutes.</p>
+      <p class="section__subtitle">Importez un PDF BNB ou un export BOB et obtenez l'analyse en 2 minutes.</p>
       <a href="#analyse" class="btn btn--large">Lancer une analyse &uarr;</a>
       <p style="margin-top:16px;font-size:.85rem;color:#5a7fa0">Gratuit : score sant&eacute; + ratios de base. Analyse compl&egrave;te : 19,99&nbsp;&euro;</p>
     </div>
