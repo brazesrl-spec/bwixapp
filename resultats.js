@@ -178,6 +178,25 @@
       tabsEl.innerHTML += '<button class="tab tab-add" data-tab="add">+ Ajouter</button>';
     }
 
+    // Fix 4: non-consecutive years warning
+    var gapNotice = document.getElementById('years-gap-notice');
+    if (gapNotice) {
+      var sortedYears = (annees || []).filter(Boolean).map(Number).sort(function(a,b){return a-b;});
+      var gaps = [];
+      for (var gi = 1; gi < sortedYears.length; gi++) {
+        if (sortedYears[gi] - sortedYears[gi-1] > 1) {
+          gaps.push(sortedYears[gi-1] + ' et ' + sortedYears[gi]);
+        }
+      }
+      if (gaps.length) {
+        gapNotice.hidden = false;
+        gapNotice.innerHTML = '⚠ Années non consécutives détectées (gap entre ' + gaps.join(', ') + ') — les tendances peuvent être trompeuses.';
+      } else {
+        gapNotice.hidden = true;
+        gapNotice.innerHTML = '';
+      }
+    }
+
     // Tab switching
     if (tabsEl) {
       var mainContent = document.querySelectorAll('.results-header,.valuation-card,.ebitda-breakdown,.productivite-card,.add-exercises,.ratio-grid,.fomo-counter,#full-results,#paywall');
@@ -203,9 +222,16 @@
             var addDesc = document.getElementById('tab-add-desc');
             var addDrop = document.getElementById('add-drop-zone');
             if (unlocked) {
-              addTitle.textContent = 'Ajoutez un exercice suppl\u00e9mentaire';
-              addDesc.textContent = 'Les donn\u00e9es seront fusionn\u00e9es automatiquement dans la synth\u00e8se.';
-              addDrop.style.display = '';
+              var nbCur = (data.annees_disponibles || []).filter(Boolean).length || data.nb_exercices || 1;
+              if (nbCur >= 5) {
+                addTitle.textContent = 'Limite atteinte';
+                addDesc.innerHTML = '<div class="add-msg add-msg--amber">\u26a0 Analyse limit\u00e9e \u00e0 5 exercices. Supprimez une ann\u00e9e pour en ajouter une nouvelle.</div>';
+                addDrop.style.display = 'none';
+              } else {
+                addTitle.textContent = 'Ajoutez un exercice suppl\u00e9mentaire';
+                addDesc.textContent = 'Les donn\u00e9es seront fusionn\u00e9es automatiquement dans la synth\u00e8se.';
+                addDrop.style.display = '';
+              }
             } else {
               addTitle.textContent = 'D\u00e9bloquez l\u2019analyse compl\u00e8te';
               addDesc.innerHTML = 'Acc\u00e9dez \u00e0 la valorisation d\u00e9taill\u00e9e + ajoutez autant d\u2019exercices que vous voulez \u2014 19,99\u00a0\u20ac<br><br><a href="#" class="btn btn--large" onclick="document.getElementById(\'pay-btn\').scrollIntoView({behavior:\'smooth\'});return false;">D\u00e9bloquer \u2014 19,99 \u20ac</a>';
@@ -259,6 +285,15 @@
         var file = addPdfInput.files[0];
         if (!file) return;
         var addDesc = document.getElementById('tab-add-desc');
+
+        // Fix 5: block at 5 exercices (client-side guard; backend enforces too)
+        var currentCount = (data.annees_disponibles || []).filter(Boolean).length || data.nb_exercices || 1;
+        if (currentCount >= 5) {
+          addDesc.innerHTML = '<div class="add-msg add-msg--amber">\u26a0 Analyse limit\u00e9e \u00e0 5 exercices. Supprimez une ann\u00e9e pour en ajouter une nouvelle.</div>';
+          addPdfInput.value = '';
+          return;
+        }
+
         addDesc.innerHTML = '<div class="spinner" style="width:32px;height:32px;margin:12px auto"></div><p>Extraction en cours...</p>';
 
         var fd = new FormData();
@@ -272,15 +307,35 @@
             return r.json();
           })
           .then(function(result) {
+            var fmtList = function(arr) { return (arr || []).join(', '); };
+            // 100% doublon (backend warning)
             if (result.warning === 'doublon') {
-              addDesc.innerHTML = '\u26a0\ufe0f Ann\u00e9e(s) d\u00e9j\u00e0 pr\u00e9sente(s) : ' + result.annees_deja_presentes.join(', ') + '. Aucun nouvel exercice ajout\u00e9.';
-            } else {
-              addDesc.innerHTML = '\u2705 Exercice(s) ' + result.annees_nouvelles.join(', ') + ' ajout\u00e9(s). Rechargement...';
-              setTimeout(function() { window.location.reload(); }, 1000);
+              addDesc.innerHTML = '<div class="add-msg add-msg--amber">\u26a0 Ces ann\u00e9es sont d\u00e9j\u00e0 dans l\u2019analyse : <strong>' + fmtList(result.annees_deja_presentes) + '</strong>. Aucune modification.</div>';
+              setTimeout(function() { window.location.reload(); }, 2000);
+              return;
             }
+            // Max-5 (backend warning)
+            if (result.warning === 'max_5') {
+              addDesc.innerHTML = '<div class="add-msg add-msg--amber">\u26a0 Analyse limit\u00e9e \u00e0 5 exercices. Supprimez une ann\u00e9e pour en ajouter une nouvelle.</div>';
+              return;
+            }
+            // Success \u2014 with or without partial duplicates / truncation
+            var newY = result.annees_nouvelles || [];
+            var dupY = result.annees_deja_presentes || [];
+            var maxY = result.annees_ignorees_max5 || [];
+            var html = '<div class="add-msg add-msg--green">\u2705 Ajout\u00e9 : <strong>' + fmtList(newY) + '</strong></div>';
+            if (dupY.length) {
+              html += '<div class="add-msg add-msg--muted">D\u00e9j\u00e0 pr\u00e9sent, ignor\u00e9 : <strong>' + fmtList(dupY) + '</strong></div>';
+            }
+            if (maxY.length) {
+              html += '<div class="add-msg add-msg--amber">\u26a0 Limite 5 exercices atteinte. Ann\u00e9es non ajout\u00e9es : <strong>' + fmtList(maxY) + '</strong></div>';
+            }
+            html += '<p style="color:#5a7fa0;font-size:.82rem;margin-top:8px">Rechargement...</p>';
+            addDesc.innerHTML = html;
+            setTimeout(function() { window.location.reload(); }, 2000);
           })
           .catch(function(err) {
-            addDesc.innerHTML = '<span style="color:#ff6b6b">' + err.message + '</span>';
+            addDesc.innerHTML = '<div class="add-msg add-msg--error">' + err.message + '</div>';
           });
       });
     }
@@ -643,21 +698,31 @@
         bd.hidden = false;
         bd.innerHTML = 'EBITDA ' + tabData.annee + ' : <strong>' + fmtEur(tabData.ebitda_n) + '</strong>';
       } else {
-        // Synthese: show EBITDA pondéré with dropdown detail
+        // Synthese: EBITDA pondéré breakdown (always visible above valuation)
         var valo = tabData.valorisation || {};
         var detail = valo.ebitda_pondere_detail || ((tabData.full || {}).synthese || {}).ebitda_pondere_detail || [];
         var nbEx = tabData.nb_exercices || detail.length || 1;
         bd.hidden = false;
         var pondVal = tabData.ebitda_reference || valo.ebitda_reference || 0;
-        var html = 'EBITDA pond\u00e9r\u00e9 : <strong>' + fmtEur(pondVal) + '</strong> \u2190 base de valorisation';
-        if (detail.length > 1) {
-          html += ' <a href="#" id="ebitda-detail-toggle" style="color:#00c896;font-size:.78rem;margin-left:8px">D\u00e9tail \u25be</a>';
-          html += '<div id="ebitda-detail" hidden style="margin-top:8px;font-size:.8rem;color:#5a7fa0">';
+        var html = '<div class="ebitda-breakdown__title">Base de calcul</div>';
+        if (detail.length >= 1) {
+          html += '<table class="ebitda-breakdown__table"><thead><tr>'
+            + '<th>Ann\u00e9e</th><th>EBITDA</th><th>Poids</th><th>Contribution</th>'
+            + '</tr></thead><tbody>';
           detail.forEach(function(d) {
-            html += d.annee + ' : ' + fmtEur(d.ebitda) + ' \u00d7 ' + d.poids_pct + '% = ' + fmtEur(d.contribution) + '<br>';
+            html += '<tr><td>' + d.annee + '</td>'
+              + '<td>' + fmtEur(d.ebitda) + '</td>'
+              + '<td>' + d.poids_pct + '%</td>'
+              + '<td>' + fmtEur(d.contribution) + '</td></tr>';
           });
-          html += '</div>';
+          html += '<tr class="ebitda-breakdown__total">'
+            + '<td>Total pond\u00e9r\u00e9</td><td>\u2014</td><td>100%</td>'
+            + '<td><strong>' + fmtEur(pondVal) + '</strong></td></tr>';
+          html += '</tbody></table>';
+        } else {
+          html += '<p class="ebitda-breakdown__single">EBITDA : <strong>' + fmtEur(pondVal) + '</strong></p>';
         }
+
         // Reliability warning
         var warnStyle, warnText;
         if (nbEx <= 1) { warnStyle = 'background:rgba(239,68,68,.1);color:#ef4444;border:1px solid rgba(239,68,68,.2)'; warnText = '\u26a0\ufe0f Valorisation non fiable sur 1 exercice. Ajoutez au moins 2 ans.'; }
@@ -665,11 +730,8 @@
         else if (nbEx === 3) { warnStyle = 'background:rgba(0,200,150,.06);color:#00c896;border:1px solid rgba(0,200,150,.15)'; warnText = '\u2713 Valorisation correcte sur 3 exercices.'; }
         else if (nbEx === 4) { warnStyle = 'background:rgba(0,200,150,.08);color:#00c896;border:1px solid rgba(0,200,150,.2)'; warnText = '\u2713 Valorisation fiable sur 4 exercices.'; }
         else { warnStyle = 'background:rgba(0,200,150,.1);color:#00c896;border:1px solid rgba(0,200,150,.25)'; warnText = '\u2713 Valorisation solide \u2014 r\u00e9f\u00e9rence M&A sur 5+ exercices.'; }
-        html += '<div style="' + warnStyle + ';border-radius:8px;padding:8px 12px;margin-top:10px;font-size:.82rem">' + warnText + '</div>';
+        html += '<div class="ebitda-breakdown__reliability" style="' + warnStyle + '">' + warnText + '</div>';
         bd.innerHTML = html;
-        // Toggle handler
-        var toggle = document.getElementById('ebitda-detail-toggle');
-        if (toggle) toggle.onclick = function(e) { e.preventDefault(); var d2 = document.getElementById('ebitda-detail'); d2.hidden = !d2.hidden; toggle.textContent = d2.hidden ? 'D\u00e9tail \u25be' : 'D\u00e9tail \u25b4'; };
       }
     }
 

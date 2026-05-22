@@ -52,6 +52,7 @@
     <div class="container">
       <!-- TABS -->
       <div class="analyse-tabs" id="analyse-tabs" hidden></div>
+      <div class="years-gap-notice" id="years-gap-notice" hidden></div>
 
       <!-- 1. HEADER + SCORE -->
       <p class="results-denom" id="results-denom"></p>
@@ -73,7 +74,10 @@
         </div>
       </div>
 
-      <!-- 2. VALORISATION EN PREMIER -->
+      <!-- 2. BASE DE CALCUL (EBITDA pondéré) -->
+      <div class="ebitda-breakdown" id="ebitda-breakdown" hidden></div>
+
+      <!-- 3. VALORISATION -->
       <div class="valuation-card" id="valuation-card">
         <h3>Valorisation de l'entreprise</h3>
         <p class="valuation-estimate-label">Valeur estim&eacute;e</p>
@@ -90,7 +94,6 @@
         </div>
         <p class="valuation-method" id="val-method"></p>
       </div>
-      <div class="ebitda-breakdown" id="ebitda-breakdown" hidden></div>
 
       <!-- Productivity card -->
       <div class="productivite-card" id="productivite-card" hidden></div>
