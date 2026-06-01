@@ -26,6 +26,29 @@
 
   var adminCode = new URLSearchParams(window.location.search).get('admin') || '';
 
+  // ── Prix centralisé : changer le prix = éditer UNIQUEMENT cette constante.
+  // Doit rester aligné avec le Price Stripe côté back (STRIPE_PRICE_ID dans
+  // bwix-api/main.py → price_1TdRv7… = 39,99 € TTC).
+  var PRICE_EUR = 39.99;
+  (function () {
+    var el = document.getElementById('price-display');
+    if (el) el.innerHTML = PRICE_EUR.toFixed(2).replace('.', ',') + ' €';
+  })();
+
+  // ── Accès par code (hors funnel) : révèle le champ ; le code part avec l'analyse.
+  (function () {
+    var toggle = document.getElementById('code-toggle');
+    var field = document.getElementById('code-field');
+    if (!toggle || !field) return;
+    toggle.addEventListener('click', function () {
+      field.hidden = !field.hidden;
+      if (!field.hidden) {
+        var i = document.getElementById('access-code');
+        if (i) i.focus();
+      }
+    });
+  })();
+
   // ── Drop zone ──
   var dropZone = document.getElementById('drop-zone');
   var fileInput = document.getElementById('pdf');
@@ -83,11 +106,15 @@
     setTimeout(function () { setProgress(70, 'Analyse IA en cours'); setStep(2); }, 10000);
     setTimeout(function () { setProgress(85, 'Finalisation'); setStep(3); }, 18000);
 
+    var codeEl = document.getElementById('access-code');
+    var accessCode = codeEl ? codeEl.value.trim() : '';
+
     var fd = new FormData();
     fd.append('file', file);
     fd.append('email', email);
     fd.append('secteur', secteur);
     if (adminCode) fd.append('admin', adminCode);
+    if (accessCode) fd.append('code', accessCode);
 
     fetch(API + '/api/analyse', { method: 'POST', body: fd })
       .then(function (res) {
