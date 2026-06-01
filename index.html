@@ -131,22 +131,22 @@
             <span><strong>Comptes abr&eacute;g&eacute;s (petites soci&eacute;t&eacute;s)&nbsp;:</strong> l'analyse reste disponible mais certains ratios seront partiels &mdash; les comptes abr&eacute;g&eacute;s contiennent moins de d&eacute;tail que les sch&eacute;mas complets.</span>
           </div>
 
-          <!-- 4. Prix + CTA primaire unique -->
-          <p class="price-line">Analyse compl&egrave;te&nbsp;: <strong id="price-display">39,99&nbsp;&euro;</strong> <span class="price-line__vat">TVA incluse</span></p>
-          <button type="submit" class="btn btn--full" id="submit-btn">Lancer l'analyse &rarr;</button>
-          <p class="fine-print">Con&ccedil;u pour le plan comptable belge &middot; Soci&eacute;t&eacute;s belges uniquement &middot; R&eacute;sultats indicatifs, non contractuels</p>
-
-          <!-- 5. Compte pro (grisé, sans handler) -->
+          <!-- Compte pro (grisé, sans handler) -->
           <button type="button" class="btn btn--full btn--ghost" id="pro-account-btn" disabled aria-disabled="true">Compte professionnel &mdash; bient&ocirc;t</button>
 
-          <!-- 6. Accès par code, hors funnel principal -->
+          <!-- Accès par code — juste au-dessus du prix/CTA -->
           <div class="code-access">
             <button type="button" class="code-access__toggle" id="code-toggle">J'ai un code d'acc&egrave;s</button>
             <div class="code-access__field" id="code-field" hidden>
               <input type="text" id="access-code" name="code" placeholder="votre code d'acc&egrave;s" maxlength="20" autocomplete="off">
-              <span class="code-access__hint">Le code d&eacute;bloque l'analyse compl&egrave;te sans paiement.</span>
+              <span class="code-access__hint">Saisissez votre code, puis cliquez sur Lancer l'analyse &mdash; le rapport sera d&eacute;bloqu&eacute; sans paiement.</span>
             </div>
           </div>
+
+          <!-- Prix + CTA primaire -->
+          <p class="price-line">Analyse compl&egrave;te&nbsp;: <strong id="price-display">39,99&nbsp;&euro;</strong> <span class="price-line__vat">TVA incluse</span></p>
+          <button type="submit" class="btn btn--full" id="submit-btn">Lancer l'analyse &rarr;</button>
+          <p class="fine-print">Con&ccedil;u pour le plan comptable belge &middot; Soci&eacute;t&eacute;s belges uniquement &middot; R&eacute;sultats indicatifs, non contractuels</p>
         </form>
 
         <p class="upload-msg" id="upload-msg" hidden></p>
