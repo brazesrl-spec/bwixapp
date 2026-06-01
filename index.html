@@ -74,25 +74,17 @@
     <div class="launch-progress"><div class="launch-progress-bar"></div></div>
   </div>
 
-  <!-- ============ 1. HERO ============ -->
+  <!-- ============ HERO — funnel vertical ============ -->
   <section class="hero" id="hero">
-    <div class="container hero__split">
-      <!-- LEFT: Form -->
-      <div class="hero__left" id="analyse">
+    <div class="container hero__center">
+      <div class="hero__form-col" id="analyse">
         <span class="badge"><span class="badge__flag">&#127463;&#127466;</span> Toutes les soci&eacute;t&eacute;s belges</span>
-        <h1 class="hero__title">Votre entreprise vaut combien&nbsp;? La r&eacute;ponse est dans votre bilan.</h1>
-        <p class="hero__subtitle">Avant d'acheter. Avant de vendre. Avant de rencontrer votre banque. Uploadez les comptes annuels BNB ou votre export BOB &mdash; obtenez en 2 minutes la valorisation, les ratios sectoriels et le diagnostic complet.</p>
-        <p class="hero__highlight">Vous avez d&eacute;j&agrave; le PDF. C'est tout ce qu'il faut.</p>
-
-        <div class="flow-steps" aria-label="&Eacute;tapes">
-          <span class="flow-steps__step">PDF comptes annuels</span>
-          <span class="flow-steps__arrow">&rarr;</span>
-          <span class="flow-steps__step">Analyse sectorielle automatique</span>
-          <span class="flow-steps__arrow">&rarr;</span>
-          <span class="flow-steps__step">Valorisation + ratios + rapport PDF</span>
-        </div>
+        <h1 class="hero__title">Analysez une soci&eacute;t&eacute;&nbsp;: valeur et ratios financiers &agrave; partir d'un bilan.</h1>
+        <p class="hero__subtitle">Uploadez les comptes annuels BNB ou votre export BOB &mdash; obtenez en 2 minutes la valorisation, les ratios sectoriels et le diagnostic complet.</p>
+        <a href="#exemple" class="hero__example-link">&#128202; Voir un exemple de r&eacute;sultat &darr;</a>
 
         <form id="analyse-form" class="upload-form">
+          <!-- 3. Secteur (inchangé) -->
           <div class="form-group">
             <label for="secteur">Secteur</label>
             <select id="secteur" name="secteur">
@@ -113,54 +105,50 @@
             </select>
           </div>
 
-          <div class="format-pills" aria-label="Formats accept&eacute;s">
-            <div class="format-pill">
-              <span class="format-pill__icon">&#128196;</span>
-              <span class="format-pill__body">
-                <span class="format-pill__title">BNB officiel</span>
-                <span class="format-pill__sub">consult.cbso.nbb.be</span>
-                <span class="format-pill__badge">D&eacute;tect&eacute; automatiquement</span>
-              </span>
-            </div>
-            <div class="format-pill">
-              <span class="format-pill__icon">&#128203;</span>
-              <span class="format-pill__body">
-                <span class="format-pill__title">Export BOB / Sage BOB</span>
-                <span class="format-pill__sub">Multi-exercices &middot; 2 &agrave; 5 ans</span>
-                <span class="format-pill__badge">D&eacute;tect&eacute; automatiquement</span>
-              </span>
-            </div>
-          </div>
-
+          <!-- 2. Zone upload (format BNB/BOB auto-détecté côté serveur) -->
           <div class="form-group">
             <div class="drop-zone" id="drop-zone">
               <input type="file" id="pdf" name="file" accept=".pdf" required>
               <div class="drop-zone__prompt">
                 <span class="drop-zone__icon">&#128196;</span>
-                <span>Glissez le PDF ici ou <strong>parcourir</strong></span>
-                <span class="drop-zone__hint">BNB ou BOB &mdash; format d&eacute;tect&eacute; automatiquement</span>
+                <span>Glissez votre bilan PDF ici ou <strong>parcourir</strong></span>
+                <span class="drop-zone__hint">Comptes annuels BNB ou export BOB/Sage &mdash; format d&eacute;tect&eacute; automatiquement</span>
               </div>
               <div class="drop-zone__file" hidden></div>
             </div>
-            <p class="drop-zone__formats"><strong>BNB</strong> &rarr; <a href="https://consult.cbso.nbb.be" target="_blank" rel="noopener" style="color:#00c896">consult.cbso.nbb.be</a> &middot; <strong>BOB</strong> &rarr; export PDF depuis votre logiciel</p>
+            <p class="drop-zone__formats">Pas votre bilan sous la main&nbsp;? <a href="https://consult.cbso.nbb.be" target="_blank" rel="noopener" style="color:#00c896">R&eacute;cup&eacute;rez-le sur la BNB &rarr;</a></p>
+            <p class="drop-zone__limits">Optimis&eacute; pour les comptes annuels de PME (~80 pages, 5 Mo max).</p>
           </div>
 
-          <p class="trust-line">
-            &#128274; PDF supprim&eacute; imm&eacute;diatement
-            <span class="trust-line__sep">&middot;</span>
-            Donn&eacute;es h&eacute;berg&eacute;es en Europe (Frankfurt)
-            <span class="trust-line__sep">&middot;</span>
-            Conforme RGPD
-          </p>
+          <!-- 8. RGPD en argument fort -->
+          <div class="rgpd-arg" role="note">
+            <span class="rgpd-arg__icon">&#128274;</span>
+            <span class="rgpd-arg__text"><strong>Votre bilan n'est jamais conserv&eacute;.</strong> Le PDF est supprim&eacute; imm&eacute;diatement apr&egrave;s analyse &middot; H&eacute;berg&eacute; en Europe (Frankfurt) &middot; Conforme RGPD.</span>
+          </div>
 
           <div class="notice-amber" role="note">
             <span class="notice-amber__icon">&#9888;</span>
             <span><strong>Comptes abr&eacute;g&eacute;s (petites soci&eacute;t&eacute;s)&nbsp;:</strong> l'analyse reste disponible mais certains ratios seront partiels &mdash; les comptes abr&eacute;g&eacute;s contiennent moins de d&eacute;tail que les sch&eacute;mas complets.</span>
           </div>
 
-          <button type="submit" class="btn btn--full" id="submit-btn">Je veux conna&icirc;tre la valeur de cette soci&eacute;t&eacute; &rarr;</button>
+          <!-- 4. Prix + CTA primaire unique -->
+          <p class="price-line">Analyse compl&egrave;te&nbsp;: <strong id="price-display">39,99&nbsp;&euro;</strong> <span class="price-line__vat">TVA incluse</span></p>
+          <button type="submit" class="btn btn--full" id="submit-btn">Lancer l'analyse &rarr;</button>
           <p class="fine-print">Con&ccedil;u pour le plan comptable belge &middot; Soci&eacute;t&eacute;s belges uniquement &middot; R&eacute;sultats indicatifs, non contractuels</p>
+
+          <!-- 5. Compte pro (grisé, sans handler) -->
+          <button type="button" class="btn btn--full btn--ghost" id="pro-account-btn" disabled aria-disabled="true">Compte professionnel &mdash; bient&ocirc;t</button>
+
+          <!-- 6. Accès par code, hors funnel principal -->
+          <div class="code-access">
+            <button type="button" class="code-access__toggle" id="code-toggle">J'ai un code d'acc&egrave;s</button>
+            <div class="code-access__field" id="code-field" hidden>
+              <input type="text" id="access-code" name="code" placeholder="votre code d'acc&egrave;s" maxlength="20" autocomplete="off">
+              <span class="code-access__hint">Le code d&eacute;bloque l'analyse compl&egrave;te sans paiement.</span>
+            </div>
+          </div>
         </form>
+
         <p class="upload-msg" id="upload-msg" hidden></p>
         <div id="loading" class="loading" hidden>
           <div class="progress-container">
@@ -170,178 +158,10 @@
           </div>
         </div>
       </div>
-      <!-- RIGHT: Dashboard example -->
-      <div class="hero__right">
-        <div class="demo-dash demo-dash--hero">
-          <span class="demo-badge">EXEMPLE</span>
-          <p class="demo-company">CONSTRUCTION DUPONT SRL &mdash; 2024</p>
-          <div class="demo-row demo-row--2">
-            <div class="demo-card demo-card--score">
-              <svg viewBox="0 0 120 120" width="90" height="90"><circle cx="60" cy="60" r="52" fill="none" stroke="#1e3a5f" stroke-width="8"/><circle cx="60" cy="60" r="52" fill="none" stroke="#00c896" stroke-width="8" stroke-dasharray="255 72" stroke-linecap="round" transform="rotate(-90 60 60)"/></svg>
-              <div class="demo-score-num"><strong>78</strong><small>/100</small></div>
-              <span class="demo-score-label" style="color:#00c896">Bonne sant&eacute;</span>
-            </div>
-            <div class="demo-card">
-              <p class="demo-kv">EBITDA 2024 : <strong>187&nbsp;340&nbsp;&euro;</strong></p>
-              <p class="demo-kv">EBITDA 2023 : <strong>142&nbsp;800&nbsp;&euro;</strong></p>
-              <p class="demo-kv" style="color:#00c896">Moyenne : <strong>165&nbsp;070&nbsp;&euro;</strong></p>
-            </div>
-          </div>
-          <div class="demo-card" style="text-align:center;padding:16px">
-            <p style="color:#5a7fa0;font-size:.78rem;margin-bottom:6px">L'entreprise vaut entre</p>
-            <span style="font-size:1.3rem;font-weight:800;color:#00c896">748&nbsp;000&nbsp;&euro;</span>
-            <span style="color:#5a7fa0;font-size:.9rem"> et </span>
-            <span style="font-size:1.3rem;font-weight:800;color:#00c896">1&nbsp;050&nbsp;000&nbsp;&euro;</span>
-            <div class="demo-row demo-row--3" style="margin-top:10px">
-              <div class="demo-mini"><span>EV/EBITDA</span><span style="color:#fff;font-weight:600;font-size:.82rem">825&nbsp;350&nbsp;&euro;</span></div>
-              <div class="demo-mini"><span>DCF</span><span style="color:#fff;font-weight:600;font-size:.82rem">1&nbsp;031&nbsp;200&nbsp;&euro;</span></div>
-              <div class="demo-mini"><span>Actif net</span><span style="color:#fff;font-weight:600;font-size:.82rem">748&nbsp;000&nbsp;&euro;</span></div>
-            </div>
-          </div>
-          <div class="demo-row demo-row--4">
-            <div class="demo-ratio"><span class="demo-ratio__label">ROE</span><span class="demo-ratio__val">11.4%</span><span class="demo-pill demo-pill--green">Bon</span></div>
-            <div class="demo-ratio"><span class="demo-ratio__label">Liquidit&eacute;</span><span class="demo-ratio__val">3.82</span><span class="demo-pill demo-pill--green">Bon</span></div>
-            <div class="demo-ratio"><span class="demo-ratio__label">Solvabilit&eacute;</span><span class="demo-ratio__val">67%</span><span class="demo-pill demo-pill--yellow">Correct</span></div>
-            <div class="demo-ratio"><span class="demo-ratio__label">Gearing</span><span class="demo-ratio__val">0.18</span><span class="demo-pill demo-pill--green">Faible</span></div>
-          </div>
-          <div class="demo-card" style="padding:14px 16px">
-            <p style="color:#fff;font-size:.85rem;font-weight:600;margin-bottom:6px">Diagnostic financier</p>
-            <p style="color:#a0b4cc;font-size:.82rem;line-height:1.5;margin-bottom:8px">Soci&eacute;t&eacute; BTP en bonne sant&eacute; financi&egrave;re. Solvabilit&eacute; solide &agrave; 67%, aucune dette bancaire, tr&eacute;sorerie nette positive.</p>
-            <div class="demo-row demo-row--2" style="margin:0;gap:8px">
-              <div style="font-size:.78rem"><span style="color:#00c896">&#10003;</span> Aucune dette bancaire<br><span style="color:#00c896">&#10003;</span> ROE satisfaisant</div>
-              <div style="font-size:.78rem"><span style="color:#ffb432">&#9888;</span> BFR &eacute;lev&eacute; &agrave; 1.4x CA<br><span style="color:#ffb432">&#9888;</span> Stocks importants</div>
-            </div>
-          </div>
-        </div>
-        <div class="trust-strip" aria-label="Confidentialit&eacute;">
-          <div class="trust-strip__item">
-            <span class="trust-strip__title">PDF jamais stock&eacute;</span>
-            <span class="trust-strip__sub">Supprim&eacute; apr&egrave;s extraction</span>
-          </div>
-          <div class="trust-strip__item">
-            <span class="trust-strip__title">Chiffrement SSL</span>
-            <span class="trust-strip__sub">Ratios uniquement en base</span>
-          </div>
-          <div class="trust-strip__item">
-            <span class="trust-strip__title">H&eacute;berg&eacute; en Europe</span>
-            <span class="trust-strip__sub">Serveur Frankfurt &middot; Conforme RGPD</span>
-          </div>
-        </div>
-      </div>
     </div>
   </section>
 
-  <!-- ============ 2. PROBLEME ============ -->
-  <section class="section section--dark" id="probleme">
-    <div class="container">
-      <h2 class="section__title">Aujourd'hui, valoriser une entreprise c'est&hellip;</h2>
-      <div class="grid grid--3">
-        <a href="/guide/cession-entreprise" class="card card--problem card--clickable">
-          <span class="card__icon">&#128340;</span>
-          <h3>2-3 semaines d'attente</h3>
-          <p>chez le comptable pour obtenir une estimation approximative.</p>
-        </a>
-        <a href="/guide/acquisition-rachat" class="card card--problem card--clickable">
-          <span class="card__icon">&#128182;</span>
-          <h3>Des milliers d'euros d'honoraires</h3>
-          <p>pour un rapport basique, avant m&ecirc;me de savoir si le dossier vaut la peine.</p>
-        </a>
-        <a href="/guide/convention-actionnaires-valorisation" class="card card--problem card--clickable">
-          <span class="card__icon">&#128552;</span>
-          <h3>Des chiffres contest&eacute;s entre associ&eacute;s</h3>
-          <p>sans m&eacute;thode commune ni r&eacute;f&eacute;rence objective pour trancher.</p>
-        </a>
-      </div>
-    </div>
-  </section>
-
-
-  <!-- ============ 4. CAS D'USAGE ============ -->
-  <section class="section section--dark" id="cas-usage">
-    <div class="container">
-      <h2 class="section__title">Cas d'usage</h2>
-      <div class="grid grid--3">
-        <a href="/guide/acquisition-rachat" class="card card--usecase card--clickable">
-          <span class="card__icon">&#128269;</span>
-          <h3>Analyser un concurrent</h3>
-        </a>
-        <a href="/guide/cession-entreprise" class="card card--usecase card--clickable">
-          <span class="card__icon">&#128176;</span>
-          <h3>Conna&icirc;tre la valeur d'une entreprise</h3>
-        </a>
-        <a href="/guide/acquisition-rachat" class="card card--usecase card--clickable">
-          <span class="card__icon">&#129309;</span>
-          <h3>&Eacute;valuer une acquisition</h3>
-        </a>
-        <a href="/guide/credit-bancaire" class="card card--usecase card--clickable">
-          <span class="card__icon">&#127974;</span>
-          <h3>Pr&eacute;parer un dossier bancaire</h3>
-        </a>
-        <a href="/guide/convention-actionnaires-valorisation" class="card card--usecase card--clickable">
-          <span class="card__icon">&#129309;</span>
-          <h3>Convention d'actionnaires</h3>
-        </a>
-        <a href="/guide/cession-entreprise" class="card card--usecase card--clickable">
-          <span class="card__icon">&#128200;</span>
-          <h3>Sant&eacute; financi&egrave;re &amp; points d'am&eacute;lioration</h3>
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ GUIDE RATIOS ============ -->
-  <section class="section" id="guide-ratios">
-    <div class="container">
-      <h2 class="section__title">Comprendre les ratios financiers d'une PME belge</h2>
-      <p class="section__subtitle" style="text-align:center">Guides gratuits par secteur</p>
-      <div class="grid grid--3">
-        <div class="card card--guide">
-          <a href="/ratio/ebitda" class="card__main"><h3>EBITDA</h3><p>R&eacute;sultat d'exploitation avant amortissements</p></a>
-          <div class="card__sectors"><a href="/ratio/ebitda--construction-btp">Construction</a> <a href="/ratio/ebitda--services">Services</a> <a href="/ratio/ebitda--commerce">Commerce</a> <a href="/ratio/ebitda--tech-saas">Tech</a> <a href="/ratio/ebitda--industrie">Industrie</a></div>
-        </div>
-        <div class="card card--guide">
-          <a href="/ratio/roe" class="card__main"><h3>ROE</h3><p>Rentabilit&eacute; des capitaux propres</p></a>
-          <div class="card__sectors"><a href="/ratio/roe--construction-btp">Construction</a> <a href="/ratio/roe--services">Services</a> <a href="/ratio/roe--commerce">Commerce</a> <a href="/ratio/roe--tech-saas">Tech</a> <a href="/ratio/roe--industrie">Industrie</a></div>
-        </div>
-        <div class="card card--guide">
-          <a href="/ratio/gearing" class="card__main"><h3>Gearing</h3><p>Ratio d'endettement net</p></a>
-          <div class="card__sectors"><a href="/ratio/gearing--construction-btp">Construction</a> <a href="/ratio/gearing--services">Services</a> <a href="/ratio/gearing--commerce">Commerce</a> <a href="/ratio/gearing--tech-saas">Tech</a> <a href="/ratio/gearing--industrie">Industrie</a></div>
-        </div>
-        <div class="card card--guide">
-          <a href="/ratio/solvabilite" class="card__main"><h3>Solvabilit&eacute;</h3><p>Autonomie financi&egrave;re</p></a>
-          <div class="card__sectors"><a href="/ratio/solvabilite--construction-btp">Construction</a> <a href="/ratio/solvabilite--services">Services</a> <a href="/ratio/solvabilite--commerce">Commerce</a> <a href="/ratio/solvabilite--tech-saas">Tech</a> <a href="/ratio/solvabilite--industrie">Industrie</a></div>
-        </div>
-        <div class="card card--guide">
-          <a href="/ratio/liquidite-generale" class="card__main"><h3>Liquidit&eacute;</h3><p>Capacit&eacute; de paiement court terme</p></a>
-          <div class="card__sectors"><a href="/ratio/liquidite-generale--construction-btp">Construction</a> <a href="/ratio/liquidite-generale--services">Services</a> <a href="/ratio/liquidite-generale--commerce">Commerce</a> <a href="/ratio/liquidite-generale--tech-saas">Tech</a> <a href="/ratio/liquidite-generale--industrie">Industrie</a></div>
-        </div>
-        <div class="card card--guide">
-          <a href="/ratio/valorisation-ebitda" class="card__main"><h3>Valorisation</h3><p>M&eacute;thode des multiples EV/EBITDA</p></a>
-          <div class="card__sectors"><a href="/ratio/valorisation-ebitda--construction-btp">Construction</a> <a href="/ratio/valorisation-ebitda--services">Services</a> <a href="/ratio/valorisation-ebitda--commerce">Commerce</a> <a href="/ratio/valorisation-ebitda--tech-saas">Tech</a> <a href="/ratio/valorisation-ebitda--industrie">Industrie</a></div>
-        </div>
-      </div>
-      <p style="text-align:center;margin-top:20px"><a href="/ratio/ebitda" style="color:#00c896;font-weight:600">Voir tous les ratios &rarr;</a></p>
-    </div>
-  </section>
-
-  <!-- ============ GUIDES PRATIQUES ============ -->
-  <section class="section section--dark" id="guides-section">
-    <div class="container">
-      <h2 class="section__title">Guides pratiques</h2>
-      <p class="section__subtitle" style="text-align:center">Analysez selon votre situation</p>
-      <div class="grid grid--3">
-        <a href="/guide/cession-entreprise" class="card card--link"><h3>Cession d'entreprise</h3><p>Pr&eacute;parer la vente de sa PME</p></a>
-        <a href="/guide/acquisition-rachat" class="card card--link"><h3>Acquisition / Rachat</h3><p>Due diligence financi&egrave;re</p></a>
-        <a href="/guide/credit-bancaire" class="card card--link"><h3>Cr&eacute;dit bancaire</h3><p>Pr&eacute;parer son dossier</p></a>
-        <a href="/guide/convention-actionnaires-valorisation" class="card card--link"><h3>Convention d'actionnaires</h3><p>Fixer une m&eacute;thode de valorisation</p></a>
-        <a href="/guide/transmission-familiale" class="card card--link"><h3>Transmission familiale</h3><p>Succession et donation</p></a>
-        <a href="/guide/cession-parts-sociales" class="card card--link"><h3>Cession de parts</h3><p>Valorisation et proc&eacute;dure</p></a>
-      </div>
-      <p style="text-align:center;margin-top:20px"><a href="/guide/" style="color:#00c896;font-weight:600">Tous les guides &rarr;</a></p>
-    </div>
-  </section>
-
-  <!-- ============ 5. POUR QUI ? ============ -->
+  <!-- ============ POUR QUI ? ============ -->
   <section class="section" id="pour-qui">
     <div class="container">
       <h2 class="section__title">Pour qui ?</h2>
@@ -370,7 +190,7 @@
     </div>
   </section>
 
-  <!-- ============ 6. BELGIQUE FIRST ============ -->
+  <!-- ============ BELGIQUE FIRST ============ -->
   <section class="section section--accent" id="belgique">
     <div class="container">
       <h2 class="section__title">&#127463;&#127466; 100% belge, par conception</h2>
@@ -429,13 +249,174 @@
     </div>
   </section>
 
-  <!-- ============ 7. CTA ============ -->
-  <section class="section section--cta" id="cta-bottom">
-    <div class="container container--narrow" style="text-align:center">
-      <h2 class="section__title">Pr&ecirc;t &agrave; analyser ?</h2>
-      <p class="section__subtitle">Importez un PDF BNB ou un export BOB et obtenez l'analyse en 2 minutes.</p>
-      <a href="#analyse" class="btn btn--large">Lancer une analyse &uarr;</a>
-      <p style="margin-top:16px;font-size:.85rem;color:#5a7fa0">Gratuit : score sant&eacute; + ratios de base. Analyse compl&egrave;te : 19,99&nbsp;&euro;</p>
+  <!-- ============ 7. EXEMPLE DÉTAILLÉ — rapport complet (société fictive) ============ -->
+  <section class="section section--dark" id="exemple">
+    <div class="container container--narrow">
+      <h2 class="section__title">&Agrave; quoi ressemble une analyse BWIX</h2>
+      <p class="section__subtitle" style="text-align:center">R&eacute;plique au niveau r&eacute;el d'un rapport &mdash; soci&eacute;t&eacute; fictive, valeurs d'illustration.</p>
+
+      <div class="report-sample">
+        <span class="demo-badge">EXEMPLE</span>
+
+        <!-- En-tête -->
+        <div class="report-head">
+          <p class="report-head__name">HABITAT MOSAN SA</p>
+          <p class="report-head__meta">Construction / BTP &middot; 2 exercices (2023 &rarr; 2024) &middot; Source : Comptes annuels BNB</p>
+          <p class="report-note">Analyse sur 2 exercices &mdash; pour une analyse plus robuste, un minimum de 3 exercices est conseill&eacute;.</p>
+        </div>
+
+        <!-- §1 Score & valorisation -->
+        <div class="report-sec">
+          <p class="report-sec__title">1 &middot; Score &amp; valorisation</p>
+          <div class="demo-row demo-row--2">
+            <div class="demo-card demo-card--score">
+              <svg viewBox="0 0 120 120" width="90" height="90"><circle cx="60" cy="60" r="52" fill="none" stroke="#1e3a5f" stroke-width="8"/><circle cx="60" cy="60" r="52" fill="none" stroke="#00c896" stroke-width="8" stroke-dasharray="268 59" stroke-linecap="round" transform="rotate(-90 60 60)"/></svg>
+              <div class="demo-score-num"><strong>82</strong><small>/100</small></div>
+              <span class="demo-score-label" style="color:#00c896">Bonne sant&eacute; financi&egrave;re</span>
+            </div>
+            <div class="demo-card">
+              <p class="demo-kv" style="color:#5a7fa0;font-size:.78rem;margin-bottom:2px">Valeur estim&eacute;e (centrale)</p>
+              <p style="font-size:1.4rem;font-weight:800;color:#00c896;margin:0 0 8px">12&nbsp;759&nbsp;812&nbsp;&euro;</p>
+              <p class="demo-kv">Fourchette : <strong>9&nbsp;721&nbsp;762&nbsp;&euro; &mdash; 15&nbsp;797&nbsp;864&nbsp;&euro;</strong></p>
+              <p class="demo-kv" style="font-size:.76rem;color:#5a7fa0">M&eacute;thode : EBITDA pond&eacute;r&eacute; &times; multiples sectoriels (4x &mdash; 6,5x)</p>
+            </div>
+          </div>
+
+          <table class="report-table">
+            <thead><tr><th>M&eacute;thode</th><th>Montant</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td>EBITDA pond&eacute;r&eacute;</td><td>2&nbsp;430&nbsp;441&nbsp;&euro;</td><td>Base de calcul pond&eacute;r&eacute;e selon le nombre d'exercices</td></tr>
+              <tr><td>Multiple sectoriel</td><td>5x</td><td>Multiple EV/EBITDA m&eacute;dian du secteur</td></tr>
+              <tr><td>Valeur EV/EBITDA</td><td>12&nbsp;152&nbsp;203&nbsp;&euro;</td><td>EBITDA &times; multiple = valeur d'entreprise</td></tr>
+              <tr><td>DCF (equity)</td><td>13&nbsp;895&nbsp;327&nbsp;&euro;</td><td>Projection des flux de tr&eacute;sorerie actualis&eacute;s</td></tr>
+              <tr><td>Actif net comptable</td><td>9&nbsp;326&nbsp;330&nbsp;&euro;</td><td>Capitaux propres = plancher de valorisation</td></tr>
+            </tbody>
+          </table>
+
+          <table class="report-table">
+            <thead><tr><th>Ann&eacute;e</th><th>EBITDA</th><th>Poids</th><th>Contribution</th></tr></thead>
+            <tbody>
+              <tr><td>2023</td><td>2&nbsp;690&nbsp;560&nbsp;&euro;</td><td>35&nbsp;%</td><td>941&nbsp;696&nbsp;&euro;</td></tr>
+              <tr><td>2024</td><td>2&nbsp;290&nbsp;376&nbsp;&euro;</td><td>65&nbsp;%</td><td>1&nbsp;488&nbsp;744&nbsp;&euro;</td></tr>
+            </tbody>
+          </table>
+
+          <p class="report-synth">HABITAT MOSAN SA op&egrave;re dans le BTP avec un chiffre d'affaires de 48,2&nbsp;M&euro; en 2024, comme acteur r&eacute;gional de la construction. L'entreprise traverse une phase difficile : contraction de 18,4&nbsp;% du CA sur deux exercices, malgr&eacute; une l&eacute;g&egrave;re am&eacute;lioration de la marge EBITDA (4,5&nbsp;% &rarr; 4,8&nbsp;%). Le ROE de 14,2&nbsp;% constitue le principal atout. L'endettement reste un point de vigilance (dette/EBITDA 2,8x, gearing 0,69). Valorisation entre 9,7&nbsp;M&euro; et 15,8&nbsp;M&euro;, estimation centrale 12,8&nbsp;M&euro;.</p>
+        </div>
+
+        <!-- §2 Chiffres clés -->
+        <div class="report-sec">
+          <p class="report-sec__title">2 &middot; Chiffres cl&eacute;s</p>
+          <table class="report-table">
+            <thead><tr><th>Indicateur</th><th>2023</th><th>2024</th></tr></thead>
+            <tbody>
+              <tr><td>Chiffre d'affaires</td><td>59&nbsp;092&nbsp;454&nbsp;&euro;</td><td>48&nbsp;218&nbsp;216&nbsp;&euro;</td></tr>
+              <tr><td>Croissance CA</td><td>&mdash;</td><td>-18,4&nbsp;%</td></tr>
+              <tr><td>EBITDA</td><td>2&nbsp;690&nbsp;560&nbsp;&euro;</td><td>2&nbsp;290&nbsp;376&nbsp;&euro;</td></tr>
+              <tr><td>Marge EBITDA</td><td>4,5&nbsp;%</td><td>4,8&nbsp;%</td></tr>
+              <tr><td>R&eacute;sultat net</td><td>1&nbsp;416&nbsp;170&nbsp;&euro;</td><td>1&nbsp;328&nbsp;203&nbsp;&euro;</td></tr>
+              <tr><td>Marge nette</td><td>2,4&nbsp;%</td><td>2,8&nbsp;%</td></tr>
+              <tr><td>Capitaux propres</td><td>8&nbsp;956&nbsp;853&nbsp;&euro;</td><td>9&nbsp;326&nbsp;330&nbsp;&euro;</td></tr>
+              <tr><td>Effectif (ETP)</td><td>&mdash;</td><td>64</td></tr>
+              <tr><td>EBITDA / ETP</td><td>&mdash;</td><td>35&nbsp;787&nbsp;&euro;</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- §3 Ratios financiers -->
+        <div class="report-sec">
+          <p class="report-sec__title">3 &middot; Ratios financiers</p>
+
+          <p class="report-grp">Rentabilit&eacute;</p>
+          <div class="rsr"><span class="rsr__label">EBITDA</span><span class="rsr__val">2&nbsp;290&nbsp;376&nbsp;&euro;</span><span class="demo-pill demo-pill--green">Positif</span><span class="rsr__seuil"></span></div>
+          <div class="rsr"><span class="rsr__label">Marge EBITDA</span><span class="rsr__val">4,8&nbsp;%</span><span class="demo-pill demo-pill--red">Faible</span><span class="rsr__seuil">seuil 8&nbsp;%</span></div>
+          <div class="rsr"><span class="rsr__label">Marge nette</span><span class="rsr__val">2,8&nbsp;%</span><span class="demo-pill demo-pill--red">Faible</span><span class="rsr__seuil">seuil 3&nbsp;%</span></div>
+          <div class="rsr"><span class="rsr__label">ROE</span><span class="rsr__val">14,2&nbsp;%</span><span class="demo-pill demo-pill--green">Excellent</span><span class="rsr__seuil">seuil 5&nbsp;%</span></div>
+          <div class="rsr"><span class="rsr__label">ROA</span><span class="rsr__val">3,5&nbsp;%</span><span class="rsr__pill-empty"></span><span class="rsr__seuil"></span></div>
+
+          <p class="report-grp">Structure financi&egrave;re</p>
+          <div class="rsr"><span class="rsr__label">Solvabilit&eacute;</span><span class="rsr__val">24,4&nbsp;%</span><span class="demo-pill demo-pill--red">Faible</span><span class="rsr__seuil">seuil 25&nbsp;%</span></div>
+          <div class="rsr"><span class="rsr__label">Gearing</span><span class="rsr__val">0,69</span><span class="demo-pill demo-pill--yellow">Mod&eacute;r&eacute;</span><span class="rsr__seuil">seuil &lt; 0,5</span></div>
+          <div class="rsr"><span class="rsr__label">Dette / EBITDA</span><span class="rsr__val">2,8x</span><span class="demo-pill demo-pill--yellow">Correct</span><span class="rsr__seuil">seuil &lt; 2</span></div>
+          <div class="rsr"><span class="rsr__label">Couverture int&eacute;r&ecirc;ts</span><span class="rsr__val">3,8x</span><span class="demo-pill demo-pill--yellow">Correct</span><span class="rsr__seuil">seuil &gt; 2x</span></div>
+
+          <p class="report-grp">Liquidit&eacute; &amp; BFR</p>
+          <div class="rsr"><span class="rsr__label">Liquidit&eacute; g&eacute;n&eacute;rale</span><span class="rsr__val">1,81</span><span class="demo-pill demo-pill--green">Bon</span><span class="rsr__seuil">seuil 1,0</span></div>
+          <div class="rsr"><span class="rsr__label">BFR</span><span class="rsr__val">16&nbsp;242&nbsp;010&nbsp;&euro;</span><span class="demo-pill demo-pill--red">&Eacute;lev&eacute;</span><span class="rsr__seuil"></span></div>
+          <div class="rsr"><span class="rsr__label">BFR (jours CA)</span><span class="rsr__val">123&nbsp;j</span><span class="demo-pill demo-pill--red">&Eacute;lev&eacute;</span><span class="rsr__seuil">seuil &lt; 30&nbsp;j</span></div>
+
+          <p class="report-grp">&Eacute;volution N-1 &rarr; N</p>
+          <div class="report-evol">
+            <div class="demo-mini"><span>EBITDA</span><span>2&nbsp;690&nbsp;560&nbsp;&euro; &darr; 2&nbsp;290&nbsp;376&nbsp;&euro;</span></div>
+            <div class="demo-mini"><span>ROE</span><span>15,8&nbsp;% &darr; 14,2&nbsp;%</span></div>
+            <div class="demo-mini"><span>Marge EBITDA</span><span>4,5&nbsp;% &uarr; 4,8&nbsp;%</span></div>
+          </div>
+
+          <p class="report-grp">Productivit&eacute; (64 ETP)</p>
+          <div class="report-evol">
+            <div class="demo-mini"><span>EBITDA / ETP</span><span>35&nbsp;787&nbsp;&euro;</span></div>
+            <div class="demo-mini"><span>Marge brute / ETP</span><span>N/A</span></div>
+            <div class="demo-mini"><span>CA / ETP</span><span>753&nbsp;409&nbsp;&euro;</span></div>
+          </div>
+        </div>
+
+        <!-- §5 Diagnostic IA -->
+        <div class="report-sec">
+          <p class="report-sec__title">5 &middot; Diagnostic financier (IA)</p>
+
+          <div class="diag">
+            <p class="diag__title"><span style="color:#00c896">&#10003;</span> Rentabilit&eacute;</p>
+            <p class="diag__line"><strong>Constat</strong> &mdash; ROE de 14,2&nbsp;% tr&egrave;s au-dessus du seuil sectoriel (5&nbsp;%), forte rentabilit&eacute; des capitaux propres.</p>
+            <p class="diag__line"><strong>&Eacute;volution</strong> &mdash; analyse sur 2 ans, fiabilit&eacute; limit&eacute;e.</p>
+            <p class="diag__line"><strong>Impact</strong> &mdash; malgr&eacute; un CA en recul de 18,4&nbsp;%, la marge EBITDA progresse (4,5&nbsp;% &rarr; 4,8&nbsp;%), bonne ma&icirc;trise des co&ucirc;ts.</p>
+            <p class="diag__line"><strong>Piste</strong> &mdash; privil&eacute;gier les chantiers &agrave; forte valeur ajout&eacute;e, indexer les prix mati&egrave;res dans les contrats.</p>
+          </div>
+
+          <div class="diag">
+            <p class="diag__title"><span style="color:#ffb432">&equiv;</span> Structure financi&egrave;re</p>
+            <p class="diag__line"><strong>Constat</strong> &mdash; gearing 0,69 au-dessus de l'optimum sectoriel (0,5), endettement &eacute;lev&eacute; pour le secteur.</p>
+            <p class="diag__line"><strong>&Eacute;volution</strong> &mdash; fiabilit&eacute; limit&eacute;e (2 ans).</p>
+            <p class="diag__line"><strong>Impact</strong> &mdash; dette/EBITDA 2,8x g&eacute;rable, couverture des int&eacute;r&ecirc;ts correcte (3,8x), capitaux propres solides (9,3&nbsp;M&euro;).</p>
+            <p class="diag__line"><strong>Piste</strong> &mdash; affecter en priorit&eacute; les exc&eacute;dents de tr&eacute;sorerie au remboursement anticip&eacute; des dettes.</p>
+          </div>
+
+          <div class="diag">
+            <p class="diag__title"><span style="color:#ffb432">&#9632;</span> Cycle d'exploitation (BFR)</p>
+            <p class="diag__line"><strong>Constat</strong> &mdash; BFR de 123 jours, tr&egrave;s au-dessus du seuil sectoriel (30&nbsp;j), immobilise des ressources importantes.</p>
+            <p class="diag__line"><strong>&Eacute;volution</strong> &mdash; fiabilit&eacute; limit&eacute;e (2 ans).</p>
+            <p class="diag__line"><strong>Impact</strong> &mdash; chaque jour de BFR en moins lib&egrave;re ~132&nbsp;k&euro; de tr&eacute;sorerie sur la base du CA 2024.</p>
+            <p class="diag__line"><strong>Piste</strong> &mdash; relever les acomptes en d&eacute;but de chantier, syst&eacute;matiser la facturation d'&eacute;tapes.</p>
+          </div>
+
+          <div class="diag">
+            <p class="diag__title"><span style="color:#00c896">&#9632;</span> Trajectoire &amp; valorisation</p>
+            <p class="diag__line"><strong>Constat</strong> &mdash; phase de contraction marqu&eacute;e mais profitabilit&eacute; maintenue.</p>
+            <p class="diag__line"><strong>&Eacute;volution</strong> &mdash; CA -18,4&nbsp;% vs EBITDA -14,9&nbsp;%, adaptation op&eacute;rationnelle efficace.</p>
+            <p class="diag__line"><strong>Impact</strong> &mdash; valorisation centrale 12,8&nbsp;M&euro;, soit ~5,6x l'EBITDA 2024, score BWIX 82/100.</p>
+            <p class="diag__line"><strong>Piste</strong> &mdash; relancer la croissance par croissance externe cibl&eacute;e (concurrents r&eacute;gionaux).</p>
+          </div>
+        </div>
+
+        <!-- §6 Analyse par exercice -->
+        <div class="report-sec">
+          <p class="report-sec__title">6 &middot; Analyse par exercice</p>
+          <table class="report-table">
+            <thead><tr><th>&nbsp;</th><th>2023</th><th>2024 (r&eacute;f.)</th></tr></thead>
+            <tbody>
+              <tr><td>Chiffre d'affaires</td><td>59&nbsp;092&nbsp;454&nbsp;&euro;</td><td>48&nbsp;218&nbsp;216&nbsp;&euro;</td></tr>
+              <tr><td>Croissance</td><td>&mdash;</td><td>-18,5&nbsp;%</td></tr>
+              <tr><td>EBITDA</td><td>2&nbsp;690&nbsp;560&nbsp;&euro;</td><td>2&nbsp;290&nbsp;376&nbsp;&euro;</td></tr>
+              <tr><td>Marge EBITDA</td><td>4,5&nbsp;%</td><td>4,8&nbsp;%</td></tr>
+              <tr><td>R&eacute;sultat net</td><td>1&nbsp;416&nbsp;170&nbsp;&euro;</td><td>1&nbsp;328&nbsp;203&nbsp;&euro;</td></tr>
+              <tr><td>Marge nette</td><td>2,4&nbsp;%</td><td>2,8&nbsp;%</td></tr>
+              <tr><td>ROE</td><td>15,8&nbsp;%</td><td>14,2&nbsp;%</td></tr>
+              <tr><td>Gearing</td><td>0,50</td><td>0,69</td></tr>
+              <tr><td>BFR (jours)</td><td>85&nbsp;j</td><td>123&nbsp;j</td></tr>
+              <tr><td>Effectif</td><td>&mdash;</td><td>64 ETP</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -446,7 +427,7 @@
     </div>
   </section>
 
-  <!-- ============ 8. FOOTER ============ -->
+  <!-- ============ FOOTER ============ -->
   <footer class="footer">
     <div class="container footer__grid">
       <div class="footer__col">
@@ -461,15 +442,8 @@
         <a href="/conditions-utilisation">CGU</a>
       </div>
       <div class="footer__col">
-        <p class="footer__heading">Ratios financiers</p>
-        <a href="/ratio/ebitda">EBITDA</a>
-        <a href="/ratio/roe">ROE</a>
-        <a href="/ratio/gearing">Gearing</a>
-        <a href="/ratio/solvabilite">Solvabilit&eacute;</a>
-        <a href="/ratio/liquidite-generale">Liquidit&eacute;</a>
-        <a href="/ratio/valorisation-ebitda">Valorisation</a>
-        <a href="/ratio/marge-nette">Marge nette</a>
-        <a href="/ratio/bfr">BFR</a>
+        <p class="footer__heading">Ressources</p>
+        <a href="/guide/">Ressources / Guides</a>
       </div>
     </div>
   </footer>

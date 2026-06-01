@@ -19,6 +19,7 @@
 .drop-zone__prompt{color:#8fa3bf;font-size:.9rem}
 .drop-zone__prompt strong{color:#00c896}
 .drop-zone__hint{display:block;font-size:.75rem;color:#5a7fa0;margin-top:6px}
+.drop-zone__limits{font-size:.72rem;color:#5a7fa0;text-align:center;margin-top:4px}
 .drop-zone__file{color:#00c896;font-weight:600;font-size:.9rem}
 
 /* Disclaimers */
@@ -282,4 +283,72 @@
   .grid--2{grid-template-columns:1fr}
   .valuation-central-amount{font-size:1.8rem}
   .loading-steps{flex-direction:column;gap:8px}
+}
+
+/* ── Home refonte : funnel vertical centré ──────────────────────────── */
+.hero__center{max-width:640px;margin:0 auto}
+.hero__form-col{display:flex;flex-direction:column}
+.hero__form-col .badge{align-self:flex-start}
+.hero__example-link{align-self:flex-start;color:#00c896;font-weight:600;font-size:.9rem;text-decoration:none;margin:0 0 24px;border-bottom:1px solid transparent;transition:border-color .15s}
+.hero__example-link:hover{border-bottom-color:#00c896}
+
+/* RGPD comme argument fort */
+.rgpd-arg{display:flex;align-items:flex-start;gap:10px;background:rgba(0,200,150,.06);border:1px solid rgba(0,200,150,.25);border-radius:10px;padding:12px 14px;margin:0 0 14px;font-size:.82rem;color:#a9c6bb;line-height:1.5}
+.rgpd-arg__icon{color:#00c896;flex-shrink:0;font-size:1rem;line-height:1.4}
+.rgpd-arg__text strong{color:#cfeee2}
+
+/* Ligne prix au-dessus du CTA primaire */
+.price-line{text-align:center;font-size:.95rem;color:#8fa3bf;margin:4px 0 10px}
+.price-line strong{color:#fff;font-size:1.15rem;font-weight:800}
+.price-line__vat{font-size:.78rem;color:#5a7fa0}
+
+/* Bouton grisé : compte professionnel — bientôt */
+.btn--ghost{margin-top:10px;background:transparent;border:1px solid #1e3a5f;color:#5a7fa0}
+.hero__form-col .btn:disabled,.btn--ghost:disabled{opacity:.55;cursor:not-allowed;background:transparent;color:#5a7fa0;border:1px dashed #1e3a5f;transform:none}
+.hero__form-col .btn:disabled:hover,.btn--ghost:disabled:hover{background:transparent;transform:none}
+
+/* Accès par code (discret, hors funnel principal) */
+.code-access{margin-top:18px;text-align:center}
+.code-access__toggle{background:none;border:none;color:#5a7fa0;font-size:.82rem;cursor:pointer;text-decoration:underline;font-family:inherit;padding:4px}
+.code-access__toggle:hover{color:#8fa3bf}
+.code-access__field{margin-top:10px;display:flex;flex-direction:column;align-items:center;gap:6px}
+.code-access__field input{padding:10px 14px;border:1px solid #1e3a5f;background:#0f2440;color:#fff;border-radius:8px;font-size:.9rem;width:220px;text-align:center;font-family:inherit}
+.code-access__field input:focus{outline:none;border-color:#00c896}
+.code-access__hint{font-size:.72rem;color:#5a7fa0}
+
+/* ── Exemple : réplique de rapport (#exemple) ───────────────────────── */
+.report-sample{position:relative;background:#0f1923;border:1px solid rgba(30,58,95,.6);border-radius:16px;padding:26px 22px;box-shadow:0 20px 60px rgba(0,0,0,.3);margin-top:8px}
+.report-head{border-bottom:1px solid rgba(30,58,95,.5);padding-bottom:14px;margin-bottom:18px}
+.report-head__name{color:#fff;font-size:1.2rem;font-weight:800;letter-spacing:-.01em}
+.report-head__meta{color:#8fa3bf;font-size:.84rem;margin-top:4px}
+.report-note{color:#cbb78c;font-size:.78rem;margin-top:8px;background:rgba(255,180,50,.06);border:1px solid rgba(255,180,50,.22);border-radius:8px;padding:8px 10px}
+.report-sec{margin-top:22px}
+.report-sec__title{color:#00c896;font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px;border-left:3px solid #00c896;padding-left:8px}
+.report-grp{color:#fff;font-size:.86rem;font-weight:600;margin:14px 0 6px}
+.report-synth{color:#a0b4cc;font-size:.84rem;line-height:1.6;margin-top:14px}
+.report-table{width:100%;border-collapse:collapse;margin:10px 0;font-size:.82rem}
+.report-table th{text-align:left;color:#5a7fa0;font-weight:600;font-size:.74rem;text-transform:uppercase;letter-spacing:.4px;padding:8px 10px;border-bottom:1px solid rgba(30,58,95,.6)}
+.report-table td{color:#ccd9e8;padding:8px 10px;border-bottom:1px solid rgba(30,58,95,.3);vertical-align:top}
+.report-table td:nth-child(2),.report-table th:nth-child(2){color:#fff;white-space:nowrap}
+.report-table tbody tr:last-child td{border-bottom:none}
+.demo-pill--red{background:rgba(239,68,68,.15);color:#f87171}
+.rsr{display:grid;grid-template-columns:1fr auto auto auto;align-items:center;gap:10px;padding:9px 2px;border-bottom:1px solid rgba(30,58,95,.35)}
+.rsr__label{color:#a0b4cc;font-size:.86rem}
+.rsr__val{color:#fff;font-weight:700;font-size:1.05rem;text-align:right;white-space:nowrap}
+.rsr__seuil{color:#5a7fa0;font-size:.72rem;white-space:nowrap;text-align:right;min-width:72px}
+.rsr__pill-empty{display:inline-block}
+.report-evol{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:6px}
+.report-evol .demo-mini{background:#1a2535;border:1px solid rgba(30,58,95,.4);border-radius:10px;padding:10px;text-align:center}
+.report-evol .demo-mini span:first-child{color:#5a7fa0;font-size:.72rem;display:block;margin-bottom:4px}
+.report-evol .demo-mini span:last-child{color:#fff;font-size:.8rem;font-weight:600}
+.diag{background:#1a2535;border:1px solid rgba(30,58,95,.4);border-radius:10px;padding:12px 14px;margin-bottom:10px}
+.diag__title{color:#fff;font-size:.88rem;font-weight:700;margin-bottom:6px}
+.diag__line{color:#a0b4cc;font-size:.8rem;line-height:1.5;margin:3px 0}
+.diag__line strong{color:#cfe0ef}
+@media(max-width:600px){
+  .rsr{grid-template-columns:1fr auto auto}
+  .rsr__seuil{grid-column:1 / -1;text-align:right;min-width:0;margin-top:-4px}
+  .report-evol{grid-template-columns:1fr}
+  .report-table{font-size:.78rem}
+  .report-table th,.report-table td{padding:6px 6px}
 }
