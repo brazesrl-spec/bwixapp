@@ -35,6 +35,29 @@
     if (el) el.innerHTML = PRICE_EUR.toFixed(2).replace('.', ',') + ' €';
   })();
 
+  // ── Garde-fou taille (aligné avec MAX_UPLOAD_BYTES côté back = 5 Mo) ──
+  var MAX_MB = 5;
+  function checkSize(file) {
+    if (file && file.size > MAX_MB * 1024 * 1024) {
+      return 'Fichier de ' + (file.size / 1048576).toFixed(1) + ' Mo : au-delà du format '
+           + 'optimisé pour les PME (max ' + MAX_MB + ' Mo). '
+           + 'Pour un groupe ou un dépôt consolidé volumineux, contactez-nous.';
+    }
+    return null;
+  }
+  function setUploadError(msg) {
+    var m = document.getElementById('upload-msg');
+    if (m) { m.hidden = false; m.textContent = msg; }
+    var b = document.getElementById('submit-btn');
+    if (b) b.disabled = true;
+  }
+  function clearUploadError() {
+    var m = document.getElementById('upload-msg');
+    if (m) { m.hidden = true; m.textContent = ''; }
+    var b = document.getElementById('submit-btn');
+    if (b) b.disabled = false;
+  }
+
   // ── Accès par code (hors funnel) : révèle le champ ; le code part avec l'analyse.
   (function () {
     var toggle = document.getElementById('code-toggle');
@@ -71,6 +94,15 @@
   });
 
   function showFile(file) {
+    var err = checkSize(file);
+    if (err) {
+      // Fichier trop lourd : ne pas le pr\u00E9senter comme valide, bloquer l'envoi.
+      if (promptEl) promptEl.hidden = false;
+      if (fileDisplay) fileDisplay.hidden = true;
+      setUploadError(err);
+      return;
+    }
+    clearUploadError();
     if (promptEl) promptEl.hidden = true;
     if (fileDisplay) { fileDisplay.hidden = false; fileDisplay.textContent = '\uD83D\uDCC4 ' + file.name + ' (' + (file.size / 1024).toFixed(0) + ' KB)'; }
   }
@@ -81,6 +113,8 @@
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       if (!fileInput.files[0]) return;
+      var err = checkSize(fileInput.files[0]);
+      if (err) { setUploadError(err); return; }
       submitAnalysis(fileInput.files[0]);
     });
   }
