@@ -20,6 +20,7 @@
 .drop-zone__prompt strong{color:#00c896}
 .drop-zone__hint{display:block;font-size:.75rem;color:#5a7fa0;margin-top:6px}
 .drop-zone__limits{font-size:.72rem;color:#5a7fa0;text-align:center;margin-top:4px}
+.drop-zone__rgpd{font-size:.72rem;color:#5a7fa0;text-align:center;margin-top:2px}
 .drop-zone__file{color:#00c896;font-weight:600;font-size:.9rem}
 
 /* Disclaimers */
@@ -293,9 +294,6 @@
 .hero__example-link:hover{border-bottom-color:#00c896}
 
 /* RGPD comme argument fort */
-.rgpd-arg{display:flex;align-items:flex-start;gap:10px;background:rgba(0,200,150,.06);border:1px solid rgba(0,200,150,.25);border-radius:10px;padding:12px 14px;margin:0 0 14px;font-size:.82rem;color:#a9c6bb;line-height:1.5}
-.rgpd-arg__icon{color:#00c896;flex-shrink:0;font-size:1rem;line-height:1.4}
-.rgpd-arg__text strong{color:#cfeee2}
 
 /* Ligne prix au-dessus du CTA primaire */
 .price-line{text-align:center;font-size:.95rem;color:#8fa3bf;margin:4px 0 10px}

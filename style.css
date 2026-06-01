@@ -179,8 +179,6 @@ a:hover{text-decoration:underline}
 .trust-line__sep{color:rgba(255,255,255,.18)}
 
 /* ===== NOTICE AMBER ===== */
-.notice-amber{display:flex;align-items:flex-start;gap:10px;background:rgba(255,180,50,.06);border:1px solid rgba(255,180,50,.25);border-radius:10px;padding:12px 14px;margin:0 0 14px;font-size:.8rem;color:#cbb78c;line-height:1.5}
-.notice-amber__icon{color:#ffb432;flex-shrink:0;font-size:.95rem;line-height:1.4}
 
 /* ===== FINE PRINT (under CTA) ===== */
 .fine-print{text-align:center;font-size:.72rem;color:#5a7fa0;margin-top:10px;line-height:1.5}
