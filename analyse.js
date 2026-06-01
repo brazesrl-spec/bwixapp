@@ -4,25 +4,8 @@
 
   var API = 'https://bwix-api.onrender.com';
 
-  // Pre-warm backend + load free slots
+  // Pre-warm backend
   fetch(API + '/api/health').catch(function () {});
-  fetch(API + '/api/free-slots').then(function(r){return r.json();}).then(function(d){
-    var slots = d.free_slots || 0;
-    var banner = document.getElementById('launch-banner');
-    if (!banner) return;
-    if (slots <= 0) { banner.style.display = 'none'; return; }
-    banner.hidden = false;
-    banner.querySelector('.launch-count').textContent = slots;
-    var pct = (slots / 17) * 100;
-    banner.querySelector('.launch-progress-bar').style.width = pct + '%';
-    if (slots <= 5) {
-      banner.querySelector('.launch-count').style.color = '#00c896';
-      banner.querySelector('.launch-label').textContent = 'analyses compl\u00e8tes offertes \u2014 Plus que ' + slots + ' !';
-    }
-  }).catch(function(){
-    var b = document.getElementById('launch-banner');
-    if (b) b.style.display = 'none';
-  });
 
   var adminCode = new URLSearchParams(window.location.search).get('admin') || '';
 

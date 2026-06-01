@@ -5,6 +5,9 @@
     }
   },
   "cleanUrls": true,
+  "redirects": [
+    { "source": "/analyse", "destination": "/", "statusCode": 301 }
+  ],
   "rewrites": [
     { "source": "/ratio/:slug", "destination": "/ratio/:slug--:secteur.html", "has": [{ "type": "query", "key": "secteur", "value": "(?<secteur>.+)" }] },
     { "source": "/ratio/:slug", "destination": "/ratio/:slug--construction-btp.html" },

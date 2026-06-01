@@ -42,15 +42,6 @@ a:hover{text-decoration:underline}
 .hero__subtitle{font-size:.95rem;color:#8fa3bf;margin-bottom:20px;max-width:480px}
 .hero__visual{display:flex;justify-content:center}
 .hero__upload{background:#0f2440;border:1px solid rgba(30,58,95,.6);border-radius:16px;padding:28px 24px}
-/* Launch banner */
-.launch-banner{background:#1a2535;border-bottom:1px solid rgba(255,255,255,.08);padding:0}
-.launch-banner-content{display:flex;align-items:center;justify-content:center;height:64px;flex-wrap:wrap;gap:4px;padding:0 20px}
-.launch-count{font-size:1.4rem;font-weight:700;color:#fff}
-.launch-label{font-size:1.1rem;font-weight:600;color:#fff;margin-left:6px}
-.launch-sep{color:rgba(255,255,255,.3);margin:0 12px}
-.launch-sub{font-size:.8rem;color:rgba(255,255,255,.5);font-weight:400}
-.launch-progress{height:3px;background:rgba(255,255,255,.08);width:100%}
-.launch-progress-bar{height:3px;background:#00c896;width:100%;transition:width .5s ease}
 .hero__upload .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .hero__upload .upload-note{text-align:center;font-size:.78rem;color:#5a7fa0;margin-top:10px}
 .hero__upload .upload-note a{color:#00c896}
@@ -236,8 +227,6 @@ a:hover{text-decoration:underline}
   .hero__right{margin-top:24px}
   .hero__inner{grid-template-columns:1fr;text-align:center}
   .hero__subtitle{margin-left:auto;margin-right:auto}
-  .launch-banner-content{flex-direction:column;height:auto;padding:12px 20px;gap:2px}
-  .launch-sep{display:none}
   .grid--3{grid-template-columns:1fr}
   .grid--5{grid-template-columns:repeat(2,1fr)}
   .disclaimers-grid{grid-template-columns:1fr}
