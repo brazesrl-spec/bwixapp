@@ -55,6 +55,15 @@
     });
   })();
 
+  // ── Secteur obligatoire : efface l'erreur dès qu'un secteur valide est choisi ──
+  (function () {
+    var secteurSelect = document.getElementById('secteur');
+    if (!secteurSelect) return;
+    secteurSelect.addEventListener('change', function () {
+      if (secteurSelect.value) clearUploadError();
+    });
+  })();
+
   // ── Drop zone ──
   var dropZone = document.getElementById('drop-zone');
   var fileInput = document.getElementById('pdf');
@@ -95,6 +104,11 @@
   if (form) {
     form.addEventListener('submit', function (e) {
       e.preventDefault();
+      var secteurEl = document.getElementById('secteur');
+      if (!secteurEl || !secteurEl.value) {
+        setUploadError("Veuillez choisir un secteur d'activité.");
+        return;
+      }
       if (!fileInput.files[0]) return;
       var err = checkSize(fileInput.files[0]);
       if (err) { setUploadError(err); return; }

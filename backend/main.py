@@ -553,7 +553,7 @@ async def claim_free_slot(request: Request):
 async def create_analyse(
     file: UploadFile = File(...),
     email: str = Form(...),
-    secteur: str = Form(""),
+    secteur: str = Form(...),
     admin: str = Form(""),
 ):
     """Upload PDF → extract → compute ratios → Claude analysis → store in Supabase."""
@@ -562,6 +562,10 @@ async def create_analyse(
         logging.warning("ADMIN MODE — analyse for %s", email)
     if not file.filename.lower().endswith('.pdf'):
         raise HTTPException(400, "Seuls les fichiers PDF sont acceptés.")
+    if not secteur.strip():
+        raise HTTPException(422, "Secteur d'activité requis.")
+    if secteur not in SECTEUR_MULTIPLES:
+        raise HTTPException(422, "Secteur d'activité non reconnu.")
 
     # Save to temp file
     content = await file.read()
