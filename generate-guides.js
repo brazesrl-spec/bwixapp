@@ -1,6 +1,11 @@
 #!/usr/bin/env node
 /* Generate guide pages: /guide/[slug].html */
 var fs = require('fs');
+// Adresses configurables (défauts = production actuelle) :
+//   SITE_URL  = host des pages SEO (canonical / og:url)
+//   BILAN_URL = host de l'outil de bilan (boutons « Analyser »)
+var SITE_URL = (process.env.SITE_URL || 'https://www.bwix.app').replace(/\/+$/, '');
+var BILAN_URL = (process.env.BILAN_URL || 'https://www.bwix.app').replace(/\/+$/, '');
 var path = require('path');
 
 var DISCLAIMER = '<section style="padding:32px 0"><div class="container container--narrow" style="text-align:center">'
@@ -279,10 +284,10 @@ guides.forEach(function (g) {
     + '<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">\n'
     + '<title>' + esc(g.title) + ' | BWIX</title>\n'
     + '<meta name="description" content="' + esc(g.metaDesc) + '">\n'
-    + '<link rel="canonical" href="https://www.bwix.app/guide/' + g.slug + '">\n'
+    + '<link rel="canonical" href="' + SITE_URL + '/guide/' + g.slug + '">\n'
     + '<meta property="og:title" content="' + esc(g.title) + '">\n'
     + '<meta property="og:description" content="' + esc(g.metaDesc) + '">\n'
-    + '<meta property="og:url" content="https://www.bwix.app/guide/' + g.slug + '">\n'
+    + '<meta property="og:url" content="' + SITE_URL + '/guide/' + g.slug + '">\n'
     + '<meta property="og:type" content="article">\n'
     + '<script type="application/ld+json">' + JSON.stringify(faqSchema) + '</script>\n'
     + '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n'
