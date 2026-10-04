@@ -3,6 +3,7 @@
   'use strict';
 
   var API = 'https://bwix-api.onrender.com';
+  var PS = '<span class="js-price"></span>'; // rempli par price.js
   var params = new URLSearchParams(window.location.search);
   var token = params.get('token');
 
@@ -234,7 +235,7 @@
               }
             } else {
               addTitle.textContent = 'D\u00e9bloquez l\u2019analyse compl\u00e8te';
-              addDesc.innerHTML = 'Acc\u00e9dez \u00e0 la valorisation d\u00e9taill\u00e9e + ajoutez autant d\u2019exercices que vous voulez \u2014 19,99\u00a0\u20ac<br><br><a href="#" class="btn btn--large" onclick="document.getElementById(\'pay-btn\').scrollIntoView({behavior:\'smooth\'});return false;">D\u00e9bloquer \u2014 19,99 \u20ac</a>';
+              addDesc.innerHTML = 'Acc\u00e9dez \u00e0 la valorisation d\u00e9taill\u00e9e + ajoutez autant d\u2019exercices que vous voulez \u2014 '+PS+'<br><br><a href="#" class="btn btn--large" onclick="document.getElementById(\'pay-btn\').scrollIntoView({behavior:\'smooth\'});return false;">D\u00e9bloquer \u2014 '+PS+'</a>';
               addDrop.style.display = 'none';
             }
           }
@@ -487,7 +488,7 @@
     if (!unlocked && lockedCount > 0) {
       var fomo = document.getElementById('fomo-counter');
       fomo.hidden = false;
-      fomo.innerHTML = '\uD83D\uDD12 <strong>' + lockedCount + ' indicateurs masqu\u00e9s</strong> \u2014 d\u00e9bloquez l\u2019analyse compl\u00e8te pour 19,99\u00a0\u20ac';
+      fomo.innerHTML = '\uD83D\uDD12 <strong>' + lockedCount + ' indicateurs masqu\u00e9s</strong> \u2014 d\u00e9bloquez l\u2019analyse compl\u00e8te pour '+PS;
     }
 
     // Onboarding tooltip (once)
@@ -510,7 +511,7 @@
     var pdfBtn = document.getElementById('pdf-export-btn');
     if (pdfBtn && !unlocked) {
       pdfBtn.hidden = false;
-      pdfBtn.textContent = '\uD83D\uDD12 Rapport PDF \u2014 19,99\u00a0\u20ac';
+      pdfBtn.innerHTML = '\uD83D\uDD12 Rapport PDF \u2014 '+PS;
       pdfBtn.onclick = function() {
         document.getElementById('pay-btn').scrollIntoView({behavior: 'smooth'});
       };
@@ -841,7 +842,7 @@
         .then(function (d) { if (d.checkout_url) window.location.href = d.checkout_url; })
         .catch(function () {
           document.getElementById('pay-btn').disabled = false;
-          document.getElementById('pay-btn').textContent = 'D\u00e9bloquer maintenant \u2014 19,99 \u20ac';
+          document.getElementById('pay-btn').innerHTML = 'D\u00e9bloquer maintenant \u2014 '+PS;
         });
     };
 
@@ -923,7 +924,7 @@
       sub.textContent = 'Acc\u00e9dez \u00e0 la valorisation d\u00e9taill\u00e9e, tous les ratios et le diagnostic complet. Ajoutez autant d\u2019exercices que vous voulez.';
       var payBtn = document.createElement('button');
       payBtn.className = 'btn btn--large';
-      payBtn.textContent = 'D\u00e9bloquer \u2014 19,99 \u20ac';
+      payBtn.innerHTML = 'D\u00e9bloquer \u2014 '+PS;
       payBtn.onclick = function() {
         document.getElementById('pay-btn').scrollIntoView({behavior:'smooth'});
       };
