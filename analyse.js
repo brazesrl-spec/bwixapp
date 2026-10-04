@@ -12,7 +12,7 @@
   // ── Prix centralisé : changer le prix = éditer UNIQUEMENT cette constante.
   // Doit rester aligné avec le Price Stripe côté back (STRIPE_PRICE_ID dans
   // bwix-api/main.py → price_1TdRv7… = 39,99 € TTC).
-  var PRICE_EUR = 39.99;
+  var PRICE_EUR = 19.99;
   (function () {
     var el = document.getElementById('price-display');
     if (el) el.innerHTML = PRICE_EUR.toFixed(2).replace('.', ',') + ' €';
