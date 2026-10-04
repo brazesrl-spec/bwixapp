@@ -134,7 +134,7 @@
       <!-- PAYWALL -->
       <div id="paywall" class="paywall">
         <div class="paywall__overlay">
-          <h3>D&eacute;bloquer l'analyse compl&egrave;te &mdash; 19,99&nbsp;&euro;</h3>
+          <h3>D&eacute;bloquer l'analyse compl&egrave;te &mdash; <span class="js-price"></span></h3>
           <ul class="paywall__features">
             <li>&#10003; Valorisation d&eacute;taill&eacute;e 3 m&eacute;thodes</li>
             <li>&#10003; Tous les ratios complets</li>
@@ -142,7 +142,7 @@
             <li>&#10003; Ajouter des exercices suppl&eacute;mentaires</li>
             <li>&#10003; Export rapport PDF professionnel</li>
           </ul>
-          <button class="btn btn--large" id="pay-btn">D&eacute;bloquer maintenant &mdash; 19,99&nbsp;&euro;</button>
+          <button class="btn btn--large" id="pay-btn">D&eacute;bloquer maintenant &mdash; <span class="js-price"></span></button>
           <p class="paywall__note">Paiement s&eacute;curis&eacute; par Stripe. Acc&egrave;s imm&eacute;diat.</p>
           <p class="paywall__code-link"><a href="#" id="show-code-input">Vous avez un code ?</a></p>
           <div class="paywall__code" id="code-section" hidden>
@@ -212,12 +212,13 @@
       <p class="modal__explain" id="modal-explain"></p>
       <p class="modal__interpret" id="modal-interpret"></p>
       <div class="modal__cta" id="modal-cta" hidden>
-        <button class="btn" id="modal-unlock-btn">D&eacute;bloquer pour voir &mdash; 19,99&nbsp;&euro;</button>
+        <button class="btn" id="modal-unlock-btn">D&eacute;bloquer pour voir &mdash; <span class="js-price"></span></button>
       </div>
     </div>
   </div>
 
   <script src="ratios-data.js"></script>
+  <script src="price.js"></script>
   <script src="resultats.js"></script>
 </body>
 </html>

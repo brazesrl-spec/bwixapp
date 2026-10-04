@@ -9,15 +9,6 @@
 
   var adminCode = new URLSearchParams(window.location.search).get('admin') || '';
 
-  // ── Prix centralisé : changer le prix = éditer UNIQUEMENT cette constante.
-  // Doit rester aligné avec le Price Stripe côté back (STRIPE_PRICE_ID dans
-  // bwix-api/main.py → price_1TdRv7… = 39,99 € TTC).
-  var PRICE_EUR = 19.99;
-  (function () {
-    var el = document.getElementById('price-display');
-    if (el) el.innerHTML = PRICE_EUR.toFixed(2).replace('.', ',') + ' €';
-  })();
-
   // ── Garde-fou taille (aligné avec MAX_UPLOAD_BYTES côté back = 5 Mo) ──
   var MAX_MB = 5;
   function checkSize(file) {

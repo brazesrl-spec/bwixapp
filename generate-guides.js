@@ -76,7 +76,7 @@ var guides = [
     helpText: 'BWIX extrait automatiquement les donn\u00e9es de vos comptes annuels BNB, calcule tous les ratios financiers et produit une valorisation EV/EBITDA en 2 minutes. Vous obtenez un rapport objectif \u00e0 pr\u00e9senter \u00e0 un acqu\u00e9reur potentiel, sans d\u00e9pendre d\u2019un tiers.',
     faq: [
       {q:'Quelle m\u00e9thode de valorisation pour vendre une PME belge ?', a:'La m\u00e9thode EV/EBITDA (valeur d\u2019entreprise = EBITDA \u00d7 multiple sectoriel) est la plus utilis\u00e9e en Belgique. BWIX calcule automatiquement cette valorisation avec un multiple adapt\u00e9 \u00e0 votre secteur.'},
-      {q:'Combien co\u00fbte une \u00e9valuation d\u2019entreprise ?', a:'Un expert-comptable facture g\u00e9n\u00e9ralement 2.000 \u00e0 10.000\u20ac pour un rapport de valorisation. BWIX produit une analyse compl\u00e8te pour 19,99\u20ac en 2 minutes.'},
+      {q:'Combien co\u00fbte une \u00e9valuation d\u2019entreprise ?', a:'Un expert-comptable facture g\u00e9n\u00e9ralement 2.000 \u00e0 10.000\u20ac pour un rapport de valorisation. BWIX produit une analyse compl\u00e8te pour 19,99 \u20ac HTVA en 2 minutes.'},
       {q:'Combien d\u2019exercices faut-il pour une valorisation fiable ?', a:'Id\u00e9alement 3 \u00e0 5 exercices. BWIX utilise l\u2019EBITDA moyen des exercices disponibles pour lisser les variations conjoncturelles.'},
     ],
     related: ['acquisition-rachat', 'convention-actionnaires-valorisation', 'cession-parts-sociales'],
@@ -236,7 +236,7 @@ var guides = [
       + '<h2>Clause type \u00e0 int\u00e9grer</h2>'
       + '<blockquote>\u00ab La valeur des parts sociales, en cas de cession entre associ\u00e9s ou \u00e0 un tiers, sera d\u00e9termin\u00e9e sur base de l\u2019EBITDA moyen des trois derniers exercices cl\u00f4tur\u00e9s, multipli\u00e9 par un multiple sectoriel compris entre 4 et 6, d\u00e9fini d\u2019un commun accord. \u00c0 d\u00e9faut d\u2019accord, le multiple retenu sera 5. La valeur obtenue constitue la valeur d\u2019entreprise (EV), dont sera d\u00e9duite la dette nette pour obtenir la valeur des fonds propres. \u00bb</blockquote>'
       + '<h2>Pourquoi cette clause fonctionne avec BWIX</h2>'
-      + '<p>La m\u00e9thode utilis\u00e9e par BWIX (EV/EBITDA sur EBITDA moyen) correspond exactement \u00e0 la clause ci-dessus. Chaque associ\u00e9 peut v\u00e9rifier la valeur actuelle \u00e0 tout moment pour 19,99\u20ac, sans mandater un expert-comptable. La transparence r\u00e9duit les conflits.</p>'
+      + '<p>La m\u00e9thode utilis\u00e9e par BWIX (EV/EBITDA sur EBITDA moyen) correspond exactement \u00e0 la clause ci-dessus. Chaque associ\u00e9 peut v\u00e9rifier la valeur actuelle \u00e0 tout moment pour 19,99 \u20ac HTVA, sans mandater un expert-comptable. La transparence r\u00e9duit les conflits.</p>'
       + '<p><strong>Important :</strong> il est conseill\u00e9 de faire valider la clause par un notaire ou avocat sp\u00e9cialis\u00e9. BWIX fournit la donn\u00e9e financi\u00e8re, pas le conseil juridique.</p>',
     helpText: 'BWIX permet \u00e0 chaque associ\u00e9 de v\u00e9rifier la valorisation actuelle de la soci\u00e9t\u00e9 en 2 minutes, sur base de la m\u00eame m\u00e9thode (EV/EBITDA moyen) que celle fig\u00e9e dans la convention.',
     faq: [
