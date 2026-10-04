@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.bwix.app/sitemap.xml
+Sitemap: https://bilan.bwix.app/sitemap.xml
